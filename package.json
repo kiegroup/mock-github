@@ -9,8 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "file-test": "ts-node"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
