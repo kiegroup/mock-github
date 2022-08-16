@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test:no-report": "jest",
+    "test": "jest --coverage --testResultsProcessor=jest-sonar-reporter"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "axios": "^0.27.2",
     "eslint": "^8.18.0",
     "jest": "^28.1.1",
+    "jest-sonar-reporter": "^2.0.0",
     "rollup": "^2.78.0",
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.1",
