@@ -35,28 +35,28 @@ jobs:
             coverage/lcov.info
           name: tests-${{ matrix.os }}-${{ matrix.node-version }}     
   
-  coverage-report:
-    name: Publish coverage report
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download test report files
-        uses: actions/download-artifact@v3
-        with:
-          name: tests-ubuntu-latest-14.x
-      - name: Setup sonar
-        uses: warchant/setup-sonar-scanner@v3
-      - run: sonar-scanner
-          -Dsonar.organization=kiegroup
-          -Dsonar.projectKey=mock-github
-          -Dsonar.projectName="mock-github"
-          -Dsonar.sources=$GITHUB_WORKSPACE
-          -Dsonar.host.url=${{ secrets.SONAR_URL }}
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.tests=test
-          -Dsonar.testExecutionReportPaths=test-report.xml
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          -Dsonar.exclusions="test/**,jest.config.ts,*json"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # coverage-report:
+  #   name: Publish coverage report
+  #   needs: tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Download test report files
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: tests-ubuntu-latest-14.x
+  #     - name: Setup sonar
+  #       uses: warchant/setup-sonar-scanner@v3
+  #     - run: sonar-scanner
+  #         -Dsonar.organization=kiegroup
+  #         -Dsonar.projectKey=mock-github
+  #         -Dsonar.projectName="mock-github"
+  #         -Dsonar.sources=$GITHUB_WORKSPACE
+  #         -Dsonar.host.url=${{ secrets.SONAR_URL }}
+  #         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+  #         -Dsonar.tests=test
+  #         -Dsonar.testExecutionReportPaths=test-report.xml
+  #         -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+  #         -Dsonar.exclusions="test/**,jest.config.ts,*json"
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
