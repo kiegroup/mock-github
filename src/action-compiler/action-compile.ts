@@ -25,6 +25,19 @@ export class ActionCompiler {
     // compile the copy
     const bundle = await rollup({
       input: tempFilePath,
+      onwarn: (warning) => {
+        // Silence circular dependency warning for nock package
+        if (
+          warning.code === "CIRCULAR_DEPENDENCY" &&
+          !warning.importer?.indexOf(
+            path.normalize("node_modules/nock/lib/")
+          )
+        ) {
+          return;
+        }
+
+        console.warn(`(!) ${warning.message}`);
+      },
       plugins: [
         typescript({
           compilerOptions: {

@@ -10,7 +10,9 @@
   "scripts": {
     "build": "tsc",
     "test:no-report": "jest",
-    "test": "jest --coverage --testResultsProcessor=jest-sonar-reporter",
+    "test": "npm run test:no-report -- --coverage --testResultsProcessor=jest-sonar-reporter",
+    "pretest:no-report": "ncc build ./test/action-compiler/dummy-file.ts -o ./test/action-compiler/dist-no-minify && ncc build --minify ./test/action-compiler/dummy-file.ts -o ./test/action-compiler/dist-minify",
+    "posttest:no-report": "rm -rf ./test/action-compiler/dist-no-minify ./test/action-compiler/dist-minify",
     "file": "ts-node"
   },
   "author": "",
@@ -21,6 +23,7 @@
     "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
+    "@vercel/ncc": "^0.34.0",
     "axios": "^0.27.2",
     "eslint": "^8.18.0",
     "jest": "^28.1.1",
