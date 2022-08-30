@@ -1,13 +1,12 @@
+import { SetupRepositoryFile } from "../repository-mocker.types"
+
 export interface GitAction {
     action: string
 }
 
 export interface Push extends GitAction {
     branch: string,
-    file?: {
-        path: string, 
-        name: string
-    }
+    file?: SetupRepositoryFile[]
 }
 
 export interface Merge extends GitAction {
@@ -16,10 +15,7 @@ export interface Merge extends GitAction {
     commitMessage?: string
 }
 
-export interface Unknown extends GitAction {
-    cmd: string,
-    file?: {
-        path: string, 
-        name: string
-    }
+export enum GitActionTypes {
+    PUSH = "push",
+    MERGE = "merge"
 }

@@ -5,7 +5,7 @@ import { Config } from "./github-mocker.types";
 import { Mocker } from "./mocker";
 import { RepositoryMocker } from "./repository/repository-mocker";
 import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
-import { RepositoryInterface } from "./repository/repository-mocker-types";
+import { RepositoryInterface } from "./repository/repository-mocker.types";
 import { EnvInterface } from "./env/env-mocker.types";
 import { ApiInterface } from "./api/api-mocker.types";
 import { ActionInterface } from "./action/action-mocker.types";

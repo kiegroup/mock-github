@@ -5,11 +5,20 @@ import {
   RepositoryFile,
   RepositoryInterface,
   RepositoryState,
-} from "./repository-mocker-types";
+  SetupRepositoryFile,
+} from "./repository-mocker.types";
 import path from "path";
 import { rm, copyFile, writeFile } from "node:fs/promises";
 import { mkdirSync } from "fs";
-import { GitHistory } from "./git-history-mocker";
+import { GitHistory } from "./history/git-history-mocker";
+import { GitBranches } from "./branches/git-branches";
+import {
+  DEFAULT_BRANCH,
+  ORIGIN,
+  REMOTE,
+  UPSTREAM,
+} from "./repository.constants";
+import { RepositoryFileSystem } from "./files/repository-file-system";
 
 export class RepositoryMocker implements Mocker, RepositoryInterface {
   private repositories: Repositories | undefined;
@@ -29,13 +38,17 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
    */
   private async initRepo(
     repoName: string,
-    workflow?: string[]
-  ): Promise<{ git: SimpleGit; repoPath: string }> {
+    files?: SetupRepositoryFile[]
+  ): Promise<{
+    git: SimpleGit;
+    repoPath: string;
+    repoFiles: RepositoryFile[];
+  }> {
     // get repository, remote, remote/origin and remote/upstream paths
     const repoPath = path.join(this.setupPath, repoName);
-    const remotePath = path.join(repoPath, "remote");
-    const originPath = path.join(remotePath, "origin");
-    const upstreamPath = path.join(remotePath, "upstream");
+    const remotePath = path.join(repoPath, REMOTE);
+    const originPath = path.join(remotePath, ORIGIN);
+    const upstreamPath = path.join(remotePath, UPSTREAM);
 
     // create origin and upstream folders
     mkdirSync(originPath, { recursive: true });
@@ -46,73 +59,46 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
     const originGit: SimpleGit = simpleGit(originPath);
     const upstreamGit: SimpleGit = simpleGit(upstreamPath);
 
-    const promises: Promise<unknown>[] = [
+    // generate repository files
+    const repofs = new RepositoryFileSystem(repoPath);
+
+    await Promise.all([
       originGit
-        .init(true, ["-b", "main"])
+        .init(true, ["-b", DEFAULT_BRANCH])
         .addConfig("user.name", "Github")
         .addConfig("user.email", "noreply@github.com"), // initialize origin as a git repository
       upstreamGit
-        .init(true, ["-b", "main"])
+        .init(true, ["-b", DEFAULT_BRANCH])
         .addConfig("user.name", "Github")
         .addConfig("user.email", "noreply@github.com"), // initialize upstream as a git repository
-      writeFile(path.join(repoPath, ".gitignore"), "remote"), // add remote to gitignore of the repository so that upstream and origin aren't pushed
-    ];
+      writeFile(path.join(repoPath, ".gitignore"), REMOTE), // add remote to gitignore of the repository so that upstream and origin aren't pushed,
+      repofs.copyFiles(files),
+    ]);
 
-    if (workflow) {
-      const workflowDir = path.join(repoPath, ".github", "workflows");
-      mkdirSync(workflowDir, { recursive: true });
-      workflow.forEach((flow) => {
-        promises.push(
-          copyFile(flow, path.join(workflowDir, path.basename(flow)))
-        );
-      });
-    }
-
-    await Promise.all(promises);
+    const [gitignore, repoFiles] = await Promise.all([
+      writeFile(path.join(repoPath, ".gitignore"), REMOTE).then(() => ({
+        path: path.join(repoPath, ".gitignore"),
+        branch: DEFAULT_BRANCH,
+      })), // add remote to gitignore of the repository so that upstream and origin aren't pushed,
+      repofs.copyFiles(files),
+    ]);
 
     // initialize the repository and add origin, upstream and perform first push on main
     await git
-      .init(["-b", "main"])
+      .init(["-b", DEFAULT_BRANCH])
       .addConfig("user.name", "Github")
       .addConfig("user.email", "noreply@github.com")
-      .addRemote("origin", originPath)
-      .addRemote("upstream", upstreamPath)
+      .addRemote(ORIGIN, originPath)
+      .addRemote(UPSTREAM, upstreamPath)
       .add(".")
       .commit("initialization")
-      .push("origin", "main", ["--set-upstream"]);
+      .push(ORIGIN, DEFAULT_BRANCH, ["--set-upstream"]);
 
-    return { git, repoPath };
-  }
-
-  /**
-   * Create branches and push them if necessary
-   * @param git git instance
-   * @param lb array of branches to be kept local (unpushed)
-   * @param pb array of branches to be pushed
-   * @returns
-   */
-  private async setBranches(
-    git: SimpleGit,
-    lb: string[] | undefined,
-    pb: string[] | undefined
-  ): Promise<{ localBranches: string[]; pushedBranches: string[] }> {
-    // get branch info and create all the branches and push them to remote
-    const pushedBranches = pb ? pb : [];
-
-    for (const branch of pushedBranches) {
-      await git
-        .checkoutLocalBranch(branch)
-        .push("origin", branch, ["--set-upstream"]);
-      await git.checkout("main");
-    }
-
-    // get branch info and create all the branches and push them to remote
-    const localBranches = lb ? lb : [];
-    for (const branch of localBranches) {
-      await git.checkoutLocalBranch(branch).checkout("main");
-    }
-
-    return { localBranches, pushedBranches: ["main", ...pushedBranches] };
+    return {
+      git,
+      repoPath,
+      repoFiles: [...repoFiles, gitignore]
+    };
   }
 
   async setup(): Promise<void> {
@@ -129,47 +115,30 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
       const currRepo = this.repositories[repoNames[i]];
 
       // initialize the repo and return git instance configured for the repo and return repo path
-      const { git, repoPath } = await this.initRepo(
-        repoNames[i],
-        currRepo.workflow
-      );
+      const { git, repoPath, repoFiles } = await this.initRepo(repoNames[i]);
 
       // create all local and remote branches
-      const { localBranches, pushedBranches } = await this.setBranches(
-        git,
-        currRepo.localBranches,
-        currRepo.pushedBranches
-      );
+      const gitBranches = new GitBranches(git);
+      await gitBranches.setLocalBranches(currRepo.localBranches);
+      await gitBranches.setPushedBranches(currRepo.localBranches);
 
       // set the active branch if defined otherwise let it be main
-      const currBranch = currRepo.currentBranch ?? "main";
-      if (
-        localBranches.includes(currBranch) ||
-        pushedBranches.includes(currBranch)
-      ) {
-        await git.checkout(currBranch);
-      } else {
-        await git.checkoutLocalBranch(currBranch);
-        localBranches.push(currBranch);
-      }
+      const currentBranch = await gitBranches.setCurrentBranch(
+        currRepo.currentBranch
+      );
 
       // create the required history for the repo
-      const gitHistory = new GitHistory(
-        git,
-        currRepo.history,
-        repoPath,
-        currBranch
-      );
-      const files: RepositoryFile[] = await gitHistory.setHistory();
+      const gitHistory = new GitHistory(git, repoPath);
+      const gitHistoryFiles: RepositoryFile[] = await gitHistory.setHistory();
 
       // add the repo details which are to be returned
       repoState.push({
         name: repoNames[i],
         path: repoPath,
-        branch: currBranch,
-        pushedBranches,
-        localBranches,
-        files,
+        branch: currentBranch,
+        pushedBranches: [...gitBranches.pushedBranches, DEFAULT_BRANCH],
+        localBranches: gitBranches.localBranches,
+        files: [...gitHistoryFiles, ...repoFiles],
       });
     }
     this.repositoryState = repoState;
