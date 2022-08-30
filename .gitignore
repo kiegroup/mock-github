@@ -2,3 +2,5 @@ node_modules/
 .vscode/
 coverage/
 test-report.xml
+build/
+dist*/

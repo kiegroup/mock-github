@@ -1,7 +1,7 @@
 import { spawnSync } from "child_process";
 import { rmSync } from "fs";
 import path from "path";
-import { ActionCompiler } from "../../src";
+import { ActionCompiler } from "../../src/action-compiler/action-compile";
 import { CompileMockAPIs } from "../../src/action-compiler/action-compile.types";
 
 test.each([
@@ -29,7 +29,7 @@ test.each([
         ],
       },
     ];
-    await compiler.compile(path.join(__dirname, src), dest, apis, minify);
+    await compiler.compile(path.join(process.cwd(), src), dest, apis, minify);
     const result = spawnSync("node", [dest]);
     expect(result.stdout.toString()).toMatch("200 [ 'test worked' ]");
     rmSync(dest);
