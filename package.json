@@ -11,8 +11,8 @@
     "build": "tsc",
     "test:no-report": "jest",
     "test": "npm run test:no-report -- --coverage --testResultsProcessor=jest-sonar-reporter",
-    "pretest:no-report": "ncc build ./test/action-compiler/dummy-file.ts -o ./test/action-compiler/dist-no-minify && ncc build --minify ./test/action-compiler/dummy-file.ts -o ./test/action-compiler/dist-minify",
-    "posttest:no-report": "rm -rf ./test/action-compiler/dist-no-minify ./test/action-compiler/dist-minify",
+    "pretest:no-report": "ncc build ./test/action-compiler/dummy-file.ts -o dist-no-minify && ncc build --minify ./test/action-compiler/dummy-file.ts -o dist-minify",
+    "posttest:no-report": "rm -rf ./dist-no-minify ./dist-minify",
     "file": "ts-node"
   },
   "author": "",
