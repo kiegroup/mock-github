@@ -1,10 +1,10 @@
 import { SimpleGit } from "simple-git";
-import { GitAction, GitActionTypes, Merge, Push } from "./git-history.types";
+import { GitAction, GitActionTypes, Merge, Push } from "./repository-history.types";
 import { RepositoryFile } from "../repository-mocker.types";
 import { DEFAULT_BRANCH } from "../repository.constants";
 import { RepositoryFileSystem } from "../files/repository-file-system";
 
-export class GitHistory {
+export class RepositoryHistory {
   private readonly git: SimpleGit;
   private readonly repoPath: string;
   private readonly repofs: RepositoryFileSystem;

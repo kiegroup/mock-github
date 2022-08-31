@@ -10,8 +10,8 @@ import {
 import path from "path";
 import { rm, writeFile } from "node:fs/promises";
 import { mkdirSync } from "fs";
-import { GitHistory } from "./history/git-history-mocker";
-import { GitBranches } from "./branches/git-branches";
+import { RepositoryHistory } from "./history/repository-history-mocker";
+import { RepositoryBranches } from "./branches/repository-branches";
 import {
   DEFAULT_BRANCH,
   ORIGIN,
@@ -19,7 +19,7 @@ import {
   UPSTREAM,
 } from "./repository.constants";
 import { RepositoryFileSystem } from "./files/repository-file-system";
-import { GitAction } from "./history/git-history.types";
+import { GitAction } from "./history/repository-history.types";
 
 export class RepositoryMocker implements Mocker, RepositoryInterface {
   private repositories: Repositories | undefined;
@@ -106,7 +106,7 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
     localBranches?: string[],
     pushedBranches?: string[]
   ) {
-    const gitBranches = new GitBranches(git);
+    const gitBranches = new RepositoryBranches(git);
     await gitBranches.setLocalBranches(localBranches);
     await gitBranches.setPushedBranches(pushedBranches);
     return {
@@ -116,7 +116,7 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
   }
 
   private async setCurrentBranch(git: SimpleGit, currBranch?: string) {
-    const gitBranch = new GitBranches(git);
+    const gitBranch = new RepositoryBranches(git);
     return gitBranch.setCurrentBranch(currBranch);
   }
 
@@ -125,7 +125,7 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
     repoPath: string,
     history?: GitAction[]
   ) {
-    const gitHistory = new GitHistory(git, repoPath);
+    const gitHistory = new RepositoryHistory(git, repoPath);
     return gitHistory.setHistory(history);
   }
 

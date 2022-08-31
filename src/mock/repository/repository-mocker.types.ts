@@ -1,4 +1,4 @@
-import { Merge, Push } from "./history/git-history.types";
+import { GitAction, Merge, Push } from "./history/repository-history.types";
 
 export type RepositoryFile = {
   path: string;
@@ -19,8 +19,6 @@ export type SetupRepositoryFile = {
   dest: string;
 };
 
-export type History = Push | Merge;
-
 export type PullRequest = {
   [key: string]: { [key: string]: any } & {
     open: {
@@ -39,7 +37,7 @@ export type Repositories = {
     pushedBranches?: string[];
     localBranches?: string[];
     currentBranch?: string;
-    history?: History[];
+    history?: GitAction[];
     owner?: string;
     files?: SetupRepositoryFile[];
     forkedFrom?: string;

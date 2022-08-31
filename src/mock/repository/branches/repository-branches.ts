@@ -1,7 +1,7 @@
 import { SimpleGit } from "simple-git";
 import { DEFAULT_BRANCH } from "../repository.constants";
 
-export class GitBranches {
+export class RepositoryBranches {
   private readonly git: SimpleGit;
   private _pushedBranches: string[];
   private _localBranches: string[];
