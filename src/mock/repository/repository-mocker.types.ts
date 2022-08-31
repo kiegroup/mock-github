@@ -8,7 +8,7 @@ export type RepositoryFile = {
 export type RepositoryState = {
   name: string;
   path: string;
-  branch: string;
+  currentBranch: string;
   pushedBranches: string[];
   localBranches: string[];
   files: RepositoryFile[];
@@ -45,7 +45,7 @@ export type Repositories = {
     forkedFrom?: string;
     pullRequests?: PullRequest[];
   };
-} & { create: boolean };
+};
 
 export interface RepositoryInterface {
   getAllStates(): RepositoryState[];

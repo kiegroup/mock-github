@@ -9,7 +9,7 @@ export class GitBranches {
   constructor(git: SimpleGit) {
     this.git = git;
     this._localBranches = [];
-    this._pushedBranches = [];
+    this._pushedBranches = [DEFAULT_BRANCH];
   }
 
   async setPushedBranches(branches?: string[]) {

@@ -79,7 +79,6 @@ export class GitHistory {
           throw new Error("Unknown action");
       }
     }
-    await this.git.checkout(currentBranch);
     return files;
   }
 }

@@ -8,7 +8,7 @@ import {
   SetupRepositoryFile,
 } from "./repository-mocker.types";
 import path from "path";
-import { rm, copyFile, writeFile } from "node:fs/promises";
+import { rm, writeFile } from "node:fs/promises";
 import { mkdirSync } from "fs";
 import { GitHistory } from "./history/git-history-mocker";
 import { GitBranches } from "./branches/git-branches";
@@ -19,6 +19,7 @@ import {
   UPSTREAM,
 } from "./repository.constants";
 import { RepositoryFileSystem } from "./files/repository-file-system";
+import { GitAction } from "./history/git-history.types";
 
 export class RepositoryMocker implements Mocker, RepositoryInterface {
   private repositories: Repositories | undefined;
@@ -36,13 +37,9 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
    * @param repoName name of the repo to initialize
    * @returns git instance and path to repo
    */
-  private async initRepo(
-    repoName: string,
-    files?: SetupRepositoryFile[]
-  ): Promise<{
+  private async initRepo(repoName: string): Promise<{
     git: SimpleGit;
     repoPath: string;
-    repoFiles: RepositoryFile[];
   }> {
     // get repository, remote, remote/origin and remote/upstream paths
     const repoPath = path.join(this.setupPath, repoName);
@@ -59,9 +56,6 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
     const originGit: SimpleGit = simpleGit(originPath);
     const upstreamGit: SimpleGit = simpleGit(upstreamPath);
 
-    // generate repository files
-    const repofs = new RepositoryFileSystem(repoPath);
-
     await Promise.all([
       originGit
         .init(true, ["-b", DEFAULT_BRANCH])
@@ -72,15 +66,6 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
         .addConfig("user.name", "Github")
         .addConfig("user.email", "noreply@github.com"), // initialize upstream as a git repository
       writeFile(path.join(repoPath, ".gitignore"), REMOTE), // add remote to gitignore of the repository so that upstream and origin aren't pushed,
-      repofs.copyFiles(files),
-    ]);
-
-    const [gitignore, repoFiles] = await Promise.all([
-      writeFile(path.join(repoPath, ".gitignore"), REMOTE).then(() => ({
-        path: path.join(repoPath, ".gitignore"),
-        branch: DEFAULT_BRANCH,
-      })), // add remote to gitignore of the repository so that upstream and origin aren't pushed,
-      repofs.copyFiles(files),
     ]);
 
     // initialize the repository and add origin, upstream and perform first push on main
@@ -97,8 +82,51 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
     return {
       git,
       repoPath,
-      repoFiles: [...repoFiles, gitignore]
     };
+  }
+
+  private async setFiles(
+    git: SimpleGit,
+    repoPath: string,
+    files?: SetupRepositoryFile[]
+  ) {
+    const repofs = new RepositoryFileSystem(repoPath);
+    const filesCreated = await repofs.copyFiles(files);
+    if (filesCreated.length > 0) {
+      await git
+        .add(".")
+        .commit("created repository files")
+        .push(ORIGIN, DEFAULT_BRANCH);
+    }
+    return filesCreated;
+  }
+
+  private async setBranches(
+    git: SimpleGit,
+    localBranches?: string[],
+    pushedBranches?: string[]
+  ) {
+    const gitBranches = new GitBranches(git);
+    await gitBranches.setLocalBranches(localBranches);
+    await gitBranches.setPushedBranches(pushedBranches);
+    return {
+      localBranches: gitBranches.localBranches,
+      pushedBranches: gitBranches.pushedBranches,
+    };
+  }
+
+  private async setCurrentBranch(git: SimpleGit, currBranch?: string) {
+    const gitBranch = new GitBranches(git);
+    return gitBranch.setCurrentBranch(currBranch);
+  }
+
+  private async setHistory(
+    git: SimpleGit,
+    repoPath: string,
+    history?: GitAction[]
+  ) {
+    const gitHistory = new GitHistory(git, repoPath);
+    return gitHistory.setHistory(history);
   }
 
   async setup(): Promise<void> {
@@ -106,39 +134,48 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
       return;
     }
 
-    // get all names of the repositories
-    const repoNames = Object.keys(this.repositories);
     const repoState: RepositoryState[] = [];
 
     // loop through all the repositories and construct them according to the state specified in config file
-    for (let i = 0; i < repoNames.length; i++) {
-      const currRepo = this.repositories[repoNames[i]];
-
+    for (const [repoName, currentRepo] of Object.entries(this.repositories)) {
       // initialize the repo and return git instance configured for the repo and return repo path
-      const { git, repoPath, repoFiles } = await this.initRepo(repoNames[i]);
+      const { git, repoPath } = await this.initRepo(repoName);
+
+      // create repository files
+      const filesCreated = await this.setFiles(
+        git,
+        repoPath,
+        currentRepo.files
+      );
 
       // create all local and remote branches
-      const gitBranches = new GitBranches(git);
-      await gitBranches.setLocalBranches(currRepo.localBranches);
-      await gitBranches.setPushedBranches(currRepo.localBranches);
-
-      // set the active branch if defined otherwise let it be main
-      const currentBranch = await gitBranches.setCurrentBranch(
-        currRepo.currentBranch
+      const { localBranches, pushedBranches } = await this.setBranches(
+        git,
+        currentRepo.localBranches,
+        currentRepo.pushedBranches
       );
 
       // create the required history for the repo
-      const gitHistory = new GitHistory(git, repoPath);
-      const gitHistoryFiles: RepositoryFile[] = await gitHistory.setHistory();
+      const historyFiles = await this.setHistory(
+        git,
+        repoPath,
+        currentRepo.history
+      );
+
+      // set the active branch if defined otherwise let it be main
+      const currentBranch = await this.setCurrentBranch(
+        git,
+        currentRepo.currentBranch
+      );
 
       // add the repo details which are to be returned
       repoState.push({
-        name: repoNames[i],
+        name: repoName,
         path: repoPath,
-        branch: currentBranch,
-        pushedBranches: [...gitBranches.pushedBranches, DEFAULT_BRANCH],
-        localBranches: gitBranches.localBranches,
-        files: [...gitHistoryFiles, ...repoFiles],
+        currentBranch,
+        pushedBranches,
+        localBranches,
+        files: [...filesCreated, ...historyFiles],
       });
     }
     this.repositoryState = repoState;
