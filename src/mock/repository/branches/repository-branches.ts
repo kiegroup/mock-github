@@ -1,55 +1,51 @@
 import { SimpleGit } from "simple-git";
-import { DEFAULT_BRANCH } from "../repository.constants";
+import { DEFAULT_BRANCH, ORIGIN } from "../repository.constants";
 
 export class RepositoryBranches {
   private readonly git: SimpleGit;
-  private _pushedBranches: string[];
-  private _localBranches: string[];
+  private pushedBranches: string[];
+  private localBranches: string[];
 
   constructor(git: SimpleGit) {
     this.git = git;
-    this._localBranches = [];
-    this._pushedBranches = [DEFAULT_BRANCH];
+    this.localBranches = [];
+    this.pushedBranches = [DEFAULT_BRANCH];
   }
 
-  async setPushedBranches(branches?: string[]) {
+  async setPushedBranches(branches?: string[]): Promise<string[]> {
     for (const branch of branches ?? []) {
-      await this.git
-        .checkoutLocalBranch(branch)
-        .push("origin", branch, ["--set-upstream"]);
-      await this.git.checkout("main");
+      if (!this.pushedBranches.includes(branch)) {
+        await this.git
+          .checkoutLocalBranch(branch)
+          .push(ORIGIN, branch, ["--set-upstream"]);
+        await this.git.checkout(DEFAULT_BRANCH);
+        this.pushedBranches.push(branch);
+      }
     }
-    this._pushedBranches.push(...(branches ?? []));
+    return this.pushedBranches;
   }
 
-  async setLocalBranches(branches?: string[]) {
+  async setLocalBranches(branches?: string[]): Promise<string[]> {
     for (const branch of branches ?? []) {
-      await this.git.checkoutLocalBranch(branch).checkout("main");
+      if (!this.localBranches.includes(branch)) {
+        await this.git.checkoutLocalBranch(branch).checkout(DEFAULT_BRANCH);
+        this.localBranches.push(branch);
+      }
     }
-    this._localBranches.push(...(branches ?? []));
+    return this.localBranches;
   }
 
-  async setCurrentBranch(branch?: string) {
-    const currBranch = branch ?? DEFAULT_BRANCH
+  async setCurrentBranch(branch?: string): Promise<string> {
+    const currBranch = branch ?? DEFAULT_BRANCH;
     if (
-      this._localBranches.includes(currBranch) ||
-      this._pushedBranches.includes(currBranch)
+      this.localBranches.includes(currBranch) ||
+      this.pushedBranches.includes(currBranch)
     ) {
       await this.git.checkout(currBranch);
     } else {
       await this.git.checkoutLocalBranch(currBranch);
-      this._localBranches.push(currBranch);
+      this.localBranches.push(currBranch);
     }
     return currBranch;
   }
-
-  get pushedBranches() {
-    return this._pushedBranches;
-  }
-
-  get localBranches() {
-    return this._localBranches;
-  }
-
-
 }
