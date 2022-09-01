@@ -1,16 +1,7 @@
-import {
-  copy,
-  ensureFile,
-  lstatSync,
-  writeFile,
-} from "fs-extra";
+import { copy, ensureFile, writeFile } from "fs-extra";
 import path from "path";
-import { totalist } from "totalist";
-import {
-  RepositoryFile,
-  SetupRepositoryFile,
-} from "../repository-mocker.types";
-import { DEFAULT_BRANCH, REMOTE } from "../repository.constants";
+import { REMOTE } from "../repository.constants";
+import { CreateRepositoryFile } from "./repository-file-system.types";
 
 export class RepositoryFileSystem {
   private readonly repoPath: string;
@@ -23,7 +14,7 @@ export class RepositoryFileSystem {
     return dest.split("/")[0] === REMOTE;
   }
 
-  private async copyFile(file: SetupRepositoryFile, currentBranch: string) {
+  private async copyFile(file: CreateRepositoryFile) {
     if (this.checkDest(file.dest)) {
       throw new Error(
         "Cannot create a file in the remote directory. Directory remote is reserved"
@@ -36,40 +27,19 @@ export class RepositoryFileSystem {
 
     // copy files and directories
     await copy(file.src, file.dest, { overwrite: true });
-
-    const result: RepositoryFile[] = [];
-    if (lstatSync(destinationPath).isDirectory()) {
-      await totalist(destinationPath, (name, abs, stats) => {
-        if (stats.isFile()) {
-        result.push({path: abs, branch: currentBranch});
-
-        }
-      })
-    } else {
-        result.push({path: destinationPath, branch: currentBranch})
-    }
-    return result;
   }
 
   async copyFiles(
-    files: SetupRepositoryFile[] = [],
-    currentBranch: string = DEFAULT_BRANCH
+    files: CreateRepositoryFile[] = [],
   ) {
-    let promises = files.map((file) => this.copyFile(file, currentBranch));
-    const fileState: RepositoryFile[] = []
-    const result = await Promise.all(promises);
-    result.forEach((res) => {
-      fileState.push(...res)
-    })
-    return fileState;
+    await Promise.all(files.map((file) => this.copyFile(file)));
   }
 
-  async createFile(dest: string, data: string, currentBranch: string = DEFAULT_BRANCH) {
+  async createFile(
+    dest: string,
+    data: string,
+  ) {
     const destinationPath = path.join(this.repoPath, dest);
-    await writeFile(
-      destinationPath,
-      data
-    );
-    return {path: destinationPath, branch: currentBranch};
+    await writeFile(destinationPath, data);
   }
 }
