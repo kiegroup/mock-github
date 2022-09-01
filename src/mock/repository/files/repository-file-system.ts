@@ -10,11 +10,30 @@ export class RepositoryFileSystem {
     this.repoPath = repoPath;
   }
 
-  private checkDest(dest: string) {
+  async copyFiles(files?: CreateRepositoryFile[]): Promise<boolean> {
+    if (files) {
+      await Promise.all(files.map((file) => this.copyFile(file)));
+      return true;
+    }
+    return false;
+  }
+
+  async createFile(dest: string, data: string) {
+    const destinationPath = path.join(this.repoPath, dest);
+    await writeFile(destinationPath, data);
+  }
+
+  /**
+   * Make sure that the destination path does not begin with REMOTE.
+   * REMOTE is reserved directory to setup a local git repository
+   * @param dest
+   * @returns true if destination path begins from REMOTE
+   */
+  private checkDest(dest: string): boolean {
     return dest.split("/")[0] === REMOTE;
   }
 
-  private async copyFile(file: CreateRepositoryFile) {
+  private async copyFile(file: CreateRepositoryFile): Promise<void> {
     if (this.checkDest(file.dest)) {
       throw new Error(
         "Cannot create a file in the remote directory. Directory remote is reserved"
@@ -27,19 +46,5 @@ export class RepositoryFileSystem {
 
     // copy files and directories
     await copy(file.src, file.dest, { overwrite: true });
-  }
-
-  async copyFiles(
-    files: CreateRepositoryFile[] = [],
-  ) {
-    await Promise.all(files.map((file) => this.copyFile(file)));
-  }
-
-  async createFile(
-    dest: string,
-    data: string,
-  ) {
-    const destinationPath = path.join(this.repoPath, dest);
-    await writeFile(destinationPath, data);
   }
 }
