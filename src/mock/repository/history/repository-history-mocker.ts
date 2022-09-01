@@ -1,7 +1,14 @@
 import { SimpleGit } from "simple-git";
-import { GitAction, GitActionTypes, Merge, Push } from "./repository-history.types";
-import { RepositoryFile } from "../repository-mocker.types";
-import { DEFAULT_BRANCH } from "../repository.constants";
+import {
+  GitAction,
+  GitActionTypes,
+  Merge,
+  Push,
+} from "./repository-history.types";
+import {
+  DUMMY_FILE_DATA,
+  DUMMY_FILE_NAME,
+} from "../repository.constants";
 import { RepositoryFileSystem } from "../files/repository-file-system";
 
 export class RepositoryHistory {
@@ -15,33 +22,25 @@ export class RepositoryHistory {
     this.repofs = new RepositoryFileSystem(this.repoPath);
   }
 
-  private async push(action: Push, histIndex: number, currentBranch: string) {
-    const files: RepositoryFile[] = [];
-
+  private async push(action: Push, histIndex: number) {
     // checkout to branch
     await this.git.checkout(action.branch);
 
     // setup files
-    if (!action.file) {
-      files.push(
-        await this.repofs.createFile(
-          `dummy-file${histIndex}`,
-          "dummy data",
-          currentBranch
-        )
+    if (!action.files) {
+      await this.repofs.createFile(
+        `${DUMMY_FILE_NAME}${histIndex}`,
+        DUMMY_FILE_DATA
       );
     } else {
-      await this.repofs.copyFiles(action.file);
-      files.push(...(await this.repofs.copyFiles(action.file, currentBranch)));
+      await this.repofs.copyFiles(action.files);
     }
 
     // commit and push
     await this.git
       .add(".")
-      .commit(`adding files to mimic history index ${histIndex}`)
+      .commit(`adding files to mimic history at index ${histIndex}`)
       .push();
-
-    return files;
   }
 
   private async merge(action: Merge) {
@@ -58,19 +57,12 @@ export class RepositoryHistory {
    * Reconstruct git history
    * @returns Array of objects describing what files were created and on which branch
    */
-  async setHistory(
-    history?: GitAction[],
-    currentBranch: string = DEFAULT_BRANCH
-  ): Promise<RepositoryFile[]> {
-    const files: RepositoryFile[] = [];
-
+  async setHistory(history?: GitAction[]) {
     let counter = 0;
     for (const hist of history ?? []) {
       switch (hist.action.toLowerCase()) {
         case GitActionTypes.PUSH:
-          files.push(
-            ...(await this.push(hist as Push, counter, currentBranch))
-          );
+          await this.push(hist as Push, counter);
           break;
         case GitActionTypes.MERGE:
           await this.merge(hist as Merge);
@@ -78,7 +70,7 @@ export class RepositoryHistory {
         default:
           throw new Error("Unknown action");
       }
+      counter += 1;
     }
-    return files;
   }
 }
