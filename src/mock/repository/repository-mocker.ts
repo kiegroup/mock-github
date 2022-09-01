@@ -1,12 +1,6 @@
 import simpleGit, { SimpleGit } from "simple-git";
 import { Mocker } from "../mocker";
-import {
-  Repositories,
-  RepositoryFile,
-  RepositoryInterface,
-  RepositoryState,
-  SetupRepositoryFile,
-} from "./repository-mocker.types";
+import { Repositories } from "./repository-mocker.types";
 import path from "path";
 import { rm, writeFile } from "node:fs/promises";
 import { mkdirSync } from "fs";
@@ -20,16 +14,21 @@ import {
 } from "./repository.constants";
 import { RepositoryFileSystem } from "./files/repository-file-system";
 import { GitAction } from "./history/repository-history.types";
+import { CreateRepositoryFile } from "./files/repository-file-system.types";
+import { RepositoryState } from "./state/repository-state";
 
-export class RepositoryMocker implements Mocker, RepositoryInterface {
-  private repositories: Repositories | undefined;
+export class RepositoryMocker implements Mocker {
+  private repositories: Repositories;
   private setupPath: string;
-  private repositoryState: RepositoryState[];
+  private _repositoryState: RepositoryState;
 
-  constructor(repositories: Repositories | undefined, setupPath: string) {
+  constructor(repositories: Repositories, setupPath: string) {
     this.repositories = repositories;
     this.setupPath = setupPath;
-    this.repositoryState = [];
+    this._repositoryState = new RepositoryState(
+      this.repositories,
+      this.setupPath
+    );
   }
 
   /**
@@ -88,17 +87,16 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
   private async setFiles(
     git: SimpleGit,
     repoPath: string,
-    files?: SetupRepositoryFile[]
+    files?: CreateRepositoryFile[]
   ) {
     const repofs = new RepositoryFileSystem(repoPath);
     const filesCreated = await repofs.copyFiles(files);
-    if (filesCreated.length > 0) {
+    if (filesCreated) {
       await git
         .add(".")
         .commit("created repository files")
         .push(ORIGIN, DEFAULT_BRANCH);
     }
-    return filesCreated;
   }
 
   private async setBranches(
@@ -109,10 +107,6 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
     const gitBranches = new RepositoryBranches(git);
     await gitBranches.setLocalBranches(localBranches);
     await gitBranches.setPushedBranches(pushedBranches);
-    return {
-      localBranches: gitBranches.localBranches,
-      pushedBranches: gitBranches.pushedBranches,
-    };
   }
 
   private async setCurrentBranch(git: SimpleGit, currBranch?: string) {
@@ -134,69 +128,43 @@ export class RepositoryMocker implements Mocker, RepositoryInterface {
       return;
     }
 
-    const repoState: RepositoryState[] = [];
-
     // loop through all the repositories and construct them according to the state specified in config file
     for (const [repoName, currentRepo] of Object.entries(this.repositories)) {
       // initialize the repo and return git instance configured for the repo and return repo path
       const { git, repoPath } = await this.initRepo(repoName);
 
       // create repository files
-      const filesCreated = await this.setFiles(
-        git,
-        repoPath,
-        currentRepo.files
-      );
+      await this.setFiles(git, repoPath, currentRepo.files);
 
       // create all local and remote branches
-      const { localBranches, pushedBranches } = await this.setBranches(
+      await this.setBranches(
         git,
         currentRepo.localBranches,
         currentRepo.pushedBranches
       );
 
       // create the required history for the repo
-      const historyFiles = await this.setHistory(
-        git,
-        repoPath,
-        currentRepo.history
-      );
+      await this.setHistory(git, repoPath, currentRepo.history);
 
       // set the active branch if defined otherwise let it be main
-      const currentBranch = await this.setCurrentBranch(
-        git,
-        currentRepo.currentBranch
-      );
-
-      // add the repo details which are to be returned
-      repoState.push({
-        name: repoName,
-        path: repoPath,
-        currentBranch,
-        pushedBranches,
-        localBranches,
-        files: [...filesCreated, ...historyFiles],
-      });
+      await this.setCurrentBranch(git, currentRepo.currentBranch);
     }
-    this.repositoryState = repoState;
   }
 
   async teardown(): Promise<void> {
     let promises: any[] = [];
-    this.repositoryState.forEach((state) => {
-      promises.push(rm(state.path, { recursive: true }));
-    });
+    if (this.repositories) {
+      Object.keys(this.repositories).forEach((repoName) => {
+        promises.push(
+          rm(this._repositoryState.getPath(repoName), { recursive: true })
+        );
+      });
+    }
+
     await Promise.all(promises);
-    this.repositoryState = [];
   }
 
-  getAllStates(): RepositoryState[] {
-    return this.repositoryState;
-  }
-
-  getState(name: string): RepositoryState | undefined {
-    return this.repositoryState.find((state) => {
-      return name === state.name;
-    });
+  get repositoryState(): RepositoryState {
+    return this._repositoryState;
   }
 }

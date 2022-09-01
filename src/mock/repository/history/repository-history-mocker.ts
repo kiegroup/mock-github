@@ -22,7 +22,7 @@ export class RepositoryHistory {
     this.repofs = new RepositoryFileSystem(this.repoPath);
   }
 
-  private async push(action: Push, histIndex: number) {
+  private async push(action: Push, histIndex: number): Promise<void> {
     // checkout to branch
     await this.git.checkout(action.branch);
 
@@ -43,7 +43,7 @@ export class RepositoryHistory {
       .push();
   }
 
-  private async merge(action: Merge) {
+  private async merge(action: Merge): Promise<void> {
     await this.git.checkout(action.base);
     await this.git.merge([
       action.head,
@@ -57,7 +57,7 @@ export class RepositoryHistory {
    * Reconstruct git history
    * @returns Array of objects describing what files were created and on which branch
    */
-  async setHistory(history?: GitAction[]) {
+  async setHistory(history?: GitAction[]): Promise<void> {
     let counter = 0;
     for (const hist of history ?? []) {
       switch (hist.action.toLowerCase()) {

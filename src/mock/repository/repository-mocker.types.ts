@@ -1,36 +1,6 @@
-import { GitAction, Merge, Push } from "./history/repository-history.types";
-
-export type RepositoryFile = {
-  path: string;
-  branch: string;
-};
-
-export type RepositoryState = {
-  name: string;
-  path: string;
-  currentBranch: string;
-  pushedBranches: string[];
-  localBranches: string[];
-  files: RepositoryFile[];
-};
-
-export type SetupRepositoryFile = {
-  src: string;
-  dest: string;
-};
-
-export type PullRequest = {
-  [key: string]: { [key: string]: any } & {
-    open: {
-      head: string;
-      base: string;
-    };
-    closed: {
-      head: string;
-      base: string;
-    };
-  };
-};
+import { CreateRepositoryFile } from "./files/repository-file-system.types";
+import { GitAction } from "./history/repository-history.types";
+import { PullRequests } from "./state/repository-state.types";
 
 export type Repositories = {
   [key: string]: {
@@ -39,13 +9,8 @@ export type Repositories = {
     currentBranch?: string;
     history?: GitAction[];
     owner?: string;
-    files?: SetupRepositoryFile[];
+    files?: CreateRepositoryFile[];
     forkedFrom?: string;
-    pullRequests?: PullRequest[];
+    pullRequests?: PullRequests;
   };
 };
-
-export interface RepositoryInterface {
-  getAllStates(): RepositoryState[];
-  getState(name: string): RepositoryState | undefined;
-}
