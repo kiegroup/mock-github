@@ -5,7 +5,7 @@ import { Repositories } from "./repository/repository-mocker.types"
 
 export type Config = {
     create?: boolean,
-    repositories?: Repositories,
+    repositories: Repositories,
     api?: Api,
     env?: Env,
     action?: Action

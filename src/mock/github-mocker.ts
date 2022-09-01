@@ -5,10 +5,10 @@ import { Config } from "./github-mocker.types";
 import { Mocker } from "./mocker";
 import { RepositoryMocker } from "./repository/repository-mocker";
 import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
-import { RepositoryInterface } from "./repository/repository-mocker.types";
 import { EnvInterface } from "./env/env-mocker.types";
 import { ApiInterface } from "./api/api-mocker.types";
 import { ActionInterface } from "./action/action-mocker.types";
+import { RepositoryStateInterface } from "./repository/state/repository-state.types";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;
@@ -37,7 +37,7 @@ export class MockGithub implements Mocker {
       this.setupDirCreated = true;
     }
     await Promise.all([
-      this.repoMocker.setup(),
+      ...(this.config.create ? [this.repoMocker.setup()] : []),
       this.envMocker.setup(),
       this.apiMocker.setup(),
     ]);
@@ -48,7 +48,7 @@ export class MockGithub implements Mocker {
 
   async teardown(): Promise<void> {
     await Promise.all([
-      this.repoMocker.teardown(),
+      ...(this.config.create ? [this.repoMocker.teardown()] : []),
       this.actionMocker.teardown(),
       this.envMocker.teardown(),
       this.apiMocker.teardown(),
@@ -56,37 +56,32 @@ export class MockGithub implements Mocker {
     if (this.setupDirCreated) rmSync(this.setupPath, { recursive: true });
   }
 
-
   get env(): EnvInterface {
     return {
-        update: this.envMocker.update,
-        delete: this.envMocker.delete,
-        get: this.envMocker.get,
-        getAll: this.envMocker.getAll
-    }
+      update: this.envMocker.update,
+      delete: this.envMocker.delete,
+      get: this.envMocker.get,
+      getAll: this.envMocker.getAll,
+    };
   }
 
   get api(): ApiInterface {
     return {
-        add: this.apiMocker.add,
-        activate: this.apiMocker.activate,
-        deactivate: this.apiMocker.deactivate
-    }
+      add: this.apiMocker.add,
+      activate: this.apiMocker.activate,
+      deactivate: this.apiMocker.deactivate,
+    };
   }
-  
-  get repository(): RepositoryInterface {
-    return {
-        getAllStates: this.repoMocker.getAllStates,
-        getState: this.repoMocker.getState
-    }
+
+  get repository(): RepositoryStateInterface {
+    return this.repoMocker.repositoryState;
   }
 
   get action(): ActionInterface {
     return {
-        event: this.actionMocker.event,
-        input: this.actionMocker.input,
-        archiver: this.actionMocker.archiver
-    }
+      event: this.actionMocker.event,
+      input: this.actionMocker.input,
+      archiver: this.actionMocker.archiver,
+    };
   }
-
 }
