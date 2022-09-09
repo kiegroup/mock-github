@@ -6,6 +6,8 @@ import {
   Push,
 } from "./repository-history.types";
 import {
+  DEFAULT_COMMIT_MSG,
+  DEFAULT_MERGE_COMMIT_MSG,
   DUMMY_FILE_DATA,
   DUMMY_FILE_NAME,
 } from "../repository.constants";
@@ -37,10 +39,7 @@ export class RepositoryHistory {
     }
 
     // commit and push
-    await this.git
-      .add(".")
-      .commit(`adding files to mimic history at index ${histIndex}`)
-      .push();
+    await this.git.add(".").commit(action.commitMessage ?? DEFAULT_COMMIT_MSG(histIndex)).push();
   }
 
   private async merge(action: Merge): Promise<void> {
@@ -48,7 +47,8 @@ export class RepositoryHistory {
     await this.git.merge([
       action.head,
       "-m",
-      action.commitMessage ?? `Merging ${action.head} to ${action.base}`,
+      action.commitMessage ??
+        DEFAULT_MERGE_COMMIT_MSG(action.base, action.head),
     ]);
     await this.git.push();
   }
@@ -60,7 +60,7 @@ export class RepositoryHistory {
   async setHistory(history?: GitAction[]): Promise<void> {
     let counter = 0;
     for (const hist of history ?? []) {
-      switch (hist.action.toLowerCase()) {
+      switch (hist.action) {
         case GitActionTypes.PUSH:
           await this.push(hist as Push, counter);
           break;
