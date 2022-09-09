@@ -1,4 +1,4 @@
-import { copy, ensureFile, writeFile } from "fs-extra";
+import { copy, ensureDir, ensureFile, lstatSync, writeFile } from "fs-extra";
 import path from "path";
 import { REMOTE } from "../repository.constants";
 import { CreateRepositoryFile } from "./repository-file-system.types";
@@ -12,7 +12,14 @@ export class RepositoryFileSystem {
 
   async copyFiles(files?: CreateRepositoryFile[]): Promise<boolean> {
     if (files) {
-      await Promise.all(files.map((file) => this.copyFile(file)));
+      await Promise.all(
+        files.map(async (file) => {
+          await this.createDest(file.dest, lstatSync(file.src).isFile());
+          return copy(file.src, path.join(this.repoPath, file.dest), {
+            overwrite: true,
+          });
+        })
+      );
       return true;
     }
     return false;
@@ -20,6 +27,7 @@ export class RepositoryFileSystem {
 
   async createFile(dest: string, data: string) {
     const destinationPath = path.join(this.repoPath, dest);
+    await this.createDest(dest, true);
     await writeFile(destinationPath, data);
   }
 
@@ -33,18 +41,19 @@ export class RepositoryFileSystem {
     return dest.split("/")[0] === REMOTE;
   }
 
-  private async copyFile(file: CreateRepositoryFile): Promise<void> {
-    if (this.checkDest(file.dest)) {
+  private async createDest(dest: string, isFile: boolean): Promise<void> {
+    if (this.checkDest(dest)) {
       throw new Error(
         "Cannot create a file in the remote directory. Directory remote is reserved"
       );
     }
-    const destinationPath = path.join(this.repoPath, file.dest);
+    const destinationPath = path.join(this.repoPath, dest);
 
     // create the file and any directories needed
-    await ensureFile(destinationPath);
-
-    // copy files and directories
-    await copy(file.src, file.dest, { overwrite: true });
+    if (isFile) {
+      await ensureFile(destinationPath);
+    } else {
+      await ensureDir(destinationPath);
+    }
   }
 }
