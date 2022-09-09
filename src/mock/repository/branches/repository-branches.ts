@@ -36,16 +36,21 @@ export class RepositoryBranches {
   }
 
   async setCurrentBranch(branch?: string): Promise<string> {
-    const currBranch = branch ?? DEFAULT_BRANCH;
-    if (
-      this.localBranches.includes(currBranch) ||
-      this.pushedBranches.includes(currBranch)
-    ) {
-      await this.git.checkout(currBranch);
-    } else {
-      await this.git.checkoutLocalBranch(currBranch);
-      this.localBranches.push(currBranch);
+    // if branch wasn't defined checkout main branch
+    if (!branch) {
+      await this.git.checkout(DEFAULT_BRANCH);
+      return DEFAULT_BRANCH;
     }
-    return currBranch;
+
+    // branch does not exist. create it first
+    if (
+      !this.localBranches.includes(branch) &&
+      !this.pushedBranches.includes(branch)
+    ) {
+      await this.git.branch([branch]);
+      this.localBranches.push(branch);
+    } 
+    await this.git.checkout(branch);
+    return branch;
   }
 }
