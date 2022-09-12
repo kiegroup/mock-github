@@ -9,10 +9,11 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test:no-report": "jest",
-    "test": "npm run test:no-report -- --coverage --testResultsProcessor=jest-sonar-reporter",
-    "pretest:no-report": "ncc build ./test/action-compiler/dummy-file.ts -o dist-no-minify && ncc build --minify ./test/action-compiler/dummy-file.ts -o dist-minify",
-    "posttest:no-report": "rm -rf ./dist-no-minify ./dist-minify",
+    "test": "jest",
+    "test:report": "npm test -- --coverage",
+    "pre-compiler-test:minify": "ncc build --minify ./test/action-compiler/dummy-file.ts -o dist-minify",
+    "pre-compiler-test:no-minify": "ncc build ./test/action-compiler/dummy-file.ts -o dist-no-minify",
+    "post-compiler-test": "rm -rf ./dist-no-minify ./dist-minify",
     "file": "ts-node"
   },
   "author": "",
@@ -44,5 +45,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "simple-git": "^3.8.0",
     "totalist": "^3.0.0"
+  },
+  "jestSonar": {
+    "reportPath": "coverage"
   }
 }
