@@ -6,6 +6,10 @@ import { existsSync } from "fs";
 import path from "path";
 import { spawnSync } from "child_process";
 import { rm } from "fs/promises";
+import {
+  GITIGNORE,
+  REMOTE,
+} from "../../src/mock/repository/repository.constants";
 
 const setupPath = __dirname;
 
@@ -66,28 +70,31 @@ describe("setup", () => {
     expect(currentBranchSpy).toHaveBeenCalledTimes(2);
     expect(historySpy).toHaveBeenCalledTimes(2);
 
-    expect(existsSync(repoMocker.repositoryState.getPath("projectA")!)).toBe(
-      true
-    );
-    expect(existsSync(repoMocker.repositoryState.getPath("projectB")!)).toBe(
-      true
-    );
+    const pathA = repoMocker.repositoryState.getPath("projectA")!;
+    const pathB = repoMocker.repositoryState.getPath("projectB")!;
+
+    expect(existsSync(pathA)).toBe(true);
+    expect(existsSync(pathB)).toBe(true);
+    expect(existsSync(path.join(pathA, REMOTE))).toBe(true);
+    expect(existsSync(path.join(pathB, REMOTE))).toBe(true);
+    expect(existsSync(path.join(pathA, GITIGNORE))).toBe(true);
+    expect(existsSync(path.join(pathB, GITIGNORE))).toBe(true);
 
     // test whether the directories created are repositories
     expect(
       spawnSync("git", ["status"], {
-        cwd: repoMocker.repositoryState.getPath("projectA")!,
+        cwd: pathA,
       }).status
     ).toBe(0);
     expect(
       spawnSync("git", ["status"], {
-        cwd: repoMocker.repositoryState.getPath("projectB")!,
+        cwd: pathB,
       }).status
     ).toBe(0);
 
     await Promise.all([
-      rm(repoMocker.repositoryState.getPath("projectA")!, { recursive: true }),
-      rm(repoMocker.repositoryState.getPath("projectB")!, { recursive: true }),
+      rm(pathA, { recursive: true }),
+      rm(pathB, { recursive: true }),
     ]);
   });
 });
@@ -134,19 +141,14 @@ describe("teardown", () => {
 
     await repoMocker.setup();
 
-    expect(existsSync(repoMocker.repositoryState.getPath("projectA")!)).toBe(
-      true
-    );
-    expect(existsSync(repoMocker.repositoryState.getPath("projectB")!)).toBe(
-      true
-    );
+    const pathA = repoMocker.repositoryState.getPath("projectA")!;
+    const pathB = repoMocker.repositoryState.getPath("projectB")!;
+
+    expect(existsSync(pathA)).toBe(true);
+    expect(existsSync(pathB)).toBe(true);
 
     await expect(repoMocker.teardown()).resolves.not.toThrowError();
-    expect(existsSync(repoMocker.repositoryState.getPath("projectA")!)).toBe(
-      false
-    );
-    expect(existsSync(repoMocker.repositoryState.getPath("projectB")!)).toBe(
-      false
-    );
+    expect(existsSync(pathA)).toBe(false);
+    expect(existsSync(pathB)).toBe(false);
   });
 });
