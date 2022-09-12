@@ -3,7 +3,7 @@ import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
 import { RepositoryFileSystem } from "../../../src/mock/repository/files/repository-file-system";
 import { RepositoryMocker } from "../../../src/mock/repository/repository-mocker";
-import { REMOTE } from "../../../src/mock/repository/repository.constants";
+import { GITIGNORE, REMOTE } from "../../../src/mock/repository/repository.constants";
 
 let repoMocker: RepositoryMocker;
 let fileCreator: RepositoryFileSystem;
@@ -108,6 +108,15 @@ describe("copyFile", () => {
     await writeFile(src, "dummy1");
     await expect(
       fileCreator.copyFiles([{ src, dest: `${REMOTE}/src/files/` }])
+    ).rejects.toThrowError();
+    await rm(src);
+  });
+
+  test("overwriting gitignore", async () => {
+    const src = path.join(__dirname, "dummy1");
+    await writeFile(src, "dummy1");
+    await expect(
+      fileCreator.copyFiles([{ src, dest: GITIGNORE }])
     ).rejects.toThrowError();
     await rm(src);
   });
