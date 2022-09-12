@@ -1,6 +1,6 @@
 import simpleGit, { SimpleGit } from "simple-git";
 import { Mocker } from "../mocker";
-import { Repositories } from "./repository-mocker.types";
+import { Repositories, Repository } from "./repository-mocker.types";
 import path from "path";
 import { rm, writeFile } from "node:fs/promises";
 import { mkdirSync } from "fs";
@@ -8,6 +8,7 @@ import { RepositoryHistory } from "./history/repository-history-mocker";
 import { RepositoryBranches } from "./branches/repository-branches";
 import {
   DEFAULT_BRANCH,
+  DEFAULT_INIT_COMMIT_MSG,
   ORIGIN,
   REMOTE,
   UPSTREAM,
@@ -29,6 +30,38 @@ export class RepositoryMocker implements Mocker {
       this.repositories,
       this.setupPath
     );
+  }
+
+  /**
+   * Loop through all the repositories and construct them according to the state specified in config file
+   */
+  async setup(): Promise<void> {
+    await Promise.all(
+      Object.entries(this.repositories).map(([repoName, currentRepo]) =>
+        this.setupRepository(repoName, currentRepo)
+      )
+    );
+  }
+
+  /**
+   * Delete any created repositories
+   */
+  async teardown(): Promise<void> {
+    await Promise.all(
+      Object.keys(this.repositories).map((repoName) =>
+        rm(this._repositoryState.getPath(repoName)!, {
+          recursive: true,
+          force: true,
+        })
+      )
+    );
+  }
+
+  /**
+   * Exposes the interface used to produce just state info for all repositories
+   */
+  get repositoryState(): RepositoryState {
+    return this._repositoryState;
   }
 
   /**
@@ -75,7 +108,7 @@ export class RepositoryMocker implements Mocker {
       .addRemote(ORIGIN, originPath)
       .addRemote(UPSTREAM, upstreamPath)
       .add(".")
-      .commit("initialization")
+      .commit(DEFAULT_INIT_COMMIT_MSG)
       .push(ORIGIN, DEFAULT_BRANCH, ["--set-upstream"]);
 
     return {
@@ -84,6 +117,13 @@ export class RepositoryMocker implements Mocker {
     };
   }
 
+  /**
+   * Uses the RepositoryFileSystem to copy files from given srcs to destination in the
+   * repository which is to be created
+   * @param git 
+   * @param repoPath 
+   * @param files 
+   */
   private async setFiles(
     git: SimpleGit,
     repoPath: string,
@@ -94,11 +134,17 @@ export class RepositoryMocker implements Mocker {
     if (filesCreated) {
       await git
         .add(".")
-        .commit("created repository files")
+        .commit(DEFAULT_INIT_COMMIT_MSG)
         .push(ORIGIN, DEFAULT_BRANCH);
     }
   }
 
+  /**
+   * Sets local and pushed branches
+   * @param git 
+   * @param localBranches 
+   * @param pushedBranches 
+   */
   private async setBranches(
     git: SimpleGit,
     localBranches?: string[],
@@ -109,11 +155,24 @@ export class RepositoryMocker implements Mocker {
     await gitBranches.setPushedBranches(pushedBranches);
   }
 
+  /**
+   * Sets the current branch
+   * @param git 
+   * @param currBranch 
+   * @returns 
+   */
   private async setCurrentBranch(git: SimpleGit, currBranch?: string) {
     const gitBranch = new RepositoryBranches(git);
     return gitBranch.setCurrentBranch(currBranch);
   }
 
+  /**
+   * Reproduces the git history
+   * @param git 
+   * @param repoPath 
+   * @param history 
+   * @returns 
+   */
   private async setHistory(
     git: SimpleGit,
     repoPath: string,
@@ -123,48 +182,36 @@ export class RepositoryMocker implements Mocker {
     return gitHistory.setHistory(history);
   }
 
-  async setup(): Promise<void> {
-    if (!this.repositories) {
-      return;
-    }
+  /**
+   * Setups the given repository i.e. performs the following
+   * 1. Initialize the repository
+   * 2. Add any files to DEFAULT_BRANCH for initialization
+   * 3. Set up local and pushed branches
+   * 4. Recreate git history
+   * 5. Set current branch
+   * @param repoName 
+   * @param currentRepo 
+   */
+  private async setupRepository(
+    repoName: string,
+    currentRepo: Repository
+  ): Promise<void> {
+    const { git, repoPath } = await this.initRepo(repoName);
 
-    // loop through all the repositories and construct them according to the state specified in config file
-    for (const [repoName, currentRepo] of Object.entries(this.repositories)) {
-      // initialize the repo and return git instance configured for the repo and return repo path
-      const { git, repoPath } = await this.initRepo(repoName);
+    // create repository files
+    await this.setFiles(git, repoPath, currentRepo.files);
 
-      // create repository files
-      await this.setFiles(git, repoPath, currentRepo.files);
+    // create all local and remote branches
+    await this.setBranches(
+      git,
+      currentRepo.localBranches,
+      currentRepo.pushedBranches
+    );
 
-      // create all local and remote branches
-      await this.setBranches(
-        git,
-        currentRepo.localBranches,
-        currentRepo.pushedBranches
-      );
+    // create the required history for the repo
+    await this.setHistory(git, repoPath, currentRepo.history);
 
-      // create the required history for the repo
-      await this.setHistory(git, repoPath, currentRepo.history);
-
-      // set the active branch if defined otherwise let it be main
-      await this.setCurrentBranch(git, currentRepo.currentBranch);
-    }
-  }
-
-  async teardown(): Promise<void> {
-    let promises: any[] = [];
-    if (this.repositories) {
-      Object.keys(this.repositories).forEach((repoName) => {
-        promises.push(
-          rm(this._repositoryState.getPath(repoName), { recursive: true })
-        );
-      });
-    }
-
-    await Promise.all(promises);
-  }
-
-  get repositoryState(): RepositoryState {
-    return this._repositoryState;
+    // set the active branch if defined otherwise let it be main
+    await this.setCurrentBranch(git, currentRepo.currentBranch);
   }
 }
