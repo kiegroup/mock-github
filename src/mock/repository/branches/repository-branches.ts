@@ -17,7 +17,7 @@ export class RepositoryBranches {
       if (!this.pushedBranches.includes(branch)) {
         await this.git
           .checkoutLocalBranch(branch)
-          .push(ORIGIN, branch, ["--set-upstream"]);
+          .push(ORIGIN, branch);
         await this.git.checkout(DEFAULT_BRANCH);
         this.pushedBranches.push(branch);
       }
