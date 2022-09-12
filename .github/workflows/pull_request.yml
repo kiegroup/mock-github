@@ -17,18 +17,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      
-      - name: Install dependencies [node $${{ matrix.node-version }}]
-        run: npm ci
-      
-      - name: Run tests [node $${{ matrix.node-version }}]
-        run: npm test
 
-      - name: coverage report
+      - name: test report
         uses: ArtiomTr/jest-coverage-report-action@v2
         with:
           output: report-markdown
-          coverage-file: ./coverage/coverage-final.json     
       
       - uses: marocchino/sticky-pull-request-comment@v2
         with:

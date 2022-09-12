@@ -11,10 +11,11 @@ const jestConfig: Config.InitialOptions = {
     "src/**",
     "!**/*.types.ts",
     "!**/*.constants.ts",
-    "!src/action-compiler/mocker.ts"
+    "!src/action-compiler/mocker.ts",
+    "!src/index.ts"
   ],
-  coverageReporters: ["lcov", "json", "text"],
   testLocationInResults: true,
+  testResultsProcessor: "jest-sonar-reporter",
   testTimeout: 10000
 };
 export default jestConfig;

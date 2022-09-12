@@ -28,6 +28,7 @@
     "axios": "^0.27.2",
     "eslint": "^8.18.0",
     "jest": "^28.1.1",
+    "jest-sonar-reporter": "^2.0.0",
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
@@ -44,5 +45,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "simple-git": "^3.8.0",
     "totalist": "^3.0.0"
+  },
+  "jestSonar": {
+    "reportPath": "coverage"
   }
 }
