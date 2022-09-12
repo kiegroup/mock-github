@@ -1,6 +1,6 @@
 import { copy, ensureDir, ensureFile, lstatSync, writeFile } from "fs-extra";
 import path from "path";
-import { REMOTE } from "../repository.constants";
+import { GITIGNORE, REMOTE } from "../repository.constants";
 import { CreateRepositoryFile } from "./repository-file-system.types";
 
 export class RepositoryFileSystem {
@@ -32,13 +32,15 @@ export class RepositoryFileSystem {
   }
 
   /**
-   * Make sure that the destination path does not begin with REMOTE.
+   * Make sure that the destination path does not begin with REMOTE or GITIGNORE.
    * REMOTE is reserved directory to setup a local git repository
+   * GITIGNORE is reserved for .gitignore file that prevents REMOTE from being pushed
    * @param dest
    * @returns true if destination path begins from REMOTE
    */
   private checkDest(dest: string): boolean {
-    return dest.split("/")[0] === REMOTE;
+    const beginsWith = dest.split("/")[0]
+    return beginsWith === REMOTE || beginsWith === GITIGNORE;
   }
 
   private async createDest(dest: string, isFile: boolean): Promise<void> {
