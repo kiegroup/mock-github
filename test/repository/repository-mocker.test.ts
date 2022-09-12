@@ -1,306 +1,154 @@
 import { RepositoryMocker } from "../../src/mock/repository/repository-mocker";
-import { existsSync, readFileSync } from "fs";
-import { rm, writeFile } from "fs/promises";
+import { RepositoryFileSystem } from "../../src/mock/repository/files/repository-file-system";
+import { RepositoryHistory } from "../../src/mock/repository/history/repository-history-mocker";
+import { RepositoryBranches } from "../../src/mock/repository/branches/repository-branches";
+import { existsSync } from "fs";
 import path from "path";
 import { spawnSync } from "child_process";
-import simpleGit from "simple-git";
+import { rm } from "fs/promises";
+import {
+  GITIGNORE,
+  REMOTE,
+} from "../../src/mock/repository/repository.constants";
 
-describe("Single repository", () => {
-  test("empty configuration", async () => {
-    const repoMocker = new RepositoryMocker({ repoA: {} }, __dirname);
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "main",
-        pushedBranches: ["main"],
-        localBranches: [],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    await repoMocker.teardown();
+const setupPath = __dirname;
+
+describe("setup", () => {
+  test("no repositories", async () => {
+    const repoMocker = new RepositoryMocker({}, setupPath);
+    const fileSpy = jest
+      .spyOn(RepositoryFileSystem.prototype, "copyFiles")
+      .mockResolvedValueOnce(true);
+    const localBranchSpy = jest
+      .spyOn(RepositoryBranches.prototype, "setLocalBranches")
+      .mockResolvedValueOnce([]);
+    const pushBranchSpy = jest
+      .spyOn(RepositoryBranches.prototype, "setPushedBranches")
+      .mockResolvedValueOnce([]);
+    const currentBranchSpy = jest
+      .spyOn(RepositoryBranches.prototype, "setCurrentBranch")
+      .mockResolvedValueOnce("");
+    const historySpy = jest
+      .spyOn(RepositoryHistory.prototype, "setHistory")
+      .mockResolvedValue();
+
+    await expect(repoMocker.setup()).resolves.not.toThrowError();
+
+    expect(fileSpy).toHaveBeenCalledTimes(0);
+    expect(localBranchSpy).toHaveBeenCalledTimes(0);
+    expect(pushBranchSpy).toHaveBeenCalledTimes(0);
+    expect(currentBranchSpy).toHaveBeenCalledTimes(0);
+    expect(historySpy).toHaveBeenCalledTimes(0);
   });
 
-  test("pushed branches only", async () => {
+  test("multiple repositories", async () => {
     const repoMocker = new RepositoryMocker(
-      { repoA: { pushedBranches: ["test"] } },
-      __dirname
+      { projectA: {}, projectB: {} },
+      setupPath
     );
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "main",
-        pushedBranches: ["main", "test"],
-        localBranches: [],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    const branchInfo = await simpleGit(repoPath).branch();
-    expect(branchInfo.all.length).toBe(4);
-    expect(branchInfo.all.includes("remotes/origin/test")).toBe(true);
-    expect(branchInfo.all.includes("test")).toBe(true);
-    expect(branchInfo.current).toBe("main");
-    await repoMocker.teardown();
-  });
+    const fileSpy = jest
+      .spyOn(RepositoryFileSystem.prototype, "copyFiles")
+      .mockResolvedValueOnce(true);
+    const localBranchSpy = jest
+      .spyOn(RepositoryBranches.prototype, "setLocalBranches")
+      .mockResolvedValueOnce([]);
+    const pushBranchSpy = jest
+      .spyOn(RepositoryBranches.prototype, "setPushedBranches")
+      .mockResolvedValueOnce([]);
+    const currentBranchSpy = jest
+      .spyOn(RepositoryBranches.prototype, "setCurrentBranch")
+      .mockResolvedValueOnce("");
+    const historySpy = jest
+      .spyOn(RepositoryHistory.prototype, "setHistory")
+      .mockResolvedValue();
 
-  test("local branches only", async () => {
-    const repoMocker = new RepositoryMocker(
-      { repoA: { localBranches: ["test"] } },
-      __dirname
-    );
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "main",
-        pushedBranches: ["main"],
-        localBranches: ["test"],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    const branchInfo = await simpleGit(repoPath).branch();
-    expect(branchInfo.all.length).toBe(3);
-    expect(branchInfo.all.includes("remotes/origin/test")).toBe(false);
-    expect(branchInfo.all.includes("test")).toBe(true);
-    expect(branchInfo.current).toBe("main");
-    await repoMocker.teardown();
-  });
+    await expect(repoMocker.setup()).resolves.not.toThrowError();
 
-  test("current branch: with local branch", async () => {
-    const repoMocker = new RepositoryMocker(
-      { repoA: { localBranches: ["test"], currentBranch: "test" } },
-      __dirname
-    );
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "test",
-        pushedBranches: ["main"],
-        localBranches: ["test"],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    const branchInfo = await simpleGit(repoPath).branch();
-    expect(branchInfo.current).toBe("test");
-    await repoMocker.teardown();
-  });
+    expect(fileSpy).toHaveBeenCalledTimes(2);
+    expect(localBranchSpy).toHaveBeenCalledTimes(2);
+    expect(pushBranchSpy).toHaveBeenCalledTimes(2);
+    expect(currentBranchSpy).toHaveBeenCalledTimes(2);
+    expect(historySpy).toHaveBeenCalledTimes(2);
 
-  test("current branch: with pushed branch", async () => {
-    const repoMocker = new RepositoryMocker(
-      { repoA: { pushedBranches: ["test"], currentBranch: "test" } },
-      __dirname
-    );
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "test",
-        pushedBranches: ["main", "test"],
-        localBranches: [],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    const branchInfo = await simpleGit(repoPath).branch();
-    expect(branchInfo.current).toBe("test");
-    await repoMocker.teardown();
-  });
+    const pathA = repoMocker.repositoryState.getPath("projectA")!;
+    const pathB = repoMocker.repositoryState.getPath("projectB")!;
 
-  test("current branch: with no local or pushed branches", async () => {
-    const repoMocker = new RepositoryMocker(
-      { repoA: { currentBranch: "test" } },
-      __dirname
-    );
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "test",
-        pushedBranches: ["main"],
-        localBranches: ["test"],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    const branchInfo = await simpleGit(repoPath).branch();
-    expect(branchInfo.all.length).toBe(3);
-    expect(branchInfo.all.includes("remotes/origin/test")).toBe(false);
-    expect(branchInfo.all.includes("test")).toBe(true);
-    expect(branchInfo.current).toBe("test");
-    await repoMocker.teardown();
-  });
+    expect(existsSync(pathA)).toBe(true);
+    expect(existsSync(pathB)).toBe(true);
+    expect(existsSync(path.join(pathA, REMOTE))).toBe(true);
+    expect(existsSync(path.join(pathB, REMOTE))).toBe(true);
+    expect(existsSync(path.join(pathA, GITIGNORE))).toBe(true);
+    expect(existsSync(path.join(pathB, GITIGNORE))).toBe(true);
 
-  test("workflow", async () => {
-    const workflowFile1 = path.join(__dirname, "fake-workflow1");
-    const workflowFile2 = path.join(__dirname, "fake-workflow2");
+    // test whether the directories created are repositories
+    expect(
+      spawnSync("git", ["status"], {
+        cwd: pathA,
+      }).status
+    ).toBe(0);
+    expect(
+      spawnSync("git", ["status"], {
+        cwd: pathB,
+      }).status
+    ).toBe(0);
 
     await Promise.all([
-      writeFile(workflowFile1, "fake workflow1"),
-      writeFile(workflowFile2, "fake workflow2"),
-    ]);
-
-    const repoMocker = new RepositoryMocker(
-      { repoA: { workflow: [workflowFile1, workflowFile2] } },
-      __dirname
-    );
-    await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "main",
-        pushedBranches: ["main"],
-        localBranches: [],
-        files: [],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    const repoWorkflowPath = path.join(repoPath, ".github", "workflows");
-    expect(
-      readFileSync(
-        path.join(repoWorkflowPath, path.basename(workflowFile1)),
-        "utf8"
-      )
-    ).toBe("fake workflow1");
-    expect(
-      readFileSync(
-        path.join(repoWorkflowPath, path.basename(workflowFile2)),
-        "utf8"
-      )
-    ).toBe("fake workflow2");
-
-    await Promise.all([
-      rm(workflowFile1),
-      rm(workflowFile2),
-      repoMocker.teardown(),
+      rm(pathA, { recursive: true }),
+      rm(pathB, { recursive: true }),
     ]);
   });
+});
 
-  test("history: push", async () => {
-    const repoMocker = new RepositoryMocker(
-      {
-        repoA: {
-          pushedBranches: ["test"],
-          history: [
-            {
-              action: "push",
-              branch: "test",
-            },
-          ],
-        },
-      },
-      __dirname
-    );
+describe("teardown", () => {
+  test("no repositories", async () => {
+    const repoMocker = new RepositoryMocker({}, setupPath);
+    jest
+      .spyOn(RepositoryFileSystem.prototype, "copyFiles")
+      .mockResolvedValueOnce(true);
+    jest
+      .spyOn(RepositoryBranches.prototype, "setLocalBranches")
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(RepositoryBranches.prototype, "setPushedBranches")
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(RepositoryBranches.prototype, "setCurrentBranch")
+      .mockResolvedValueOnce("");
+    jest.spyOn(RepositoryHistory.prototype, "setHistory").mockResolvedValue();
+
     await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    const filePath = path.join(repoPath, "dummy-file0");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "main",
-        pushedBranches: ["main", "test"],
-        localBranches: [],
-        files: [
-          {
-            path: filePath,
-            branch: "test",
-          },
-        ],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    expect(existsSync(filePath)).toBe(false);
-    await simpleGit(repoPath).checkout("test");
-    expect(existsSync(filePath)).toBe(true);
-    const logs = await simpleGit(repoPath).log();
-    expect(logs.latest?.message).toBe("adding files to mimic history index 0");
-    expect(logs.latest?.refs).toBe("HEAD -> test, origin/test");
-    await repoMocker.teardown();
+    await expect(repoMocker.teardown()).resolves.not.toThrowError();
   });
 
-  test("history: merge", async () => {
+  test("multiple repositories", async () => {
     const repoMocker = new RepositoryMocker(
-      {
-        repoA: {
-          pushedBranches: ["test"],
-          history: [
-            {
-              action: "push",
-              branch: "test",
-            },
-            {
-              action: "merge",
-              head: "test",
-              base: "main",
-            },
-          ],
-        },
-      },
-      __dirname
+      { projectA: {}, projectB: {} },
+      setupPath
     );
+    jest
+      .spyOn(RepositoryFileSystem.prototype, "copyFiles")
+      .mockResolvedValueOnce(true);
+    jest
+      .spyOn(RepositoryBranches.prototype, "setLocalBranches")
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(RepositoryBranches.prototype, "setPushedBranches")
+      .mockResolvedValueOnce([]);
+    jest
+      .spyOn(RepositoryBranches.prototype, "setCurrentBranch")
+      .mockResolvedValueOnce("");
+    jest.spyOn(RepositoryHistory.prototype, "setHistory").mockResolvedValue();
+
     await repoMocker.setup();
-    const repoState = repoMocker.getAllStates();
-    const repoPath = path.join(__dirname, "repoA");
-    const filePath = path.join(repoPath, "dummy-file0");
-    expect(repoState).toStrictEqual([
-      {
-        name: "repoA",
-        path: repoPath,
-        branch: "main",
-        pushedBranches: ["main", "test"],
-        localBranches: [],
-        files: [
-          {
-            path: filePath,
-            branch: "test",
-          },
-        ],
-      },
-    ]);
-    expect(existsSync(repoPath)).toBe(true);
-    expect(spawnSync("git", ["status"], { cwd: repoPath }).status).toBe(0);
-    expect(existsSync(filePath)).toBe(true);
-    await simpleGit(repoPath).checkout("test");
-    expect(existsSync(filePath)).toBe(true);
-    const logs = await simpleGit(repoPath).log();
-    expect(logs.latest?.message).toBe("adding files to mimic history index 0");
-    expect(logs.latest?.refs).toBe("HEAD -> test, origin/test, origin/main, main");
-    await repoMocker.teardown();
+
+    const pathA = repoMocker.repositoryState.getPath("projectA")!;
+    const pathB = repoMocker.repositoryState.getPath("projectB")!;
+
+    expect(existsSync(pathA)).toBe(true);
+    expect(existsSync(pathB)).toBe(true);
+
+    await expect(repoMocker.teardown()).resolves.not.toThrowError();
+    expect(existsSync(pathA)).toBe(false);
+    expect(existsSync(pathB)).toBe(false);
   });
 });
