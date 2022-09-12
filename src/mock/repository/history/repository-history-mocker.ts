@@ -10,6 +10,7 @@ import {
   DEFAULT_MERGE_COMMIT_MSG,
   DUMMY_FILE_DATA,
   DUMMY_FILE_NAME,
+  ORIGIN,
 } from "../repository.constants";
 import { RepositoryFileSystem } from "../files/repository-file-system";
 
@@ -39,7 +40,7 @@ export class RepositoryHistory {
     }
 
     // commit and push
-    await this.git.add(".").commit(action.commitMessage ?? DEFAULT_COMMIT_MSG(histIndex)).push();
+    await this.git.add(".").commit(action.commitMessage ?? DEFAULT_COMMIT_MSG(histIndex)).push(ORIGIN, action.branch);
   }
 
   private async merge(action: Merge): Promise<void> {
@@ -50,7 +51,7 @@ export class RepositoryHistory {
       action.commitMessage ??
         DEFAULT_MERGE_COMMIT_MSG(action.base, action.head),
     ]);
-    await this.git.push();
+    await this.git.push(ORIGIN, action.base);
   }
 
   /**
