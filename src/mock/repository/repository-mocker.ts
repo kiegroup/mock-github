@@ -9,6 +9,7 @@ import { RepositoryBranches } from "./branches/repository-branches";
 import {
   DEFAULT_BRANCH,
   DEFAULT_INIT_COMMIT_MSG,
+  GITIGNORE,
   ORIGIN,
   REMOTE,
   UPSTREAM,
@@ -97,7 +98,7 @@ export class RepositoryMocker implements Mocker {
         .init(true, ["-b", DEFAULT_BRANCH])
         .addConfig("user.name", "Github")
         .addConfig("user.email", "noreply@github.com"), // initialize upstream as a git repository
-      writeFile(path.join(repoPath, ".gitignore"), REMOTE), // add remote to gitignore of the repository so that upstream and origin aren't pushed,
+      writeFile(path.join(repoPath, GITIGNORE), REMOTE), // add remote to gitignore of the repository so that upstream and origin aren't pushed,
     ]);
 
     // initialize the repository and add origin, upstream and perform first push on main
