@@ -1,12 +1,7 @@
 export type PullRequest = { [key: string]: any } & {
-  open: {
     head: string;
     base: string;
-  };
-  closed: {
-    head: string;
-    base: string;
-  };
+    isOpen: boolean;
 };
 
 export type PullRequests = {
@@ -26,7 +21,7 @@ export type BranchState = {
 
 export type State = {
   name: string;
-  path: string;
+  path?: string;
   owner?: string;
   forkedFrom?: string;
   branches?: BranchState;
@@ -38,7 +33,7 @@ export interface RepositoryStateInterface {
   getState(repositoryName: string): Promise<State | undefined>;
   getForkedFrom(repositoryName: string): string | undefined;
   isFork(repositoryName: string): boolean;
-  getPath(repositoryName: string): string;
+  getPath(repositoryName: string): string | undefined;
   getOwner(repositoryName: string): string | undefined;
   getBranchState(repositoryName: string): BranchState | undefined;
   getFileSystemState(repositoryName: string): Promise<FileState[] | undefined>;

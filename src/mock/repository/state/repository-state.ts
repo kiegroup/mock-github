@@ -47,8 +47,10 @@ export class RepositoryState implements RepositoryState {
     return !!this.repositories[repositoryName]?.forkedFrom;
   }
 
-  getPath(repositoryName: string): string {
-    return path.join(this.setupPath, repositoryName);
+  getPath(repositoryName: string): string | undefined {
+    if (this.repositories[repositoryName]) {
+      return path.join(this.setupPath, repositoryName);
+    }
   }
 
   getOwner(repositoryName: string): string | undefined {
@@ -92,7 +94,7 @@ export class RepositoryState implements RepositoryState {
       ];
       if (
         !localBranches.includes(currentBranch) &&
-        !localBranches.includes(currentBranch)
+        !pushedBranches.includes(currentBranch)
       ) {
         localBranches.push(currentBranch);
       }
@@ -118,29 +120,6 @@ export class RepositoryState implements RepositoryState {
     );
   }
 
-  private async getFile(
-    file: CreateRepositoryFile,
-    branch: string
-  ): Promise<FileState[]> {
-    const result: FileState[] = [];
-    if (lstatSync(file.src).isDirectory()) {
-      await totalist(file.src, (_name, abs, stats) => {
-        if (stats.isFile()) {
-          result.push({
-            path: abs.replace(file.src, file.dest),
-            branch,
-          });
-        }
-      });
-    } else {
-      result.push({
-        path: file.dest,
-        branch,
-      });
-    }
-    return result;
-  }
-
   private async getFiles(
     files?: CreateRepositoryFile[],
     gitActions?: GitAction[],
@@ -163,7 +142,7 @@ export class RepositoryState implements RepositoryState {
           }
         } else {
           result.push({
-            path: `${DUMMY_FILE_NAME}${counter}`,
+            path: `/${DUMMY_FILE_NAME}${counter}`,
             branch: pushAction.branch,
           });
         }
@@ -176,15 +155,42 @@ export class RepositoryState implements RepositoryState {
     return result;
   }
 
+  private async getFile(
+    file: CreateRepositoryFile,
+    branch: string
+  ): Promise<FileState[]> {
+    const result: FileState[] = [];
+    if (lstatSync(file.src).isDirectory()) {
+      await totalist(file.src, (_name, abs, stats) => {
+        if (stats.isFile()) {
+          const absSplit = abs.split(file.src);
+          result.push({
+            path: path.join(file.dest, absSplit[absSplit.length - 1]),
+            branch,
+          });
+        }
+      });
+    } else {
+      result.push({
+        path: file.dest,
+        branch,
+      });
+    }
+    return result;
+  }
+
   private getPullRequest(
     repositoryName: string,
     pullRequestName: string
   ): PullRequest | undefined {
     const repository = this.repositories[repositoryName];
-    if (!repository.pullRequests) {
+    if (!repository.pullRequests || !repository.pullRequests[pullRequestName]) {
       return;
     }
 
-    return repository?.pullRequests[pullRequestName];
+    return {
+      ...repository?.pullRequests[pullRequestName],
+      title: pullRequestName,
+    };
   }
 }
