@@ -1,6 +1,3 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Pull Request Checks
 
 on: pull_request
@@ -27,36 +24,12 @@ jobs:
       - name: Run tests [node $${{ matrix.node-version }}]
         run: npm test
 
-      - name: Save test report files
-        uses: actions/upload-artifact@v3
+      - name: coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
         with:
-          path: |
-            test-report.xml
-            coverage/lcov.info
-          name: tests-${{ matrix.os }}-${{ matrix.node-version }}     
-  
-  # coverage-report:
-  #   name: Publish coverage report
-  #   needs: tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download test report files
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: tests-ubuntu-latest-14.x
-  #     - name: Setup sonar
-  #       uses: warchant/setup-sonar-scanner@v3
-  #     - run: sonar-scanner
-  #         -Dsonar.organization=kiegroup
-  #         -Dsonar.projectKey=mock-github
-  #         -Dsonar.projectName="mock-github"
-  #         -Dsonar.sources=$GITHUB_WORKSPACE
-  #         -Dsonar.host.url=${{ secrets.SONAR_URL }}
-  #         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-  #         -Dsonar.tests=test
-  #         -Dsonar.testExecutionReportPaths=test-report.xml
-  #         -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-  #         -Dsonar.exclusions="test/**,jest.config.ts,*json"
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          output: report-markdown
+          coverage-file: ./coverage/coverage-final.json     
+      
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
