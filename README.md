@@ -23,13 +23,21 @@ A NPM library to configure and create a local github environment. Currently work
 To create your environment all you need specify its state in a `.json` file and provide the path to the config file to the `MockGithub` instance. The structure of the config file is  
 ```json
 {
+    "create": true,
     "repositories": {
         "name_of_repository": {
             "pushedBranches": ["branch1", "branch2"],
             "localBranches": ["branch3"],
             "currentBranch": "branch2",
             "history": "array of history objects to create a git history",
-            "workflow": "array of paths to workflow files that are to be added to this repositories' .github/workflows directory"
+            "files": "array of file object containing src and dest fields",
+            "pullRequests": {
+              "title_of_PR": {
+                "isOpen": true,
+                "head": "owner1/project1:base",
+                "base": "main"
+              }
+            }
         }
     },
     "api": {
@@ -62,10 +70,36 @@ A local repository is configured and created by adding a key to the `repositorie
 &emsp;type: string  
 &emsp;required: no  
 &emsp;description: set the current branch to whatever you want. By default it is "main"  
-`workflow`  
-&emsp;type: string[]  
+`owner`  
+&emsp;type: string  
 &emsp;required: no  
-&emsp;description: location of files to be used as workflow file in the repository being created. They are added to the `.github/workflows` directory of the repository
+&emsp;description: sets the owner of the repository  
+`forkedFrom`  
+&emsp;type: string  
+&emsp;required: no  
+&emsp;description: name of the repository it was forked from    
+`pullRequests`  
+&emsp;type: Object  
+&emsp;required: no  
+&emsp;description: Each key in the object is the title of the PR. For each key, the value is an object containing `isOpen`, `base`, `head` and any other field needed. Refer to example response from [github REST API](https://docs.github.com/en/rest/pulls/pulls#get-a-pull-request)    
+`files`  
+&emsp;type: {src: string, dest: string}[]  
+&emsp;required: no  
+&emsp;description: Array of objects where each object has 2 fields `src` and `dest`. The `src` field is used to specify a directory or file that is to be copied into the repository. The `dest` field is used to specify the destination inside the repository. &emsp;So for example:  
+```json
+{
+  "src": "/home/somedir",
+  "dest": "/foo/bar"
+}
+```  
+&emsp;This configuration will copy all files from `/home/somedir` directory into the repository `foo/bar` directory (it will create any required directories inside the repository). Similarly,  
+```json
+{
+  "src": "/home/test.txt",
+  "dest": "foo/test-renamed.txt"
+}
+```  
+&emsp;This configuration will copy the file from `/home/test.txt` into the repository `foo/` directory (it will create any required directories inside the repository) and rename it to `test-renamed.txt`  
 `history`  
 &emsp;type: array of `Push`, `Merge`, `Unknown` objects (see below)  
 &emsp;required: no  
@@ -75,10 +109,14 @@ A local repository is configured and created by adding a key to the `repositorie
 &emsp;&emsp;&emsp;&emsp;type: string  
 &emsp;&emsp;&emsp;&emsp;required: yes  
 &emsp;&emsp;&emsp;&emsp;desciption: the branch on which this push should occur  
-&emsp;&emsp;&emsp;`file`  
-&emsp;&emsp;&emsp;&emsp;type: object  
+&emsp;&emsp;&emsp;`files`  
+&emsp;&emsp;&emsp;&emsp;type: {src: string, dest: string}[]   
 &emsp;&emsp;&emsp;&emsp;required: no  
-&emsp;&emsp;&emsp;&emsp;desciption: contains fields `path` (the location of the file that is to be used in pushing) and `name` (in case the name of the file is supposed to be different on the repository). By default if no `file` is specified then a dummy file is pushed  
+&emsp;&emsp;&emsp;&emsp;desciption: Same as `files` field above  
+&emsp;&emsp;&emsp;`commitMessage`  
+&emsp;&emsp;&emsp;&emsp;type: string  
+&emsp;&emsp;&emsp;&emsp;required: no  
+&emsp;&emsp;&emsp;&emsp;desciption: custom commit message for pushing    
 &emsp;&emsp;`Merge`  
 &emsp;&emsp;&emsp;`head`  
 &emsp;&emsp;&emsp;&emsp;type: string  
@@ -92,17 +130,8 @@ A local repository is configured and created by adding a key to the `repositorie
 &emsp;&emsp;&emsp;&emsp;type: string  
 &emsp;&emsp;&emsp;&emsp;required: no  
 &emsp;&emsp;&emsp;&emsp;desciption: custom commit message for the merge  
-&emsp;&emsp;`Unknown`  
-&emsp;&emsp;&emsp;`cmd`  
-&emsp;&emsp;&emsp;&emsp;type: string  
-&emsp;&emsp;&emsp;&emsp;required: yes  
-&emsp;&emsp;&emsp;&emsp;desciption: A git cmd that is to be run. To be used when you want to perform some action which is neither push nor merge  
-&emsp;&emsp;&emsp;`file`  
-&emsp;&emsp;&emsp;&emsp;type: object  
-&emsp;&emsp;&emsp;&emsp;required: no  
-&emsp;&emsp;&emsp;&emsp;desciption: contains fields `path` (the location of the file that is to be used in pushing) and `name` (in case the name of the file is supposed to be different on the repository).  
 
-There are utility methods available which gets you the state of the repository once it has been constructed. The available methods are `getAllStates(), getState(repository_name)`
+There multiple utility functions available: `getState(repositoryName: string)`, `getForkedFrom(repositoryName: string)`, `isFork(repositoryName: string)`, `getPath(repositoryName: string)`, `getOwner(repositoryName: string)`, `getBranchState(repositoryName: string)`, `getFileSystemState(repositoryName: string)`, `getPullRequestState(repositoryName: string, pullRequestName?: string)`  
 
 ## Github env vars<a name="github_env"></a>  
 Used to set github environment variable. Adds the prefix `GITHUB_` to all the variables. Specify it in the `env` section of the config file. For eg:  
