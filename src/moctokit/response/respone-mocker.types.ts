@@ -1,3 +1,4 @@
+/** Adapted from: https://github.com/octokit/types.ts/blob/bd5f9f7bce9fa448c87fcfadb7bd547de66ad115/src/generated/Endpoints.ts */
 type KnownJsonResponseTypes =
   | "application/json"
   | "application/scim+json"

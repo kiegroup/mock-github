@@ -10,8 +10,3 @@ export class Moctokit {
     return this._rest;
   }
 }
-
-const mock = new Moctokit();
-mock.rest.actions.addCustomLabelsToSelfHostedRunnerForOrg({
-  runner_id: 1
-});
