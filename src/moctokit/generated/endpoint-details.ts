@@ -1,4 +1,4 @@
-import { Endpoints } from "../endpoint-details.types";
+import { Endpoints } from "../endpoints.types";
 const endpoints: Endpoints = {
   actions: {
     addCustomLabelsToSelfHostedRunnerForOrg: {
