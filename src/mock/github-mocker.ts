@@ -1,18 +1,15 @@
 import { ActionMocker } from "./action/action-mocker";
-import { ApiMocker } from "./api/api-mocker";
 import { EnvMocker } from "./env/env-mocker";
 import { Config } from "./github-mocker.types";
 import { Mocker } from "./mocker";
 import { RepositoryMocker } from "./repository/repository-mocker";
 import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { EnvInterface } from "./env/env-mocker.types";
-import { ApiInterface } from "./api/api-mocker.types";
 import { ActionInterface } from "./action/action-mocker.types";
 import { RepositoryStateInterface } from "./repository/state/repository-state.types";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;
-  private apiMocker: ApiMocker;
   private envMocker: EnvMocker;
   private repoMocker: RepositoryMocker;
   private setupPath: string;
@@ -23,7 +20,6 @@ export class MockGithub implements Mocker {
     this.config = JSON.parse(readFileSync(configFilePath, "utf8"));
     this.setupPath = setupPath;
     this.actionMocker = new ActionMocker(this.config.action, this.setupPath);
-    this.apiMocker = new ApiMocker(this.config.api);
     this.envMocker = new EnvMocker(this.config.env);
     this.repoMocker = new RepositoryMocker(
       this.config.repositories,
@@ -39,7 +35,6 @@ export class MockGithub implements Mocker {
     await Promise.all([
       ...(this.config.create ? [this.repoMocker.setup()] : []),
       this.envMocker.setup(),
-      this.apiMocker.setup(),
     ]);
 
     // trigger after env has been setup so that any env vars needed in action mocker are not overriden by user env vars
@@ -51,7 +46,6 @@ export class MockGithub implements Mocker {
       ...(this.config.create ? [this.repoMocker.teardown()] : []),
       this.actionMocker.teardown(),
       this.envMocker.teardown(),
-      this.apiMocker.teardown(),
     ]);
     if (this.setupDirCreated) rmSync(this.setupPath, { recursive: true });
   }
@@ -62,14 +56,6 @@ export class MockGithub implements Mocker {
       delete: this.envMocker.delete,
       get: this.envMocker.get,
       getAll: this.envMocker.getAll,
-    };
-  }
-
-  get api(): ApiInterface {
-    return {
-      add: this.apiMocker.add,
-      activate: this.apiMocker.activate,
-      deactivate: this.apiMocker.deactivate,
     };
   }
 
