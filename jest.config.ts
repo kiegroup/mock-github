@@ -12,7 +12,8 @@ const jestConfig: Config.InitialOptions = {
     "!**/*.types.ts",
     "!**/*.constants.ts",
     "!src/action-compiler/mocker.ts",
-    "!src/index.ts"
+    "!src/index.ts",
+    "!src/moctokit/generated/**"
   ],
   testLocationInResults: true,
   testResultsProcessor: "jest-sonar-reporter",

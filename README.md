@@ -9,7 +9,7 @@ A NPM library to configure and create a local github environment. Currently work
 - [Action inputs](#action_input)
 - [Action event](#action_event)
 - [Action artifact archiver](#action_artifact_archiver)
-- [Mock api](#mock_api)
+- [Moctokit](#moctokit)
 - [Act](#act)
 - [Compiler](#compiler)  
 
@@ -39,10 +39,6 @@ To create your environment all you need specify its state in a `.json` file and 
               }
             }
         }
-    },
-    "api": {
-        "baseUrl": "http://github.com",
-        "endpoints": "array of endpoint objects"
     },
     "env": {
         "var_name": "value"
@@ -176,18 +172,19 @@ Starts an express server which used by the artifact archiver github action to up
 &emsp;required: yes   
 &emsp;description: the directory in which the artifacts are to be uploaded to and downloaded from  
 
-## Mock api<a name="mock_api"></a>  
-Used to mock any API specified in the `api` section of the config file. It uses nock under the hood. You can specify the following properties:  
-`baseUrl`  
-&emsp;type: string  
-&emsp;required: no  
-&emsp;description: url that is to be mocked. By default it is "https://api.github.com"  
-`endpoints`  
-&emsp;type: array of endpoint objects  
-&emsp;required: yes  
-&emsp;description: specifies which endpoint is to be mocked. Can be used for regex matching, query matching or body matching as well. The response field sets the reply for the endpoint.  
+## Moctokit<a name="moctokit"></a>  
+Used to mock endpoints specified in [@octokit/rest](https://octokit.github.io/rest.js/v19). You can create a moctokit instance and optionally pass parameter `baseUrl` to it. By default it uses "https://api.github.com  
+The instance then works the same as an octokit instance. So for example
+```typescript
+const mock = new Moctokit();
+mock.rest.repos.get({
+  owner: "kie",
+  repo: /build.*/
+}).reply({status: 200, data: {full_name: "it worked}})
+```
+The above piece of code will mock all get repo calls where the owner is "kie" and the repo name starts with "build". It will return a 200 status once.  
 
-You can easily activate/deactivate mocked responses and re-use them whenever required. You can also set which response is to be used for an activated endpoint.  
+Similarly you can mock all octokit methods, set scope of how the requests should be matched and set the reply. You can optionally repeat the same mock by calling the `repeat` method before `reply`. The parameter of each method is the same as the corresponding octokit method with the only difference being that all parameters accept regex and all paramters are optional. Any missing path paramter will result in mocking all possible paths.
 
 ## Act<a name="act"></a>  
 This a TS/JS interface for the [nektos/act](https://github.com/nektos/act/) tool. It can be used to execute act cli tool programatically. It provides a parsed output object which contains the status as well as the output for each step executed by the workflow.  
