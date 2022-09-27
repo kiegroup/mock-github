@@ -1,4 +1,4 @@
-import { Endpoints } from "../endpoints.types";
+import { Endpoints } from "../../endpoint-mocker/endpoint-mocker.types";
 const endpoints: Endpoints = {
   actions: {
     addCustomLabelsToSelfHostedRunnerForOrg: {
