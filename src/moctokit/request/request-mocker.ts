@@ -19,7 +19,10 @@ export class MoctokitRequestMocker<
   request(params?: MockRequestParameters<paths[Path][Method]>) {
     const { pathParams, query, requestBody } = this.parseParams(params);
     return new MoctokitResponseMocker<Path, Method>(
-      this.createInterceptor(pathParams, query, requestBody)
+      this.createInterceptor(pathParams, query, requestBody),
+      this.baseUrl,
+      this.endpointDetails,
+      params
     );
   }
 }
