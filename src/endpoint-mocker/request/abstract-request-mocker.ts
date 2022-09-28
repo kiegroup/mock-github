@@ -1,16 +1,30 @@
 import nock, { DataMatcher, DataMatcherMap, RequestBodyMatcher } from "nock";
-import { EndpointDetails } from "../endpoint-mocker.types";
+import { EndpointDetails, Params } from "../endpoint-mocker.types";
 
 export abstract class RequestMocker {
-  protected nockScope: nock.Scope;
-  protected endpointDetails: EndpointDetails;
+  private _nockScope: nock.Scope;
+  private _endpointDetails: EndpointDetails;
+  private _baseUrl: string;
 
   constructor(baseUrl: string, endpointDetails: EndpointDetails) {
-    this.nockScope = nock(baseUrl);
-    this.endpointDetails = endpointDetails;
+    this._nockScope = nock(baseUrl);
+    this._endpointDetails = endpointDetails;
+    this._baseUrl = baseUrl;
   }
 
-  protected parseParams(params?: Record<string, unknown>) {
+  get baseUrl() {
+    return this._baseUrl;
+  }
+
+  get endpointDetails() {
+    return this._endpointDetails;
+  }
+
+  get nockScope() {
+    return this._nockScope;
+  }
+
+  protected parseParams(params?: Params) {
     let pathParams: Record<string, unknown> = {};
     let query: DataMatcherMap | undefined = undefined;
     let requestBody: RequestBodyMatcher | undefined = undefined;

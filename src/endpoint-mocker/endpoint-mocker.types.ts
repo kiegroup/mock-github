@@ -10,3 +10,5 @@ export type Endpoints = {
     [methodName: string]: EndpointDetails;
   };
 };
+
+export type Params = Record<string, unknown>;
