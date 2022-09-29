@@ -19,9 +19,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: test report
+        id: coverage
         uses: ArtiomTr/jest-coverage-report-action@v2
+        env:
+          LOGNAME: username
         with:
           output: report-markdown
+      - run: echo $OUTPUT
+        env:
+          OUTPUT: ${{join(steps.coverage.outputs.*, '\n')}}
       
       - uses: marocchino/sticky-pull-request-comment@v2
         with:

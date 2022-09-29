@@ -1,5 +1,5 @@
-import { InputMocker } from "../../../src/mock/action/input/input-mocker";
-import { DEFAULT_INPUT, Input } from "../../../src/mock/action/input/input-mocker.types";
+import { InputMocker } from "../../../../src/github/action/input/input-mocker";
+import { DEFAULT_INPUT, Input } from "../../../../src/github/action/input/input-mocker.types";
 
 describe("setup", () => {
     test("empty input", async () => {
