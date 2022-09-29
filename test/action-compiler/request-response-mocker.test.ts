@@ -1,8 +1,8 @@
 import axios from "axios";
+import { CompilerRequestMocker } from "../../src/action-compiler/request/request-mocker";
 import { EndpointMethod } from "../../src/endpoint-mocker/endpoint-mocker.types";
-import { MoctokitRequestMocker } from "../../src/moctokit/request/request-mocker";
 
-const url = "http://localhost:8000";
+const url = "http://localhost:8001";
 const instance = axios.create({
   baseURL: url,
 });
@@ -11,7 +11,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
   "Method - %p",
   (method: string) => {
     test("with path parameters", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/path/{param1}/path/{param2}/path/{param3}",
         method: method as EndpointMethod,
         parameters: {
@@ -25,7 +25,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           param1: "hello",
           param2: /(w|W)orld\d/,
         } as any)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
@@ -41,7 +41,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           param2: /(w|W)orld\d/,
         } as any)
         .repeat(3)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       // incorrect param1 - should be an exact match
       await expect(
@@ -60,7 +60,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("no path parameters passed", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/path/{param1}/path/{param2}/path",
         method: method as EndpointMethod,
         parameters: {
@@ -71,7 +71,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       });
       requestMocker
         .request()
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
@@ -82,7 +82,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("no path parameters defined. Exact path match", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/path/hello/world",
         method: method as EndpointMethod,
         parameters: {
@@ -94,7 +94,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       requestMocker
         .request()
         .repeat(2)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
@@ -112,7 +112,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("with url queries", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -127,7 +127,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           query1: "hello",
           query2: /\d/,
         } as any)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
@@ -143,7 +143,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           query2: /\d/,
         } as any)
         .repeat(2)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       await expect(
         instance({ method, url: "/query/any/query?query1=hell&query2=2" })
@@ -160,7 +160,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("no url queries", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -172,7 +172,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
 
       requestMocker
         .request()
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
@@ -184,7 +184,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("setResponse: singular response", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -196,7 +196,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
 
       requestMocker
         .request()
-        .setResponse({ status: 200, data: { msg: "hello world" } } as never)
+        .setResponse({ status: 200, data: { msg: "hello world" } })
         .reply();
 
       const { status, data } = await instance({
@@ -209,7 +209,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("setResponse: multiple response", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -224,7 +224,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
         .setResponse([
           { status: 200, data: { msg: "hello world" } },
           { status: 201, data: { msg: "another response" } },
-        ] as never)
+        ])
         .reply();
 
       const response1 = await instance({
@@ -250,7 +250,7 @@ describe.each(["post", "delete", "put", "patch"])(
   "Method - %p",
   (method: string) => {
     test("with request body", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/body/{param1}/body",
         method: method as EndpointMethod,
         parameters: {
@@ -265,7 +265,7 @@ describe.each(["post", "delete", "put", "patch"])(
           body1: "hello",
           body2: /\d/,
         } as any)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
@@ -281,7 +281,7 @@ describe.each(["post", "delete", "put", "patch"])(
           body2: /\d/,
         } as any)
         .repeat(3)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       await expect(
         instance({
@@ -307,7 +307,7 @@ describe.each(["post", "delete", "put", "patch"])(
     });
 
     test("no request body", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new CompilerRequestMocker(url, {
         path: "/body/{param1}/body",
         method: method as EndpointMethod,
         parameters: {
@@ -319,7 +319,7 @@ describe.each(["post", "delete", "put", "patch"])(
 
       requestMocker
         .request()
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" } });
 
       const { status, data } = await instance({
         method,
