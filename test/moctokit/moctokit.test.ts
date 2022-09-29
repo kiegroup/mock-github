@@ -7,8 +7,7 @@ test("with default base url", async () => {
     .get({
       owner: "kie",
     })
-    .repeat(2)
-    .reply({ status: 200, data: { full_name: "it definitely worked" } });
+    .reply({ status: 200, data: { full_name: "it definitely worked" }, repeat: 2 });
 
   const octokit = new Octokit();
   const data1 = await octokit.rest.repos.get({
@@ -33,8 +32,7 @@ test("with base url", async () => {
     .get({
       owner: "kie",
     })
-    .repeat(2)
-    .reply({ status: 200, data: { full_name: "it definitely worked" } });
+    .reply({ status: 200, data: { full_name: "it definitely worked" }, repeat: 2 });
 
   const octokit = new Octokit({ baseUrl: url });
   const data1 = await octokit.rest.repos.get({

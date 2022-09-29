@@ -58,24 +58,17 @@ export abstract class ResponseMocker<T, S extends number> {
     return this;
   }
 
-  repeat(times: number) {
-    this.interceptor = this.interceptor.times(times);
-    return this;
-  }
-
   reply(response?: Response<T, S>) {
     if (response) {
-      this.scope = this.interceptor.reply(
-        response.status,
-        response.data as nock.Body
-      );
+      this.scope = this.interceptor
+        .times(response.repeat ?? 1)
+        .reply(response.status, response.data as nock.Body);
       this.interceptor = this.createInterceptor();
     } else {
       this.responses.forEach((response) => {
-        this.scope = this.interceptor.reply(
-          response.status,
-          response.data as nock.Body
-        );
+        this.scope = this.interceptor
+          .times(response.repeat ?? 1)
+          .reply(response.status, response.data as nock.Body);
         this.interceptor = this.createInterceptor();
       });
     }

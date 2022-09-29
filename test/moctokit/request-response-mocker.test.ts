@@ -40,8 +40,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           param1: "hello",
           param2: /(w|W)orld\d/,
         } as any)
-        .repeat(3)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" }, repeat: 3 } as never);
 
       // incorrect param1 - should be an exact match
       await expect(
@@ -93,8 +92,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       });
       requestMocker
         .request()
-        .repeat(2)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" }, repeat: 2 } as never);
 
       const { status, data } = await instance({
         method,
@@ -142,8 +140,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           query1: "hello",
           query2: /\d/,
         } as any)
-        .repeat(2)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" }, repeat: 3 } as never);
 
       await expect(
         instance({ method, url: "/query/any/query?query1=hell&query2=2" })
@@ -280,8 +277,7 @@ describe.each(["post", "delete", "put", "patch"])(
           body1: "hello",
           body2: /\d/,
         } as any)
-        .repeat(3)
-        .reply({ status: 200, data: { msg: "hello world" } } as never);
+        .reply({ status: 200, data: { msg: "hello world" }, repeat: 3 } as never);
 
       await expect(
         instance({
