@@ -15,7 +15,7 @@ export class ActionCompiler {
   private _mock: CompilerMockMethod;
   private setupPath: string;
 
-  constructor(apiSchema: APISchema = {}) {
+  constructor(apiSchema: APISchema) {
     this.apiSchema = apiSchema;
     this._mock = this.apiSchemaToMethod();
     this.setupPath = path.join(__dirname, "mocker");
@@ -100,17 +100,6 @@ export class ActionCompiler {
   }
 
   /**
-   * Sets the new api schema and generates the request mocker function
-   * @param apiSchema 
-   * @returns 
-   */
-  setApiSchema(apiSchema: APISchema) {
-    this.apiSchema = apiSchema;
-    this._mock = this.apiSchemaToMethod();
-    return this;
-  }
-
-  /**
    * Returns the request mocker functions generated from api schema
    */
   get mock() {
@@ -119,7 +108,7 @@ export class ActionCompiler {
 
   /**
    * For each endpoint for each api it generates a request mocker function just like moctokit
-   * @returns 
+   * @returns
    */
   private apiSchemaToMethod() {
     let methods: CompilerMockMethod = {};

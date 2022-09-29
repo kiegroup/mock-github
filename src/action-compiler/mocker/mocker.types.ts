@@ -1,12 +1,24 @@
-import {
-  EndpointDetails,
-  Params,
-} from "../../endpoint-mocker/endpoint-mocker.types";
+import { DataMatcher } from "nock/types";
 import { Response } from "../../endpoint-mocker/response/abstract-response-mocker.types";
 
 export type MockerParams = {
   baseUrl: string;
-  endpointDetails: EndpointDetails;
+  path: {
+    value: string;
+    isRegex: boolean;
+  };
+  method: string;
   responses: Response<any, any>[];
-  params?: Params;
+  query: {
+    [key: string]: {
+      value: DataMatcher;
+      isRegex: boolean;
+    };
+  };
+  requestBody: {
+    [key: string]: {
+      value: DataMatcher;
+      isRegex: boolean;
+    };
+  };
 };

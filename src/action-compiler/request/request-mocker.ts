@@ -10,12 +10,13 @@ export class CompilerRequestMocker extends RequestMocker {
     this.request = this.request.bind(this);
   }
   request(params?: Record<string, unknown>) {
-    const { pathParams, query, requestBody } = this.parseParams(params);
+    const { path, query, requestBody } = this.parseParams(params);
     return new CompilerResponseMocker(
-      this.createInterceptor(pathParams, query, requestBody),
       this.baseUrl,
-      this.endpointDetails,
-      params
+      path,
+      this.endpointDetails.method,
+      query,
+      requestBody
     );
   }
 }
