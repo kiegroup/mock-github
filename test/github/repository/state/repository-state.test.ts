@@ -5,9 +5,9 @@ import {
   GitActionTypes,
   Merge,
   Push,
-} from "../../../src/mock/repository/history/repository-history.types";
-import { DEFAULT_BRANCH } from "../../../src/mock/repository/repository.constants";
-import { RepositoryState } from "../../../src/mock/repository/state/repository-state";
+} from "../../../../src/github/repository/history/repository-history.types";
+import { DEFAULT_BRANCH } from "../../../../src/github/repository/repository.constants";
+import { RepositoryState } from "../../../../src/github/repository/state/repository-state";
 
 const setupPath = __dirname;
 

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { EventMocker } from "../../../src/mock/action/event/event-mocker";
-import { DEFAULT_PAYLOAD } from "../../../src/mock/action/event/event-mocker.types";
+import { EventMocker } from "../../../../src/github/action/event/event-mocker";
+import { DEFAULT_PAYLOAD } from "../../../../src/github/action/event/event-mocker.types";
 
 describe("setup", () => {
   test("empty action config", async () => {

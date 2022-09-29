@@ -1,9 +1,9 @@
 import { existsSync, mkdir, mkdirSync } from "fs";
 import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
-import { RepositoryFileSystem } from "../../../src/mock/repository/files/repository-file-system";
-import { RepositoryMocker } from "../../../src/mock/repository/repository-mocker";
-import { GITIGNORE, REMOTE } from "../../../src/mock/repository/repository.constants";
+import { RepositoryFileSystem } from "../../../../src/github/repository/files/repository-file-system";
+import { RepositoryMocker } from "../../../../src/github/repository/repository-mocker";
+import { GITIGNORE, REMOTE } from "../../../../src/github/repository/repository.constants";
 
 let repoMocker: RepositoryMocker;
 let fileCreator: RepositoryFileSystem;
