@@ -3,7 +3,7 @@ import { rmSync } from "fs";
 import path from "path";
 import { promisify } from "util";
 import { ActionCompiler } from "../../src/action-compiler/action-compile";
-import { CompileMockAPIs } from "../../src/action-compiler/action-compile.types";
+import { Moctokit } from "../../src/moctokit/moctokit";
 
 beforeAll(async () => {
   const exec = promisify(require("node:child_process").exec);
@@ -14,8 +14,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  execSync("npm run post-compiler-test")
-})
+  execSync("npm run post-compiler-test");
+});
 
 test.each([
   ["minified", true, "dist-minify/index.js"],
@@ -23,28 +23,42 @@ test.each([
 ])(
   "compile mocked action: %p",
   async (_title: string, minify: boolean, src: string) => {
-    const compiler = new ActionCompiler();
-    const dest = path.join(__dirname, "compiled.js");
-    const apis: CompileMockAPIs[] = [
-      {
+    const moctokit = new Moctokit();
+    const compiler = new ActionCompiler({
+      google: {
         baseUrl: "https://google.com",
-        endpoints: [
-          {
-            path: "/",
-            method: "get",
-            response: [
-              {
-                status: 200,
-                data: ["test worked"],
+        endpoints: {
+          root: {
+            get: {
+              path: "/",
+              method: "get",
+              parameters: {
+                path: [],
+                query: ["search"],
+                body: [],
               },
-            ],
+            },
           },
-        ],
+        },
       },
+    });
+    const dest = path.join(__dirname, "compiled.js");
+    const apis = [
+      compiler.mock.google.root
+        .get({ search: /test.+/ })
+        .setResponse({ status: 200, data: ["test worked"] }),
+      moctokit.rest.repos
+        .getBranch({ owner: /kie.*/, repo: "build-chain" })
+        .setResponse({ status: 200, data: { name: "main" } }),
+      moctokit.rest.repos
+        .update({ name: /newName\d/ })
+        .setResponse([{ status: 200, data: { full_name: "new-name" } }]),
     ];
     await compiler.compile(path.join(process.cwd(), src), dest, apis, minify);
     const result = spawnSync("node", [dest]);
-    expect(result.stdout.toString()).toMatch("200 [ 'test worked' ]");
+    expect(result.stdout.toString()).toMatch(
+      "200 [ 'test worked' ]\n200 { name: 'main' }\n200 { full_name: 'new-name' }"
+    );
     rmSync(dest);
   }
 );

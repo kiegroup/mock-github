@@ -1,12 +1,12 @@
+import { Response } from "../../endpoint-mocker/response/abstract-response-mocker.types";
+
 /** Adapted from: https://github.com/octokit/types.ts/blob/bd5f9f7bce9fa448c87fcfadb7bd547de66ad115/src/generated/Endpoints.ts */
 type KnownJsonResponseTypes =
   | "application/json"
   | "application/scim+json"
   | "text/html";
-type MockResponse<T, S extends number = number> = {
-  status: S;
-  data: Partial<T>;
-};
+
+type MockResponse<T, S extends number> = Response<Partial<T>, S>;
 
 type DataType<T> = {
   [K in KnownJsonResponseTypes & keyof T]: T[K];

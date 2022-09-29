@@ -6,7 +6,9 @@ export type EndpointDetails = {
 };
 
 export type Endpoints = {
-  [key: string]: {
-    [key: string]: EndpointDetails;
+  [scope: string]: {
+    [methodName: string]: EndpointDetails;
   };
 };
+
+export type Params = Record<string, unknown>;

@@ -35,9 +35,6 @@ const QUERY = `
       responses {
         code
         description
-        examples {
-          data
-        }
       }
       renamed {
         before {
