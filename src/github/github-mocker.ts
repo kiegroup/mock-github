@@ -65,7 +65,6 @@ export class MockGithub implements Mocker {
 
   get action(): ActionInterface {
     return {
-      event: this.actionMocker.event,
       input: this.actionMocker.input,
       archiver: this.actionMocker.archiver,
     };
