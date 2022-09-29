@@ -1,7 +1,7 @@
-import { ActionMocker } from "../../src/mock/action/action-mocker";
-import { ArchiveArtifactsMocker } from "../../src/mock/action/archive/archive-mocker";
-import { EventMocker } from "../../src/mock/action/event/event-mocker";
-import { InputMocker } from "../../src/mock/action/input/input-mocker";
+import { ActionMocker } from "../../../src/github/action/action-mocker";
+import { ArchiveArtifactsMocker } from "../../../src/github/action/archive/archive-mocker";
+import { EventMocker } from "../../../src/github/action/event/event-mocker";
+import { InputMocker } from "../../../src/github/action/input/input-mocker";
 
 test("setup", async () => {
   const spyInputMocker = jest.spyOn(InputMocker.prototype, "setup").mockImplementation(async () => undefined);

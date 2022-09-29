@@ -20,6 +20,8 @@ jobs:
 
       - name: test report
         uses: ArtiomTr/jest-coverage-report-action@v2
+        env:
+          LOGNAME: username
         with:
           output: report-markdown
       

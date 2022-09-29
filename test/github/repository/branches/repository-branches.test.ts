@@ -1,7 +1,7 @@
 import path from "path";
 import simpleGit, { SimpleGit } from "simple-git";
-import { RepositoryBranches } from "../../../src/mock/repository/branches/repository-branches";
-import { RepositoryMocker } from "../../../src/mock/repository/repository-mocker";
+import { RepositoryBranches } from "../../../../src/github/repository/branches/repository-branches";
+import { RepositoryMocker } from "../../../../src/github/repository/repository-mocker";
 
 let repoMocker: RepositoryMocker;
 let branchCreator: RepositoryBranches;

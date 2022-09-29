@@ -1,5 +1,5 @@
-import { EnvMocker } from "../../src/mock/env/env-mocker"
-import { DEFAULT_ENV, Env } from "../../src/mock/env/env-mocker.types";
+import { EnvMocker } from "../../../src/github/env/env-mocker"
+import { DEFAULT_ENV, Env } from "../../../src/github/env/env-mocker.types";
 
 describe("setup", () => {
     test("empty env", async () => {

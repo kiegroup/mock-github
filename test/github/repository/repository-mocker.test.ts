@@ -1,7 +1,7 @@
-import { RepositoryMocker } from "../../src/mock/repository/repository-mocker";
-import { RepositoryFileSystem } from "../../src/mock/repository/files/repository-file-system";
-import { RepositoryHistory } from "../../src/mock/repository/history/repository-history-mocker";
-import { RepositoryBranches } from "../../src/mock/repository/branches/repository-branches";
+import { RepositoryMocker } from "../../../src/github/repository/repository-mocker";
+import { RepositoryFileSystem } from "../../../src/github/repository/files/repository-file-system";
+import { RepositoryHistory } from "../../../src/github/repository/history/repository-history-mocker";
+import { RepositoryBranches } from "../../../src/github/repository/branches/repository-branches";
 import { existsSync } from "fs";
 import path from "path";
 import { spawnSync } from "child_process";
@@ -9,7 +9,7 @@ import { rm } from "fs/promises";
 import {
   GITIGNORE,
   REMOTE,
-} from "../../src/mock/repository/repository.constants";
+} from "../../../src/github/repository/repository.constants";
 
 const setupPath = __dirname;
 
