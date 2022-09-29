@@ -19,6 +19,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: test report
+        id: coverage
         uses: ArtiomTr/jest-coverage-report-action@v2
         env:
           LOGNAME: username
@@ -27,4 +28,4 @@ jobs:
       
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
-          message: ${{ steps.tests.outputs.report }}
+          message: ${{ steps.coverage.outputs.report }}
