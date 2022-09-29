@@ -1,40 +1,51 @@
-import nock from "nock";
+import nock, { DataMatcher, DataMatcherMap } from "nock";
 import { MockerParams } from "../../action-compiler/mocker/mocker.types";
-import { EndpointDetails, Params } from "../endpoint-mocker.types";
 import { Response } from "./abstract-response-mocker.types";
 
 export abstract class ResponseMocker<T, S extends number> {
-  private _interceptor: nock.Interceptor;
+  private interceptor: nock.Interceptor;
+  private scope: nock.Scope;
   private responses: Response<T, S>[];
   private baseUrl: string;
-  private endpointDetails: EndpointDetails;
-  private params?: Params;
+  private path: string | RegExp;
+  private query?: DataMatcherMap;
+  private requestBody?: DataMatcherMap;
+  private method: string;
 
   constructor(
-    interceptor: nock.Interceptor,
     baseUrl: string,
-    endpointDetails: EndpointDetails,
-    params?: Params
+    path: string | RegExp,
+    method: string,
+    query?: DataMatcherMap,
+    requestBody?: DataMatcherMap
   ) {
-    this._interceptor = interceptor;
+    this.scope = nock(baseUrl);
     this.responses = [];
     this.baseUrl = baseUrl;
-    this.endpointDetails = endpointDetails;
-    this.params = params;
+    this.path = path;
+    this.query = query;
+    this.requestBody = requestBody;
+    this.method = method;
+    this.interceptor = this.createInterceptor();
   }
 
   toJSON(): MockerParams {
-    let params: Params = {};
-    if (this.params) {
-      Object.entries(this.params).forEach(([key, value]) => {
-        params[key] = value instanceof RegExp ? value.source : value;
-      });
-    }
+    const query: MockerParams["query"] = {};
+    Object.entries(this.query ?? {}).forEach(([key, value]) => {
+      query[key] = this.isRegex<typeof value>(value);
+    });
+
+    const requestBody: MockerParams["requestBody"] = {};
+    Object.entries(this.requestBody ?? {}).forEach(([key, value]) => {
+      requestBody[key] = this.isRegex<typeof value>(value);
+    });
     return {
       baseUrl: this.baseUrl,
-      endpointDetails: this.endpointDetails,
-      params: Object.keys(params).length === 0 ? undefined : params,
+      path: this.isRegex<string>(this.path),
+      method: this.method,
       responses: this.responses,
+      query,
+      requestBody,
     };
   }
 
@@ -48,17 +59,39 @@ export abstract class ResponseMocker<T, S extends number> {
   }
 
   repeat(times: number) {
-    this._interceptor = this._interceptor.times(times);
+    this.interceptor = this.interceptor.times(times);
     return this;
   }
 
   reply(response?: Response<T, S>) {
     if (response) {
-      this._interceptor.reply(response.status, response.data as nock.Body);
+      this.scope = this.interceptor.reply(
+        response.status,
+        response.data as nock.Body
+      );
+      this.interceptor = this.createInterceptor();
     } else {
       this.responses.forEach((response) => {
-        this._interceptor.reply(response.status, response.data as nock.Body);
+        this.scope = this.interceptor.reply(
+          response.status,
+          response.data as nock.Body
+        );
+        this.interceptor = this.createInterceptor();
       });
     }
+  }
+
+  private createInterceptor(): nock.Interceptor {
+    // if query is defined use that otherwise set it to true to indicate that we want to mock the path regardless of query
+    return this.scope
+      .intercept(this.path, this.method, this.requestBody)
+      .query(this.query ?? true);
+  }
+
+  private isRegex<T>(data: T | RegExp) {
+    return {
+      value: data instanceof RegExp ? data.source : data,
+      isRegex: data instanceof RegExp,
+    };
   }
 }

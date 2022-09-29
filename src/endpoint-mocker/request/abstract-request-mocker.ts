@@ -1,13 +1,11 @@
-import nock, { DataMatcher, DataMatcherMap, RequestBodyMatcher } from "nock";
+import { DataMatcher, DataMatcherMap, RequestBodyMatcher } from "nock/types";
 import { EndpointDetails, Params } from "../endpoint-mocker.types";
 
 export abstract class RequestMocker {
-  private _nockScope: nock.Scope;
   private _endpointDetails: EndpointDetails;
   private _baseUrl: string;
 
   constructor(baseUrl: string, endpointDetails: EndpointDetails) {
-    this._nockScope = nock(baseUrl);
     this._endpointDetails = endpointDetails;
     this._baseUrl = baseUrl;
   }
@@ -18,10 +16,6 @@ export abstract class RequestMocker {
 
   get endpointDetails() {
     return this._endpointDetails;
-  }
-
-  get nockScope() {
-    return this._nockScope;
   }
 
   protected parseParams(params?: Params) {
@@ -50,15 +44,7 @@ export abstract class RequestMocker {
         }
       }
     }
-    return { pathParams, query, requestBody };
-  }
 
-  protected createInterceptor(
-    pathParams: Record<string, unknown>,
-    query?: DataMatcherMap,
-    requestBody?: DataMatcherMap
-  ): nock.Interceptor {
-    let interceptor: nock.Interceptor;
     let path: string | RegExp = this.endpointDetails.path;
     let regexFlag = false;
 
@@ -82,27 +68,6 @@ export abstract class RequestMocker {
       path = new RegExp(path);
     }
 
-    switch (this.endpointDetails.method) {
-      case "get":
-        interceptor = this.nockScope.get(path);
-        break;
-      case "delete":
-        interceptor = this.nockScope.delete(path, requestBody);
-        break;
-      case "patch":
-        interceptor = this.nockScope.patch(path, requestBody);
-        break;
-      case "post":
-        interceptor = this.nockScope.post(path, requestBody);
-        break;
-      case "put":
-        interceptor = this.nockScope.put(path, requestBody);
-        break;
-      default:
-        throw new Error("Invalid http method");
-    }
-
-    // if query is defined use that otherwise set it to true to indicate that we want to mock the path regardless of query
-    return interceptor.query(query ?? true);
+    return { path, query, requestBody };
   }
 }
