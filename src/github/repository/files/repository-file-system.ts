@@ -39,7 +39,7 @@ export class RepositoryFileSystem {
    * @returns true if destination path begins from REMOTE
    */
   private checkDest(dest: string): boolean {
-    const beginsWith = dest.split("/")[0]
+    const beginsWith = dest.split("/")[0];
     return beginsWith === REMOTE || beginsWith === GITIGNORE;
   }
 

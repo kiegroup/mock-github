@@ -197,99 +197,6 @@ describe("getBranchState", () => {
   });
 });
 
-describe("getPullRequestState", () => {
-  test("undefined repository", () => {
-    const repoState = new RepositoryState({}, setupPath);
-    expect(repoState.getPullRequestState("repoA")).toBe(undefined);
-  });
-
-  test("get all PRs when no PRs are defined", () => {
-    const repoState = new RepositoryState({ projectA: {} }, setupPath);
-    expect(repoState.getPullRequestState("projectA")).toStrictEqual([]);
-  });
-
-  test("get all PRs when PRs are defined", () => {
-    const repoState = new RepositoryState(
-      {
-        projectA: {
-          pullRequests: {
-            "issue-43 bug fix": {
-              isOpen: true,
-              head: "issue-43",
-              base: "main",
-            },
-            "issue-42": {
-              isOpen: false,
-              head: "issue-42",
-              base: "main",
-            },
-          },
-        },
-      },
-      setupPath
-    );
-    expect(repoState.getPullRequestState("projectA")).toStrictEqual([
-      {
-        title: "issue-43 bug fix",
-        isOpen: true,
-        head: "issue-43",
-        base: "main",
-      },
-      { title: "issue-42", isOpen: false, head: "issue-42", base: "main" },
-    ]);
-  });
-
-  test("get PR by title - found", () => {
-    const repoState = new RepositoryState(
-      {
-        projectA: {
-          pullRequests: {
-            "issue-43 bug fix": {
-              isOpen: true,
-              head: "issue-43",
-              base: "main",
-            },
-            "issue-42": {
-              isOpen: false,
-              head: "issue-42",
-              base: "main",
-            },
-          },
-        },
-      },
-      setupPath
-    );
-    expect(repoState.getPullRequestState("projectA", "issue-42")).toStrictEqual(
-      [{ title: "issue-42", isOpen: false, head: "issue-42", base: "main" }]
-    );
-  });
-
-  test("get PR by title - not found", () => {
-    const repoState = new RepositoryState(
-      {
-        projectA: {
-          pullRequests: {
-            "issue-43 bug fix": {
-              isOpen: true,
-              head: "issue-43",
-              base: "main",
-            },
-            "issue-42": {
-              isOpen: false,
-              head: "issue-42",
-              base: "main",
-            },
-          },
-        },
-      },
-      setupPath
-    );
-    expect(repoState.getPullRequestState("projectA", "issue")).toStrictEqual(
-      []
-    );
-  });
-});
-
 describe("getOwner", () => {
   test("undefined repository", () => {
     const repoState = new RepositoryState({}, setupPath);
@@ -413,16 +320,16 @@ describe("getState", () => {
       branches: {
         localBranches: repoConfig.localBranches,
         pushedBranches: [...repoConfig.pushedBranches, DEFAULT_BRANCH],
-        currentBranch: repoConfig.currentBranch
+        currentBranch: repoConfig.currentBranch,
       },
       forkedFrom: "project-forked",
       pullRequests: [
         {
           title: "issue-400",
-          ...repoConfig.pullRequests["issue-400"]
-        }
+          ...repoConfig.pullRequests["issue-400"],
+        },
       ],
-      files: []
-    })
+      files: [],
+    });
   });
 });

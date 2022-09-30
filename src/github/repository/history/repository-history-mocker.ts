@@ -40,7 +40,10 @@ export class RepositoryHistory {
     }
 
     // commit and push
-    await this.git.add(".").commit(action.commitMessage ?? DEFAULT_COMMIT_MSG(histIndex)).push(ORIGIN, action.branch);
+    await this.git
+      .add(".")
+      .commit(action.commitMessage ?? DEFAULT_COMMIT_MSG(histIndex))
+      .push(ORIGIN, action.branch);
   }
 
   private async merge(action: Merge): Promise<void> {

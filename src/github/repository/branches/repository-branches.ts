@@ -15,9 +15,7 @@ export class RepositoryBranches {
   async setPushedBranches(branches?: string[]): Promise<string[]> {
     for (const branch of branches ?? []) {
       if (!this.pushedBranches.includes(branch)) {
-        await this.git
-          .checkoutLocalBranch(branch)
-          .push(ORIGIN, branch);
+        await this.git.checkoutLocalBranch(branch).push(ORIGIN, branch);
         await this.git.checkout(DEFAULT_BRANCH);
         this.pushedBranches.push(branch);
       }
@@ -49,7 +47,7 @@ export class RepositoryBranches {
     ) {
       await this.git.branch([branch]);
       this.localBranches.push(branch);
-    } 
+    }
     await this.git.checkout(branch);
     return branch;
   }

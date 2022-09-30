@@ -6,7 +6,7 @@ import { RepositoryMocker } from "./repository/repository-mocker";
 import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { EnvMethods } from "./env/env-mocker.types";
 import { ActionMockerMethods } from "./action/action-mocker.types";
-import { RepositoryStateInterface } from "./repository/state/repository-state.types";
+import { RepositoryStateMethods } from "./repository/state/repository-state.types";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;
@@ -59,7 +59,7 @@ export class MockGithub implements Mocker {
     };
   }
 
-  get repository(): RepositoryStateInterface {
+  get repository(): RepositoryStateMethods {
     return this.repoMocker.repositoryState;
   }
 
