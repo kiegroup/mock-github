@@ -148,7 +148,7 @@ test("download all", async () => {
   ]);
 
   await Promise.all([
-    rm(path.join(__dirname, artifactName), {recursive: true}),
+    rm(path.join(__dirname, artifactName), { recursive: true }),
     archiveMocker.teardown(),
   ]);
   expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(

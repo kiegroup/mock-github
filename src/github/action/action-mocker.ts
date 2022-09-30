@@ -1,12 +1,12 @@
 import path from "path";
 import { Mocker } from "../mocker";
-import { Action, ActionInterface } from "./action-mocker.types";
+import { Action, ActionMockerMethods } from "./action-mocker.types";
 import { ArchiveArtifactsMocker } from "./archive/archive-mocker";
-import { ArchiveArtifactsInterface } from "./archive/archive-mocker.types";
+import { ArchiveArtifactsMockerMethods } from "./archive/archive-mocker.types";
 import { InputMocker } from "./input/input-mocker";
-import { InputInterface } from "./input/input-mocker.types";
+import { InputMockerMethods } from "./input/input-mocker.types";
 
-export class ActionMocker implements Mocker, ActionInterface {
+export class ActionMocker implements Mocker, ActionMockerMethods {
   private inputMocker: InputMocker;
   private archiveArtifactsMocker: ArchiveArtifactsMocker;
 
@@ -14,7 +14,7 @@ export class ActionMocker implements Mocker, ActionInterface {
     this.inputMocker = new InputMocker(action?.input);
     this.archiveArtifactsMocker = new ArchiveArtifactsMocker(
       path.join(setupPath, action?.archive?.artifactStore ?? ""),
-      action?.archive?.serverPort,
+      action?.archive?.serverPort
     );
   }
 
@@ -32,7 +32,7 @@ export class ActionMocker implements Mocker, ActionInterface {
     ]);
   }
 
-  get input(): InputInterface {
+  get input(): InputMockerMethods {
     return {
       get: this.inputMocker.get,
       delete: this.inputMocker.delete,
@@ -41,7 +41,7 @@ export class ActionMocker implements Mocker, ActionInterface {
     };
   }
 
-  get archiver(): ArchiveArtifactsInterface {
+  get archiver(): ArchiveArtifactsMockerMethods {
     return {
       getArtifactStore: this.archiveArtifactsMocker.getArtifactStore,
       getRunId: this.archiveArtifactsMocker.getRunId,

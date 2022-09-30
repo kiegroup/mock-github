@@ -3,8 +3,12 @@ import { ArchiveArtifactsMocker } from "../../../src/github/action/archive/archi
 import { InputMocker } from "../../../src/github/action/input/input-mocker";
 
 test("setup", async () => {
-  const spyInputMocker = jest.spyOn(InputMocker.prototype, "setup").mockImplementation(async () => undefined);
-  const spyArchiveMocker = jest.spyOn(ArchiveArtifactsMocker.prototype, "setup").mockImplementation(async () => undefined);
+  const spyInputMocker = jest
+    .spyOn(InputMocker.prototype, "setup")
+    .mockImplementation(async () => undefined);
+  const spyArchiveMocker = jest
+    .spyOn(ArchiveArtifactsMocker.prototype, "setup")
+    .mockImplementation(async () => undefined);
 
   const actionMocker = new ActionMocker(
     { input: { test: "hello" } },
@@ -17,8 +21,12 @@ test("setup", async () => {
 });
 
 test("teardown", async () => {
-  const spyInputMocker = jest.spyOn(InputMocker.prototype, "teardown").mockImplementation(async () => undefined);
-  const spyArchiveMocker = jest.spyOn(ArchiveArtifactsMocker.prototype, "teardown").mockImplementation(async () => undefined);
+  const spyInputMocker = jest
+    .spyOn(InputMocker.prototype, "teardown")
+    .mockImplementation(async () => undefined);
+  const spyArchiveMocker = jest
+    .spyOn(ArchiveArtifactsMocker.prototype, "teardown")
+    .mockImplementation(async () => undefined);
 
   const actionMocker = new ActionMocker(
     { input: { test: "hello" } },

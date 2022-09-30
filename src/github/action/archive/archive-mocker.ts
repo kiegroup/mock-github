@@ -1,11 +1,11 @@
 import { existsSync, rm } from "fs-extra";
 import path from "path";
 import { Mocker } from "../../mocker";
-import { ArchiveArtifactsInterface } from "./archive-mocker.types";
+import { ArchiveArtifactsMockerMethods } from "./archive-mocker.types";
 import { ArchiveServer } from "./archive-server";
 
 export class ArchiveArtifactsMocker
-  implements Mocker, ArchiveArtifactsInterface
+  implements Mocker, ArchiveArtifactsMockerMethods
 {
   private archiveServer: ArchiveServer;
   private store: string;
