@@ -303,14 +303,7 @@ describe("getState", () => {
       localBranches: ["local1", "local2"],
       pushedBranches: ["pushed1", "pushed2"],
       currentBranch: "local1",
-      forkedFrom: "project-forked",
-      pullRequests: {
-        "issue-400": {
-          isOpen: true,
-          head: "owner2/project2:base1",
-          base: "base2",
-        },
-      },
+      forkedFrom: "project-forked"
     };
     const repoState = new RepositoryState({ projectA: repoConfig }, setupPath);
     await expect(repoState.getState("projectA")).resolves.toStrictEqual({
@@ -323,12 +316,6 @@ describe("getState", () => {
         currentBranch: repoConfig.currentBranch,
       },
       forkedFrom: "project-forked",
-      pullRequests: [
-        {
-          title: "issue-400",
-          ...repoConfig.pullRequests["issue-400"],
-        },
-      ],
       files: [],
     });
   });
