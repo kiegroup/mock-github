@@ -36,7 +36,10 @@ describe("setup local branches", () => {
   });
 
   test("defined local branch: branch has not been created before", async () => {
-    const localBranches = await branchCreator.setLocalBranches(["branch1", "branch2"]);
+    const localBranches = await branchCreator.setLocalBranches([
+      "branch1",
+      "branch2",
+    ]);
     expect(localBranches).toStrictEqual(["branch1", "branch2"]);
     const branchInfo = await simpleGit(repoPath).branch();
     expect(branchInfo.all.length).toBe(4);
@@ -50,7 +53,7 @@ describe("setup local branches", () => {
 
   test("defined local branch: branch has been created before", async () => {
     await branchCreator.setLocalBranches(["branch1", "branch2"]);
-    
+
     let branchInfo = await simpleGit(repoPath).branch();
     expect(branchInfo.all.length).toBe(4);
     expect(branchInfo.all.includes("remotes/origin/main")).toBe(true);
@@ -60,7 +63,10 @@ describe("setup local branches", () => {
     expect(branchInfo.all.includes("remotes/origin/branch2")).toBe(false);
     expect(branchInfo.all.includes("branch2")).toBe(true);
 
-    const localBranches = await branchCreator.setLocalBranches(["branch1", "branch2"]);
+    const localBranches = await branchCreator.setLocalBranches([
+      "branch1",
+      "branch2",
+    ]);
     expect(localBranches).toStrictEqual(["branch1", "branch2"]);
 
     branchInfo = await simpleGit(repoPath).branch();
@@ -71,7 +77,6 @@ describe("setup local branches", () => {
     expect(branchInfo.all.includes("branch1")).toBe(true);
     expect(branchInfo.all.includes("remotes/origin/branch2")).toBe(false);
     expect(branchInfo.all.includes("branch2")).toBe(true);
-
   });
 });
 
@@ -86,7 +91,10 @@ describe("setup pushed branches", () => {
   });
 
   test("defined pushed branch: branch has not been created before", async () => {
-    const pushedBranches = await branchCreator.setPushedBranches(["branch1", "branch2"]);
+    const pushedBranches = await branchCreator.setPushedBranches([
+      "branch1",
+      "branch2",
+    ]);
     expect(pushedBranches).toStrictEqual(["main", "branch1", "branch2"]);
     const branchInfo = await simpleGit(repoPath).branch();
     expect(branchInfo.all.length).toBe(6);
@@ -100,7 +108,7 @@ describe("setup pushed branches", () => {
 
   test("defined pushed branch: branch has been created before", async () => {
     await branchCreator.setPushedBranches(["branch1", "branch2"]);
-    
+
     let branchInfo = await simpleGit(repoPath).branch();
     expect(branchInfo.all.length).toBe(6);
     expect(branchInfo.all.includes("remotes/origin/main")).toBe(true);
@@ -110,7 +118,10 @@ describe("setup pushed branches", () => {
     expect(branchInfo.all.includes("remotes/origin/branch2")).toBe(true);
     expect(branchInfo.all.includes("branch2")).toBe(true);
 
-    const pushedBranches = await branchCreator.setPushedBranches(["branch1", "branch2"]);
+    const pushedBranches = await branchCreator.setPushedBranches([
+      "branch1",
+      "branch2",
+    ]);
     expect(pushedBranches).toStrictEqual(["main", "branch1", "branch2"]);
 
     branchInfo = await simpleGit(repoPath).branch();
@@ -121,7 +132,6 @@ describe("setup pushed branches", () => {
     expect(branchInfo.all.includes("branch1")).toBe(true);
     expect(branchInfo.all.includes("remotes/origin/branch2")).toBe(true);
     expect(branchInfo.all.includes("branch2")).toBe(true);
-
   });
 });
 
@@ -136,7 +146,6 @@ describe("setup current branch", () => {
     expect(currentBranch).toBe("main");
     branchInfo = await git.branch();
     expect(branchInfo.current).toBe("main");
-
   });
 
   test("defined current branch: branch has not been created before", async () => {
@@ -148,14 +157,13 @@ describe("setup current branch", () => {
 
     branchInfo = await simpleGit(repoPath).branch();
     expect(branchInfo.current).toBe("branch1");
-    
+
     const localBranches = await branchCreator.setLocalBranches(["branch1"]);
     expect(localBranches).toStrictEqual(["branch1"]);
-
   });
 
   test("defined current branch: branch has been created before", async () => {
-    const git = simpleGit(repoPath)
+    const git = simpleGit(repoPath);
     await branchCreator.setPushedBranches(["branch1"]);
     await branchCreator.setLocalBranches(["branch2"]);
 

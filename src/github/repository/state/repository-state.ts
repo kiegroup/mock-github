@@ -12,11 +12,11 @@ import { DEFAULT_BRANCH, DUMMY_FILE_NAME } from "../repository.constants";
 import {
   BranchState,
   FileState,
-  PullRequest,
+  RepositoryStateMethods,
   State,
 } from "./repository-state.types";
 
-export class RepositoryState implements RepositoryState {
+export class RepositoryState implements RepositoryStateMethods {
   private repositories: Repositories;
   private setupPath: string;
 
@@ -34,7 +34,6 @@ export class RepositoryState implements RepositoryState {
         branches: this.getBranchState(repositoryName),
         files: await this.getFileSystemState(repositoryName),
         forkedFrom: this.getForkedFrom(repositoryName),
-        pullRequests: this.getPullRequestState(repositoryName),
       };
     }
   }
@@ -58,28 +57,6 @@ export class RepositoryState implements RepositoryState {
       return (
         this.repositories[repositoryName].owner ?? process.env.LOGNAME ?? ""
       );
-    }
-  }
-
-  getPullRequestState(
-    repositoryName: string,
-    pullRequestName?: string
-  ): PullRequest[] | undefined {
-    const repository = this.repositories[repositoryName];
-    if (!repository) {
-      return;
-    }
-
-    if (pullRequestName) {
-      const pr = this.getPullRequest(repositoryName, pullRequestName);
-      return pr ? [pr] : [];
-    } else {
-      if (repository.pullRequests) {
-        return Object.keys(repository.pullRequests).map(
-          (name) => this.getPullRequest(repositoryName, name)!
-        );
-      }
-      return [];
     }
   }
 
@@ -177,20 +154,5 @@ export class RepositoryState implements RepositoryState {
       });
     }
     return result;
-  }
-
-  private getPullRequest(
-    repositoryName: string,
-    pullRequestName: string
-  ): PullRequest | undefined {
-    const repository = this.repositories[repositoryName];
-    if (!repository.pullRequests || !repository.pullRequests[pullRequestName]) {
-      return;
-    }
-
-    return {
-      ...repository?.pullRequests[pullRequestName],
-      title: pullRequestName,
-    };
   }
 }

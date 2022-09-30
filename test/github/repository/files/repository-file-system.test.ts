@@ -3,7 +3,10 @@ import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
 import { RepositoryFileSystem } from "../../../../src/github/repository/files/repository-file-system";
 import { RepositoryMocker } from "../../../../src/github/repository/repository-mocker";
-import { GITIGNORE, REMOTE } from "../../../../src/github/repository/repository.constants";
+import {
+  GITIGNORE,
+  REMOTE,
+} from "../../../../src/github/repository/repository.constants";
 
 let repoMocker: RepositoryMocker;
 let fileCreator: RepositoryFileSystem;
@@ -127,7 +130,9 @@ describe("createFile", () => {
     const data = "some data";
     const filePath = "src/dummy.txt";
     await fileCreator.createFile(filePath, data);
-    await expect(readFile(path.join(repoPath, filePath), "utf8")).resolves.toBe(data);
+    await expect(readFile(path.join(repoPath, filePath), "utf8")).resolves.toBe(
+      data
+    );
   });
 
   test("failure", async () => {

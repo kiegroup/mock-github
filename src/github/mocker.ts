@@ -1,4 +1,4 @@
 export interface Mocker {
-    setup(): Promise<void>;
-    teardown(): Promise<void>;
+  setup(): Promise<void>;
+  teardown(): Promise<void>;
 }

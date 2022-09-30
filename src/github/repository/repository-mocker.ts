@@ -121,9 +121,9 @@ export class RepositoryMocker implements Mocker {
   /**
    * Uses the RepositoryFileSystem to copy files from given srcs to destination in the
    * repository which is to be created
-   * @param git 
-   * @param repoPath 
-   * @param files 
+   * @param git
+   * @param repoPath
+   * @param files
    */
   private async setFiles(
     git: SimpleGit,
@@ -142,9 +142,9 @@ export class RepositoryMocker implements Mocker {
 
   /**
    * Sets local and pushed branches
-   * @param git 
-   * @param localBranches 
-   * @param pushedBranches 
+   * @param git
+   * @param localBranches
+   * @param pushedBranches
    */
   private async setBranches(
     git: SimpleGit,
@@ -158,9 +158,9 @@ export class RepositoryMocker implements Mocker {
 
   /**
    * Sets the current branch
-   * @param git 
-   * @param currBranch 
-   * @returns 
+   * @param git
+   * @param currBranch
+   * @returns
    */
   private async setCurrentBranch(git: SimpleGit, currBranch?: string) {
     const gitBranch = new RepositoryBranches(git);
@@ -169,10 +169,10 @@ export class RepositoryMocker implements Mocker {
 
   /**
    * Reproduces the git history
-   * @param git 
-   * @param repoPath 
-   * @param history 
-   * @returns 
+   * @param git
+   * @param repoPath
+   * @param history
+   * @returns
    */
   private async setHistory(
     git: SimpleGit,
@@ -190,8 +190,8 @@ export class RepositoryMocker implements Mocker {
    * 3. Set up local and pushed branches
    * 4. Recreate git history
    * 5. Set current branch
-   * @param repoName 
-   * @param currentRepo 
+   * @param repoName
+   * @param currentRepo
    */
   private async setupRepository(
     repoName: string,
