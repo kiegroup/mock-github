@@ -10,14 +10,14 @@ jest
 
 test("upload artifact", async () => {
   const archiveMocker = new ArchiveArtifactsMocker(
-    path.join(__dirname, "store"),
+    path.join(__dirname, "store1"),
     "3434"
   );
   await archiveMocker.setup();
   expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:3434/");
   expect(process.env["GITHUB_RUN_ID"]).toBe(archiveMocker.getRunId());
   expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(true);
-  expect(archiveMocker.getArtifactStore()).toBe(path.join(__dirname, "store"));
+  expect(archiveMocker.getArtifactStore()).toBe(path.join(__dirname, "store1"));
 
   const files = [
     path.join(__dirname, "file1.txt"),
@@ -63,7 +63,7 @@ test("download", async () => {
   expect(process.env["GITHUB_RUN_ID"]).toBe(archiveMocker.getRunId());
   expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(true);
   expect(archiveMocker.getArtifactStore()).toBe(
-    "/home/sbapna/projects/mock-github/src/github/action/archive/store"
+    path.join(process.cwd(), "src/github/action/archive/store")
   );
 
   const files = [
@@ -110,14 +110,15 @@ test("download", async () => {
 });
 
 test("download all", async () => {
-  const archiveMocker = new ArchiveArtifactsMocker();
+  const archiveMocker = new ArchiveArtifactsMocker(
+    path.join(__dirname, "store2"),
+    "8001"
+  );
   await archiveMocker.setup();
-  expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:8000/");
+  expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:8001/");
   expect(process.env["GITHUB_RUN_ID"]).toBe(archiveMocker.getRunId());
   expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(true);
-  expect(archiveMocker.getArtifactStore()).toBe(
-    "/home/sbapna/projects/mock-github/src/github/action/archive/store"
-  );
+  expect(archiveMocker.getArtifactStore()).toBe(path.join(__dirname, "store2"));
 
   const files = [
     path.join(__dirname, "file1.txt"),
