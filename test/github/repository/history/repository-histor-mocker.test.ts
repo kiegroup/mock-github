@@ -77,7 +77,11 @@ describe.each([
   });
 
   test("custom commit message", async () => {
-    const action: Push = { action: GitActionTypes.PUSH, branch, commitMessage: "custom message" };
+    const action: Push = {
+      action: GitActionTypes.PUSH,
+      branch,
+      commitMessage: "custom message",
+    };
     await historyMocker.setHistory([action]);
     const filePath = path.join(repoPath, `${DUMMY_FILE_NAME}0`);
 

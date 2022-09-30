@@ -17,6 +17,14 @@ const jestConfig: Config.InitialOptions = {
   ],
   testLocationInResults: true,
   testResultsProcessor: "jest-sonar-reporter",
-  testTimeout: 50000
+  testTimeout: 50000,
+  coverageThreshold: {
+    global: {
+      branches: 77,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  }
 };
 export default jestConfig;

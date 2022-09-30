@@ -4,9 +4,9 @@ import { Config } from "./github-mocker.types";
 import { Mocker } from "./mocker";
 import { RepositoryMocker } from "./repository/repository-mocker";
 import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
-import { EnvInterface } from "./env/env-mocker.types";
-import { ActionInterface } from "./action/action-mocker.types";
-import { RepositoryStateInterface } from "./repository/state/repository-state.types";
+import { EnvMethods } from "./env/env-mocker.types";
+import { ActionMockerMethods } from "./action/action-mocker.types";
+import { RepositoryStateMethods } from "./repository/state/repository-state.types";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;
@@ -50,7 +50,7 @@ export class MockGithub implements Mocker {
     if (this.setupDirCreated) rmSync(this.setupPath, { recursive: true });
   }
 
-  get env(): EnvInterface {
+  get env(): EnvMethods {
     return {
       update: this.envMocker.update,
       delete: this.envMocker.delete,
@@ -59,13 +59,12 @@ export class MockGithub implements Mocker {
     };
   }
 
-  get repository(): RepositoryStateInterface {
+  get repository(): RepositoryStateMethods {
     return this.repoMocker.repositoryState;
   }
 
-  get action(): ActionInterface {
+  get action(): ActionMockerMethods {
     return {
-      event: this.actionMocker.event,
       input: this.actionMocker.input,
       archiver: this.actionMocker.archiver,
     };
