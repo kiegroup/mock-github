@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install nektos/act
+        run: brew install act
       - name: test report
         id: coverage
         uses: ArtiomTr/jest-coverage-report-action@v2
