@@ -15,7 +15,7 @@ export class ArchiveArtifactsMocker
 
   constructor(
     store: string = path.join(__dirname, "store"),
-    port: string = "8000"
+    port: string = "8080"
   ) {
     this.archiveServer = new ArchiveServer(store, port);
     this.store = store;

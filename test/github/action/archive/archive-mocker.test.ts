@@ -59,7 +59,7 @@ test("upload artifact", async () => {
 test("download", async () => {
   const archiveMocker = new ArchiveArtifactsMocker();
   await archiveMocker.setup();
-  expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:8000/");
+  expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:8080/");
   expect(process.env["GITHUB_RUN_ID"]).toBe(archiveMocker.getRunId());
   expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(true);
   expect(archiveMocker.getArtifactStore()).toBe(
@@ -112,10 +112,10 @@ test("download", async () => {
 test("download all", async () => {
   const archiveMocker = new ArchiveArtifactsMocker(
     path.join(__dirname, "store2"),
-    "8001"
+    "3435"
   );
   await archiveMocker.setup();
-  expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:8001/");
+  expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:3435/");
   expect(process.env["GITHUB_RUN_ID"]).toBe(archiveMocker.getRunId());
   expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(true);
   expect(archiveMocker.getArtifactStore()).toBe(path.join(__dirname, "store2"));
