@@ -137,13 +137,6 @@ To create your environment all you need specify its state in a `.json` file and 
       "currentBranch": "branch2",
       "history": "array of history objects to create a git history",
       "files": "array of file object containing src and dest fields",
-      "pullRequests": {
-        "title_of_PR": {
-          "isOpen": true,
-          "head": "owner1/project1:base",
-          "base": "main"
-        }
-      }
     }
   },
   "env": {
@@ -183,11 +176,7 @@ A local repository is configured and created by adding a key to the `repositorie
 `forkedFrom`  
 &emsp;type: string  
 &emsp;required: no  
-&emsp;description: name of the repository it was forked from  
-`pullRequests`  
-&emsp;type: Object  
-&emsp;required: no  
-&emsp;description: Each key in the object is the title of the PR. For each key, the value is an object containing `isOpen`, `base`, `head` and any other field needed. Refer to example response from [github REST API](https://docs.github.com/en/rest/pulls/pulls#get-a-pull-request)  
+&emsp;description: name of the repository it was forked from    
 `files`  
 &emsp;type: {src: string, dest: string}[]  
 &emsp;required: no  
@@ -241,7 +230,7 @@ A local repository is configured and created by adding a key to the `repositorie
 &emsp;&emsp;&emsp;&emsp;required: no  
 &emsp;&emsp;&emsp;&emsp;desciption: custom commit message for the merge
 
-There multiple utility functions available: `getState(repositoryName: string)`, `getForkedFrom(repositoryName: string)`, `isFork(repositoryName: string)`, `getPath(repositoryName: string)`, `getOwner(repositoryName: string)`, `getBranchState(repositoryName: string)`, `getFileSystemState(repositoryName: string)`, `getPullRequestState(repositoryName: string, pullRequestName?: string)`
+There multiple utility functions available: `getState(repositoryName: string)`, `getForkedFrom(repositoryName: string)`, `isFork(repositoryName: string)`, `getPath(repositoryName: string)`, `getOwner(repositoryName: string)`, `getBranchState(repositoryName: string)`, `getFileSystemState(repositoryName: string)`
 
 ### Github env vars<a name="github_env"></a>
 
