@@ -44,6 +44,48 @@ Similarly you can mock all octokit methods, set scope of how the requests should
 
 This a TS/JS interface for the [nektos/act](https://github.com/nektos/act/) tool. It can be used to execute act cli tool programatically. It provides a parsed output object which contains the status as well as the output for each step executed by the workflow.
 
+Simple usage
+List the workflows in the current working directory
+```typescript
+// optionally pass current working directory. By default it is process.cwd()
+const act = new Act()
+
+console.log(await act.list())
+/**
+* Prints:
+* [
+*      {
+*        jobId: "push1",
+*        jobName: "push1",
+*        workflowName: "Act Push Test 1",
+*        workflowFile: "push1.yml",
+*        events: "push",
+*      },
+*      {
+*        jobId: "push2",
+*        jobName: "push2",
+*        workflowName: "Act Push Test 2",
+*        workflowFile: "push2.yml",
+*        events: "push",
+*      },
+*    ]
+*/
+
+console.log(await act.list("pull_request"))
+/**
+* Prints:
+* [
+*      {
+*        jobId: "pr",
+*        jobName: "pr",
+*        workflowName: "Pull Request",
+*        workflowFile: "pull_request.yml",
+*        events: "pull_request",
+*      }
+*    ]
+*/
+```
+
 ## Compiler<a name="compiler"></a>
 
 The idea is that given a compiled (bundled and/or minified) github custom action entrypoint file (.js only), we can inject it with mocked apis such that when the action is run it used the data from the mocked api instead of making the actual api call.
