@@ -24,9 +24,6 @@ jobs:
           LOGNAME: username
         with:
           output: report-markdown
-      - run: echo $OUTPUT
-        env:
-          OUTPUT: ${{join(steps.coverage.outputs.*, '\n')}}
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: ${{ steps.coverage.outputs.report }}
