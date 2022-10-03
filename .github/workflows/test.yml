@@ -1,0 +1,19 @@
+name: Test
+
+on: workflow_dispatch
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install nektos/act
+        run: brew install act
+      - run: act -W ./test/resources pull_request
