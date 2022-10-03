@@ -17,22 +17,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm i
-      - run: npm run test:report
+      - name: test report
+        id: coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2
         env:
           LOGNAME: username
-
-#       - name: test report
-#         id: coverage
-#         uses: ArtiomTr/jest-coverage-report-action@v2
-#         env:
-#           LOGNAME: username
-#         with:
-#           output: report-markdown
-#       - run: echo $OUTPUT
-#         env:
-#           OUTPUT: ${{join(steps.coverage.outputs.*, '\n')}}
+        with:
+          output: report-markdown
+      - run: echo $OUTPUT
+        env:
+          OUTPUT: ${{join(steps.coverage.outputs.*, '\n')}}
       
-#       - uses: marocchino/sticky-pull-request-comment@v2
-#         with:
-#           message: ${{ steps.coverage.outputs.report }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
