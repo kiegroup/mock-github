@@ -1,0 +1,19 @@
+{
+  "repositories": {
+    "repoA": {
+      "localBranches": ["branch1"]
+    }
+  },
+  "env": {
+    "workspace": "workspace"
+  },
+  "action": {
+    "input": {
+      "actionInput": "input"
+    },
+    "archive": {
+      "artifactStore": "/store",
+      "serverPort": "8080"
+    }
+  }
+}
