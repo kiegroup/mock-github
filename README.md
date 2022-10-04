@@ -129,7 +129,7 @@ await compiler.compile(
         .getBranch({ owner: /kie.*/, repo: "build-chain" })
         .setResponse({ status: 200, data: { name: "main" } }),
   ], 
-  minify) // whether you want the compiled file to be minified or not
+  true) // whether you want the compiled file to be minified or not
 ```  
 
 You can also you this to conveniently mock APIs other than github.  

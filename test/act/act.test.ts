@@ -32,7 +32,8 @@ describe("list", () => {
   test("without event", async () => {
     const act = new Act();
     const list = await act.list(undefined, resources);
-    expect(list).toStrictEqual([
+    // act seems to behave a bit differently in different env - In GHA the pull request worklow is listed while on local machin it isn't
+    expect(list).toEqual(expect.arrayContaining([
       {
         jobId: "push1",
         jobName: "push1",
@@ -47,7 +48,7 @@ describe("list", () => {
         workflowFile: "push2.yml",
         events: "push",
       },
-    ]);
+    ]));
   });
 
   test("with event", async () => {
@@ -71,15 +72,17 @@ describe("run", () => {
     const output = await act
       .setSecret("SECRET1", "secret1")
       .runJob("push1", resources);
-    expect(output).toStrictEqual([
-      { name: 'echo "push 1"', status: 0, output: "push 1" },
+
+    // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
+    expect(output).toMatchObject([
+      { name: expect.stringMatching(/echo "push 1"/), status: 0, output: "push 1" },
       {
-        name: "secrets",
+        name: expect.stringMatching(/secrets/),
         output: "***",
         status: 0,
       },
-      { name: "pass", status: 0, output: "pass" },
-      { name: "fail", status: 1, output: "fail" },
+      { name: expect.stringMatching(/pass/), status: 0, output: "pass" },
+      { name: expect.stringMatching(/fail/), status: 1, output: "fail" },
     ]);
   });
 
@@ -88,15 +91,16 @@ describe("run", () => {
     const output = await act
       .setSecret("SECRET1", "secret1")
       .runEvent("pull_request", resources);
+    // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toStrictEqual([
-      { name: 'echo "pull request"', status: 0, output: "pull request" },
+      { name: expect.stringMatching(/echo "pull request"/), status: 0, output: "pull request" },
       {
-        name: "secrets",
+        name: expect.stringMatching(/secrets/),
         output: "***",
         status: 0,
       },
-      { name: "pass", status: 0, output: "pass" },
-      { name: "fail", status: 1, output: "fail" },
+      { name: expect.stringMatching(/pass/), status: 0, output: "pass" },
+      { name: expect.stringMatching(/fail/), status: 1, output: "fail" },
     ]);
   });
 });
