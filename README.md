@@ -85,6 +85,7 @@ console.log(await act.list("pull_request"))
 *    ]
 */
 ```
+You can set secrets and change current working directory
 
 ## Compiler<a name="compiler"></a>
 
