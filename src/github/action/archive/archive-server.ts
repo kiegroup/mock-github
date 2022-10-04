@@ -45,33 +45,28 @@ export class ArchiveServer {
     );
 
     this.server.put("/upload/:runId", (req, res) => {
-      try {
-        let { itemPath } = req.query;
-        const { runId } = req.params;
+      let { itemPath } = req.query;
+      const { runId } = req.params;
 
-        if (req.get("Content-Encoding")) {
-          itemPath += ".gz__";
-        }
-
-        const filename = path.join(
-          this.store,
-          runId,
-          path.normalize(itemPath as string)
-        );
-        fs.ensureFileSync(filename);
-
-        const contentRange = req.get("Content-Range");
-        const mode =
-          contentRange !== "" && !contentRange?.startsWith("bytes 0-")
-            ? "a"
-            : "w";
-        const fd = fs.openSync(filename, mode);
-        fs.writeSync(fd, req.body);
-        res.status(200).json({ message: "success" });
-      } catch (err) {
-        console.log(err);
-        res.status(500).send("Internal server error");
+      if (req.get("Content-Encoding")) {
+        itemPath += ".gz__";
       }
+
+      const filename = path.join(
+        this.store,
+        runId,
+        path.normalize(itemPath as string)
+      );
+      fs.ensureFileSync(filename);
+
+      const contentRange = req.get("Content-Range");
+      const mode =
+        contentRange !== "" && !contentRange?.startsWith("bytes 0-")
+          ? "a"
+          : "w";
+      const fd = fs.openSync(filename, mode);
+      fs.writeSync(fd, req.body);
+      res.status(200).json({ message: "success" });
     });
   }
 
@@ -126,10 +121,11 @@ export class ArchiveServer {
 
   start(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.app = this.server.listen(this.port, () => {
+      const app = this.server.listen(this.port, () => {
+        this.app = app;
         resolve();
       });
-      this.app.on("error", (err) => {
+      app.on("error", (err) => {
         reject(err);
       });
     });
@@ -146,7 +142,7 @@ export class ArchiveServer {
           }
         });
       } else {
-        resolve();
+        reject(new Error("Server has not been started"));
       }
     });
   }
