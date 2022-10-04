@@ -14,7 +14,7 @@ export class ArchiveArtifactsMocker
   private isStoreCreated: boolean;
 
   constructor(
-    store: string = path.join(__dirname, "store"),
+    store: string = path.join(process.cwd(), "store"),
     port: string = "8080"
   ) {
     this.archiveServer = new ArchiveServer(store, port);
@@ -36,7 +36,9 @@ export class ArchiveArtifactsMocker
   async teardown(): Promise<void> {
     await Promise.all([
       this.archiveServer.stop(),
-      ...(this.isStoreCreated ? [rm(this.store, { recursive: true })] : []),
+      ...(this.isStoreCreated
+        ? [rm(this.store, { recursive: true, force: true })]
+        : []),
     ]);
     delete process.env["ACTIONS_RUNTIME_URL"];
     delete process.env["GITHUB_RUN_ID"];
