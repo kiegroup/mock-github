@@ -1,22 +1,17 @@
-name: Pull Request Checks
+name: Test
 
-on: pull_request
+on: workflow_dispatch
 
 jobs:
   tests:
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x]
-        os: [ubuntu-latest]
-      fail-fast: false
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14.x
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install nektos/act
@@ -27,14 +22,4 @@ jobs:
           echo "-P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04" >> ~/.actrc
           echo "-P ubuntu-18.04=ghcr.io/catthehacker/ubuntu:act-18.04" >> ~/.actrc
           echo "-P ubuntu-22.04=ghcr.io/catthehacker/ubuntu:act-22.04" >> ~/.actrc
-      - name: test report
-        id: coverage
-        uses: ArtiomTr/jest-coverage-report-action@v2
-        env:
-          LOGNAME: username
-        with:
-          output: report-markdown
-      - uses: marocchino/sticky-pull-request-comment@v2
-        if: always()
-        with:
-          message: ${{ steps.coverage.outputs.report }}
+      - run: act -W ./test/resources pull_request
