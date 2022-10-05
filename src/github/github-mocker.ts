@@ -7,6 +7,8 @@ import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { EnvMethods } from "./env/env-mocker.types";
 import { ActionMockerMethods } from "./action/action-mocker.types";
 import { RepositoryStateMethods } from "./repository/state/repository-state.types";
+import Ajv from "ajv";
+import { GithubConfigSchema } from "../schema/github/github";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;
@@ -18,15 +20,12 @@ export class MockGithub implements Mocker {
   private hasCalledSetup: boolean;
 
   constructor(config: string | Config, setupPath: string = __dirname) {
-    this.config =
-      typeof config === "string"
-        ? JSON.parse(readFileSync(config, "utf8"))
-        : config;
+    this.config = this.validateConfig(config);
     this.setupPath = setupPath;
     this.actionMocker = new ActionMocker(this.config.action, this.setupPath);
     this.envMocker = new EnvMocker(this.config.env);
     this.repoMocker = new RepositoryMocker(
-      this.config.repositories,
+      this.config.repositories ?? {},
       this.setupPath
     );
     this.setupDirCreated = false;
@@ -88,5 +87,19 @@ export class MockGithub implements Mocker {
       input: this.actionMocker.input,
       archiver: this.actionMocker.archiver,
     };
+  }
+
+  private validateConfig(config: string | Config) {
+    const rawJSON =
+      typeof config === "string"
+        ? JSON.parse(readFileSync(config, "utf8"))
+        : config;
+    const ajv = new Ajv({ allowUnionTypes: true });
+    const validate = ajv.compile(GithubConfigSchema);
+    if (validate(rawJSON)) {
+      return rawJSON;
+    } else {
+      throw new Error(JSON.stringify(validate.errors));
+    }
   }
 }
