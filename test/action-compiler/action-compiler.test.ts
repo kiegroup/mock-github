@@ -6,7 +6,7 @@ import { ActionCompiler } from "../../src/action-compiler/action-compile";
 import { Moctokit } from "../../src/moctokit/moctokit";
 
 describe("initialization from file", () => {
-  const resources = path.resolve(__dirname, "..", "resources");
+  const resources = path.resolve(process.cwd(), "test", "resources");
   test("success", () => {
     expect(
       () => new ActionCompiler(path.join(resources, "api-schema-correct.json"))

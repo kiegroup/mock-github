@@ -1,7 +1,9 @@
 import childProcess from "child_process";
 import path from "path";
 import { Act } from "../../src";
-const resources = path.resolve(__dirname, "..", "resources");
+
+const resources = path.resolve(process.cwd(), "test", "resources");
+
 describe("act initialization", () => {
   test("act is installed", () => {
     expect(() => new Act(__dirname)).not.toThrowError();
@@ -33,22 +35,24 @@ describe("list", () => {
     const act = new Act();
     const list = await act.list(undefined, resources);
     // act seems to behave a bit differently in different env - In GHA the pull request worklow is listed while on local machin it isn't
-    expect(list).toEqual(expect.arrayContaining([
-      {
-        jobId: "push1",
-        jobName: "push1",
-        workflowName: "Act Push Test 1",
-        workflowFile: "push1.yml",
-        events: "push",
-      },
-      {
-        jobId: "push2",
-        jobName: "push2",
-        workflowName: "Act Push Test 2",
-        workflowFile: "push2.yml",
-        events: "push",
-      },
-    ]));
+    expect(list).toEqual(
+      expect.arrayContaining([
+        {
+          jobId: "push1",
+          jobName: "push1",
+          workflowName: "Act Push Test 1",
+          workflowFile: "push1.yml",
+          events: "push",
+        },
+        {
+          jobId: "push2",
+          jobName: "push2",
+          workflowName: "Act Push Test 2",
+          workflowFile: "push2.yml",
+          events: "push",
+        },
+      ])
+    );
   });
 
   test("with event", async () => {
@@ -75,7 +79,11 @@ describe("run", () => {
 
     // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toMatchObject([
-      { name: expect.stringMatching(/echo "push 1"/), status: 0, output: "push 1" },
+      {
+        name: expect.stringMatching(/echo "push 1"/),
+        status: 0,
+        output: "push 1",
+      },
       {
         name: expect.stringMatching(/secrets/),
         output: "***",
@@ -93,7 +101,11 @@ describe("run", () => {
       .runEvent("pull_request", resources);
     // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toStrictEqual([
-      { name: expect.stringMatching(/echo "pull request"/), status: 0, output: "pull request" },
+      {
+        name: expect.stringMatching(/echo "pull request"/),
+        status: 0,
+        output: "pull request",
+      },
       {
         name: expect.stringMatching(/secrets/),
         output: "***",
