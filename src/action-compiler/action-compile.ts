@@ -1,4 +1,4 @@
-import { APISchema, CompilerMockMethod } from "./action-compiler.types";
+import { API, CompilerMockMethod } from "./action-compiler.types";
 import { appendFileSync, copyFileSync, existsSync, readFileSync } from "fs";
 import path from "path";
 import { rollup } from "rollup";
@@ -9,14 +9,16 @@ import { terser } from "rollup-plugin-terser";
 import { rm, writeFile } from "fs/promises";
 import { CompilerRequestMocker } from "./request/request-mocker";
 import { ResponseMocker } from "../endpoint-mocker/response/abstract-response-mocker";
+import Ajv from "ajv";
+import { APISchema } from "../schema/action-compiler/api-schema";
 
 export class ActionCompiler {
-  private apiSchema: APISchema;
+  private apiSchema: API;
   private _mock: CompilerMockMethod;
   private setupPath: string;
 
-  constructor(apiSchema: APISchema) {
-    this.apiSchema = apiSchema;
+  constructor(apiSchema: string | API) {
+    this.apiSchema = this.validateAPISchema(apiSchema);
     this._mock = this.apiSchemaToMethod();
     this.setupPath = path.join(__dirname, "mocker");
   }
@@ -129,5 +131,19 @@ export class ActionCompiler {
       }
     }
     return methods;
+  }
+
+  private validateAPISchema(apiSchema: string | API) {
+    const rawJSON =
+      typeof apiSchema === "string"
+        ? JSON.parse(readFileSync(apiSchema, "utf8"))
+        : apiSchema;
+    const ajv = new Ajv({ allowUnionTypes: true });
+    const validate = ajv.compile(APISchema);
+    if (validate(rawJSON)) {
+      return rawJSON;
+    } else {
+      throw new Error(JSON.stringify(validate.errors));
+    }
   }
 }

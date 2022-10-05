@@ -29,35 +29,20 @@ beforeEach(() => {
 });
 
 describe("initialization", () => {
-  test("config from file", () => {
+  test("from file: success", () => {
     expect(
-      () => new MockGithub(path.join(resources, "config.json"))
+      () => new MockGithub(path.join(resources, "config-correct.json"))
     ).not.toThrowError();
   });
 
-  test("config from constructor argument", () => {
+  test("from file: failure", () => {
     expect(
-      () =>
-        new MockGithub({
-          repositories: {
-            repoA: {
-              localBranches: ["branch1"],
-            },
-          },
-          env: {
-            workspace: "workspace",
-          },
-          action: {
-            input: {
-              actionInput: "input",
-            },
-            archive: {
-              artifactStore: "/store",
-              serverPort: "8080",
-            },
-          },
-        })
-    ).not.toThrowError();
+      () => new MockGithub(path.join(resources, "config-incorrect.json"))
+    ).toThrowError();
+  });
+
+  test("empty", () => {
+    expect(() => new MockGithub({})).not.toThrowError();
   });
 });
 
@@ -65,7 +50,7 @@ describe("setup", () => {
   test("create setup dir", async () => {
     const setupPath = path.join(__dirname, "setup");
     const github = new MockGithub(
-      path.join(resources, "config.json"),
+      path.join(resources, "config-correct.json"),
       setupPath
     );
 
@@ -79,7 +64,7 @@ describe("setup", () => {
     const setupPath = path.join(__dirname, "setup");
     mkdirSync(setupPath);
     const github = new MockGithub(
-      path.join(resources, "config.json"),
+      path.join(resources, "config-correct.json"),
       setupPath
     );
 
@@ -94,7 +79,7 @@ describe("teardown", () => {
   test("setup dir was created", async () => {
     const setupPath = path.join(__dirname, "setup");
     const github = new MockGithub(
-      path.join(resources, "config.json"),
+      path.join(resources, "config-correct.json"),
       setupPath
     );
 
@@ -108,7 +93,7 @@ describe("teardown", () => {
     const setupPath = path.join(__dirname, "setup");
     mkdirSync(setupPath);
     const github = new MockGithub(
-      path.join(resources, "config.json"),
+      path.join(resources, "config-correct.json"),
       setupPath
     );
 
@@ -122,14 +107,14 @@ describe("teardown", () => {
 
 describe("getters", () => {
   test("accessing getters before setting up", () => {
-    const github = new MockGithub(path.join(resources, "config.json"));
+    const github = new MockGithub(path.join(resources, "config-correct.json"));
     expect(() => github.env).toThrowError();
     expect(() => github.action).toThrowError();
     expect(() => github.repository).toThrowError();
   });
 
   test("accessing getters after teardown", async () => {
-    const github = new MockGithub(path.join(resources, "config.json"));
+    const github = new MockGithub(path.join(resources, "config-correct.json"));
     await github.setup();
     await github.teardown();
     expect(() => github.env).toThrowError();
@@ -138,7 +123,7 @@ describe("getters", () => {
   });
 
   test("accessing getters after setup", async () => {
-    const github = new MockGithub(path.join(resources, "config.json"));
+    const github = new MockGithub(path.join(resources, "config-correct.json"));
     await github.setup();
     expect(() => github.env).not.toThrowError();
     expect(() => github.action).not.toThrowError();

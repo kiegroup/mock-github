@@ -1,11 +1,11 @@
 import { CreateRepositoryFile } from "./files/repository-file-system.types";
-import { GitAction } from "./history/repository-history.types";
+import { Merge, Push } from "./history/repository-history.types";
 
 export type Repository = {
   pushedBranches?: string[];
   localBranches?: string[];
   currentBranch?: string;
-  history?: GitAction[];
+  history?: (Push | Merge)[];
   owner?: string;
   files?: CreateRepositoryFile[];
   forkedFrom?: string;
