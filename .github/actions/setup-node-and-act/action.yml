@@ -1,0 +1,26 @@
+name: Setup node and act
+description: Sets up node and act cli
+inputs:
+  node-version:
+    description: version of node to setup
+    required: false
+    default: 14.x
+  default-runner-size:
+    description: default runner size for act
+    required: false
+    default: medium
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+      
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+      
+    - name: Set up act
+      uses: shubhbapna/setup-act@v1
+      with:
+        default-runner-size: ${{ inputs.default-runner-size }}

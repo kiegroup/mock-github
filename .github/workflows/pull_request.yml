@@ -3,7 +3,7 @@ name: Pull Request Checks
 on: pull_request
 
 jobs:
-  tests:
+  source-tests:
     strategy:
       matrix:
         node-version: [14.x, 16.x]
@@ -12,21 +12,27 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Setup node and act cli
+        uses: ./.github/actions/setup-node-and-act
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install nektos/act
-        run: brew install act
-      - name: Setup Act
-        run: |
-          echo "-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest" > ~/.actrc
-          echo "-P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04" >> ~/.actrc
-          echo "-P ubuntu-18.04=ghcr.io/catthehacker/ubuntu:act-18.04" >> ~/.actrc
-          echo "-P ubuntu-22.04=ghcr.io/catthehacker/ubuntu:act-22.04" >> ~/.actrc
+          default-runner-size: medium
+      - name: Install packages
+        run: npm ci
+      - name: Test
+        run: npm test
+        env:
+          LOGNAME: username
+
+  coverage:
+    runs-on: ubuntu-latest  
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node and act cli
+        uses: ./.github/actions/setup-node-and-act
+        with:
+          node-version: 14.x
+          default-runner-size: medium
       - name: test report
         id: coverage
         uses: ArtiomTr/jest-coverage-report-action@v2
