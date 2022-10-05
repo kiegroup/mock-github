@@ -8,9 +8,12 @@
     "build"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.prod.json",
     "test": "jest",
     "test:report": "npm test -- --coverage",
+    "pretest:build": "tsc",
+    "test:build": "npm test -- build/",
+    "posttest:build": "rm -rf ./build",
     "pre-compiler-test:minify": "ncc build --minify ./test/action-compiler/dummy-file.ts -o dist-minify",
     "pre-compiler-test:no-minify": "ncc build ./test/action-compiler/dummy-file.ts -o dist-no-minify",
     "post-compiler-test": "rm -rf ./dist-no-minify ./dist-minify",
