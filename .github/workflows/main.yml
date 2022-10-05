@@ -1,17 +1,22 @@
-name: Test
+name: Main
 
 on: workflow_dispatch
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+        os: [ubuntu-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       
-      - name: Use Node.js 14.x
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: ${{ matrix.node-version }}
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install nektos/act
@@ -22,4 +27,9 @@ jobs:
           echo "-P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04" >> ~/.actrc
           echo "-P ubuntu-18.04=ghcr.io/catthehacker/ubuntu:act-18.04" >> ~/.actrc
           echo "-P ubuntu-22.04=ghcr.io/catthehacker/ubuntu:act-22.04" >> ~/.actrc
-      - run: act -W ./test/resources pull_request
+      - name: Install packages
+        run: npm ci
+      - name: Test
+        run: npm test
+        env:
+          LOGNAME: username
