@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { API } from "../../action-compiler/action-compiler.types";
+import { API } from "../mockapi.types";
 import { EndpointSchema } from "./endpoints";
 
 export const APISchema: JSONSchemaType<API> = {

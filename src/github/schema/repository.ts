@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { Repository } from "../../github/repository/repository-mocker.types";
+import { Repository } from "../repository/repository-mocker.types";
 import { BranchSchema } from "./branch";
 import { MergeSchema, PushSchema } from "./history";
 import { CreateRepositoryFileSchema } from "./repository-file";

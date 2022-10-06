@@ -1,5 +1,5 @@
 import { Endpoints } from "../endpoint-mocker/endpoint-mocker.types";
-import { CompilerRequestMocker } from "./request/request-mocker";
+import { MockapiRequestMocker } from "./request/request-mocker"
 
 export type API = {
   [apiName: string]: {
@@ -8,10 +8,10 @@ export type API = {
   };
 };
 
-export type CompilerMockMethod = {
+export type MockapiMethod = {
   [apiName: string]: {
     [scope: string]: {
-      [methodName: string]: typeof CompilerRequestMocker.prototype.request;
+      [methodName: string]: typeof MockapiRequestMocker.prototype.request;
     };
   };
 };

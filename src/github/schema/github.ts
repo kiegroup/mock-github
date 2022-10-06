@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { Config } from "../../github/github-mocker.types";
+import { Config } from "../github-mocker.types";
 import { ActionSchema } from "./action";
 import { RepositorySchema } from "./repository";
 

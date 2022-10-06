@@ -1,4 +1,4 @@
-import { lstatSync } from "fs";
+import { lstatSync } from "fs-extra";
 import path from "path";
 import { totalist } from "totalist";
 import { CreateRepositoryFile } from "../files/repository-file-system.types";

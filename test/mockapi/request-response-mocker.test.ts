@@ -1,6 +1,6 @@
 import axios from "axios";
-import { CompilerRequestMocker } from "../../src/action-compiler/request/request-mocker";
 import { EndpointMethod } from "../../src/endpoint-mocker/endpoint-mocker.types";
+import { MockapiRequestMocker } from "../../src/mockapi/request/request-mocker";
 
 const url = "http://localhost:8001";
 const instance = axios.create({
@@ -11,7 +11,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
   "Method - %p",
   (method: string) => {
     test("with path parameters", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/path/{param1}/path/{param2}/path/{param3}",
         method: method as EndpointMethod,
         parameters: {
@@ -59,7 +59,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("no path parameters passed", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/path/{param1}/path/{param2}/path",
         method: method as EndpointMethod,
         parameters: {
@@ -81,7 +81,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("no path parameters defined. Exact path match", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/path/hello/world",
         method: method as EndpointMethod,
         parameters: {
@@ -110,7 +110,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("with url queries", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -157,7 +157,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("no url queries", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -181,7 +181,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("setResponse: singular response", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -206,7 +206,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
     });
 
     test("setResponse: multiple response", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -247,7 +247,7 @@ describe.each(["post", "delete", "put", "patch"])(
   "Method - %p",
   (method: string) => {
     test("with request body", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/body/{param1}/body",
         method: method as EndpointMethod,
         parameters: {
@@ -303,7 +303,7 @@ describe.each(["post", "delete", "put", "patch"])(
     });
 
     test("no request body", async () => {
-      const requestMocker = new CompilerRequestMocker(url, {
+      const requestMocker = new MockapiRequestMocker(url, {
         path: "/body/{param1}/body",
         method: method as EndpointMethod,
         parameters: {

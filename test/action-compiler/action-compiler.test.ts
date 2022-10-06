@@ -1,25 +1,10 @@
 import { execSync, spawnSync } from "child_process";
-import { rmSync } from "fs";
+import { rmSync } from "fs-extra";
 import path from "path";
 import { promisify } from "util";
+import { Mockapi } from "../../src";
 import { ActionCompiler } from "../../src/action-compiler/action-compile";
 import { Moctokit } from "../../src/moctokit/moctokit";
-
-describe("initialization from file", () => {
-  const resources = path.resolve(process.cwd(), "test", "resources");
-  test("success", () => {
-    expect(
-      () => new ActionCompiler(path.join(resources, "api-schema-correct.json"))
-    ).not.toThrowError();
-  });
-
-  test("failure", () => {
-    expect(
-      () =>
-        new ActionCompiler(path.join(resources, "api-schema-incorrect.json"))
-    ).toThrowError();
-  });
-});
 
 describe("compile mocked action", () => {
   beforeAll(async () => {
@@ -41,7 +26,7 @@ describe("compile mocked action", () => {
     "compile mocked action: %p",
     async (_title: string, minify: boolean, src: string) => {
       const moctokit = new Moctokit();
-      const compiler = new ActionCompiler({
+      const mockapi = new Mockapi({
         google: {
           baseUrl: "https://google.com",
           endpoints: {
@@ -59,9 +44,10 @@ describe("compile mocked action", () => {
           },
         },
       });
+      const compiler = new ActionCompiler();
       const dest = path.join(__dirname, "compiled.js");
       const apis = [
-        compiler.mock.google.root
+        mockapi.mock.google.root
           .get({ search: /test.+/ })
           .setResponse({ status: 200, data: ["test worked"] }),
         moctokit.rest.repos
