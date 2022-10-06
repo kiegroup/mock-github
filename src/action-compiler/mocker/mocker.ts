@@ -1,5 +1,5 @@
 import { MockerParams } from "./mocker.types";
-import { CompilerResponseMocker } from "../response/response-mocker";
+import { CompilerResponseMocker } from "./response-mocker";
 import { DataMatcherMap } from "nock/types";
 
 function mock(apis: MockerParams[]) {
