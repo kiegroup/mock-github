@@ -2,8 +2,7 @@ import simpleGit, { SimpleGit } from "simple-git";
 import { Mocker } from "../mocker";
 import { Repositories, Repository } from "./repository-mocker.types";
 import path from "path";
-import { rm, writeFile } from "node:fs/promises";
-import { mkdirSync } from "fs";
+import { mkdirSync, rm, writeFile } from "fs-extra";
 import { RepositoryHistory } from "./history/repository-history-mocker";
 import { RepositoryBranches } from "./branches/repository-branches";
 import {

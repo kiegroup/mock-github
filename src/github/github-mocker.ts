@@ -3,12 +3,12 @@ import { EnvMocker } from "./env/env-mocker";
 import { Config } from "./github-mocker.types";
 import { Mocker } from "./mocker";
 import { RepositoryMocker } from "./repository/repository-mocker";
-import { readFileSync, mkdirSync, existsSync, rmSync } from "fs";
+import { readFileSync, mkdirSync, existsSync, rmSync } from "fs-extra";
 import { EnvMethods } from "./env/env-mocker.types";
 import { ActionMockerMethods } from "./action/action-mocker.types";
 import { RepositoryStateMethods } from "./repository/state/repository-state.types";
 import Ajv from "ajv";
-import { GithubConfigSchema } from "../schema/github/github";
+import { GithubConfigSchema } from "./schema/github";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;

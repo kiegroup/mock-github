@@ -1,4 +1,4 @@
-import nock, { DataMatcher, DataMatcherMap } from "nock";
+import nock, { DataMatcherMap } from "nock";
 import { MockerParams } from "../../action-compiler/mocker/mocker.types";
 import { Response } from "./abstract-response-mocker.types";
 
