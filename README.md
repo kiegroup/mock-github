@@ -1,14 +1,23 @@
-# mock-github (WIP)
+# Mock Github
 
-A NPM library to configure and create a local github environment. Currently work in progress
+Provides a bunch of tools to configure and create a local github environment to test your custom github actions in without having to clutter your github with test repositories, actions or hitting github api rate limits.
 
 ## Table of Content
 
-- [Use cases](#use_cases)
-- [Moctokit](#moctokit)
+- [Moctokit](#moctokit)  
+  - [Specifying which base url to use](#specifying-which-base-url-to-use)
+  - [Mock an api](#mock-an-api)
+    - [Mock the entire endpoint](#mock-the-entire-endpoint)
+    - [Mock an endpoint for specific parameter(s)](#mock-an-endpoint-for-specific-parameters)
+  - [Replying with a response](#replying-with-a-response)
+    - [Reply once](#reply-once)
+    - [Reply n times](#reply-n-times)
+    - [Chaining responses](#chaining-responses)
+  - [Typescript Support](#typescript-support)
+- [Mockapi](#mockapi)
 - [Act](#act)
-- [Compiler](#compiler)
-- [Github]()
+- [Action Compiler](#action-compiler)
+- [Github](#github)
   - [config.json](#config)
   - [Repositories](#repositories)
   - [Github env vars](#github_env)
@@ -16,29 +25,117 @@ A NPM library to configure and create a local github environment. Currently work
   - [Action event](#action_event)
   - [Action artifact archiver](#action_artifact_archiver)
 
-## Use cases<a name="use_cases"></a>
+## Moctokit
 
-- The idea behind this library is to provide a local github environment where you can run your test cases in. It was built to provide an environment to test custom github actions.
-- You can use it to create completely local git repositories, mock `GITHUB_` env vars, mock inputs to github actions and much more.
-- It provides a javascript wrapper around the [nektos/act](https://github.com/nektos/act) cli tool.
-- It lets you compile a custom github action with certain apis that are mocked. You can use this perform to integration testing on your custom action without having to worry about github api rate limits.
+Provides a simple interface to mock any github api endpoints. This interface is just like the one from [@octokit/rest](https://octokit.github.io/rest.js/v19).  
 
-## Moctokit<a name="moctokit"></a>
-
-Used to mock endpoints specified in [@octokit/rest](https://octokit.github.io/rest.js/v19). You can create a moctokit instance and optionally pass parameter `baseUrl` to it. By default it uses "https://api.github.com  
-The instance then works the same as an octokit instance. So for example
-
+Example
 ```typescript
-const mock = new Moctokit();
+const moctokit = new Moctokit();
 mock.rest.repos.get({
   owner: "kie",
   repo: /build.*/
-}).reply({status: 200, data: {full_name: "it worked}})
+}).reply({status: 200, data: {full_name: "it worked"}})
+```  
+
+### Specifying which base url to use
+By default a moctokit instance uses `https://api.github.com` as the base url
+```typescript
+const moctokit = new Moctokit(); // mocks github apis for https://api.github.com
 ```
 
-The above piece of code will mock all get repo calls where the owner is "kie" and the repo name starts with "build". It will return a 200 status once.
+You can also specify a base url when a creating a new instance. Useful when you have an enterprise github api url.  
+```typescript
+const moctokit = new Moctokit("http://localhost:8000"); // mocks github apis for http://localhost:8000
+```  
 
-Similarly you can mock all octokit methods, set scope of how the requests should be matched and set the reply. You can optionally repeat the same mock by calling the `repeat` method before `reply`. The parameter of each method is the same as the corresponding octokit method with the only difference being that all parameters accept regex and all paramters are optional. Any missing path paramter will result in mocking all possible paths.
+### Mock an api  
+You can mock all the github api exactly how [@octokit/rest](https://octokit.github.io/rest.js/v19) library is used to make an actual call to the corresponding api. 
+#### Mock the entire endpoint  
+You can mock an entire endpoint by simply passing no arguments.  
+```typescript
+const moctokit = new Moctokit();
+/**
+ * This translates to mocking all possible values of path, query and body paramters mentioned here: https://docs.github.com/en/rest/projects/projects#create-a-repository-project
+ */
+moctokit.rest.projects.createForRepo().reply({status: 200, data: {owner_url: "whatever url"}});
+```
+#### Mock an endpoint for specific parameter(s)  
+You can mock an endpoint for certain paramters. So only if the call to the api has parameters which match the values you defined it will be get the mocked response.  
+```typescript
+const moctokit = new Moctokit();
+/**
+ * Mocks this api - https://docs.github.com/en/rest/projects/projects#create-a-repository-project
+ * It translates to mocking all api calls to https://api.github.com/repos/{owner}/{repo}/projects where owner is "kie", 
+ * repo starts with a "d", has the value "project" for the "name" field in the body of the request and accepts any value
+ * for the "body" field of the request body
+ */
+moctokit.rest.projects.createForRepo({owner: "kie", repo: /d.+/, name: "project"}).reply({status: 200, data: {owner_url: "whatever url"}});
+```
+### Replying with a response  
+The endpoint isn't actually mocked with calling `reply` with response you want send back if your application makes an api call to that particular endpoint. 
+
+#### Reply once  
+You can reply with a response exactly once i.e. the 1st api call to the mocked endpoint will respond with whatever response you set and the 2nd api call won't be mocked.
+```typescript
+const moctokit = new Moctokit();
+/**
+ * Responds with status 200 and data {owner_url: "whatever url"} exactly once
+ */
+moctokit.rest.projects.createForRepo().reply({status: 200, data: {owner_url: "whatever url"}});
+```  
+
+#### Reply n times
+You can repeat the same response n times i.e. n consecutive calls to the mocked api will get the same response back  
+```typescript
+const moctokit = new Moctokit();
+/**
+ * Responds with status 200 and data {owner_url: "whatever url"} for 5 consecutive calls to the same api
+ */
+moctokit.rest.projects.createForRepo().reply({status: 200, data: {owner_url: "whatever url"}, repeat: 5});
+```  
+
+#### Setting response and replying later
+You can set an array of responses but actually mock the api later on. Responses are sent in order of their position in the array. This is extremely useful when using moctokit with [Action Compiler](#action-compiler)
+```typescript
+const moctokit = new Moctokit();
+/**
+ * Add just 1 response to an array of responses but don't actually mock the endpoint
+ */
+const mockedCreateForRepo = moctokit.rest.projects.createForRepo()
+                                                  .setResponse({
+                                                    status: 200, 
+                                                    data: {owner_url: "whatever url"}, repeat: 5
+                                                  });
+
+/**
+ * Adds all of these responses after the above response in the array. Again doesn't actually mock the api
+ */ 
+mockedCreateForRepo.setResponse([
+  {status: 201, data: {owner_url: "something"}},
+  {status: 400, data: {owner_url: "something else"}, repeat: 2}
+  {status: 404, data: {owner_url: "something completely difference"}}
+]);
+
+/**
+ * Now the api is actually being mocked.
+ * For the 1st, 2nd, 3rd, 4th and 5th api call the response status would be 200
+ * For the 6th api call the response status would be 201
+ * For the 7th and 8th api call the response status would be 400
+ * For the 9th api call the response status would be 404
+ */ 
+mockedCreateForRepo.reply();
+``` 
+
+#### Chaining responses
+
+To be implemented
+
+### Typescript Support
+
+When using with typescript, for each endpoint typescript will tell you what paramters are allowed and what status and corresponding data you can set as response. This way you will be forced to pass paramters that are actually accepted either as path, query or body params by the api and set responses according to the api's response schema.
+
+Note no key in either params or response data will be a required key. All keys are optional. This merely checks that no key which is not defined in the openapi specification is passed in either params or response data for the given endpoint. It also enforces datatypes for any key defined in the openapi specification for the given endpoint.
 
 ## Act<a name="act"></a>
 
@@ -86,7 +183,7 @@ console.log(await act.list("pull_request"))
 */
 ```
 
-## Compiler<a name="compiler"></a>
+## Action Compiler
 
 The idea is that given a compiled (bundled and/or minified) github custom action entrypoint file (.js only), we can inject it with mocked apis such that when the action is run it used the data from the mocked api instead of making the actual api call.
 
