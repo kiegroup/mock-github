@@ -28,6 +28,10 @@ Provides a bunch of tools to configure and create a local github environment to 
   - [Current working directory](#current-working-directory)
   - [Secrets](#secrets)
   - [List workflows](#list-workflows)
+  - [Run a job](#run-a-job)
+    - [Using job id](#using-job-id)
+    - [Using event name](#using-event-name)
+    - [Run result](#run-result)
 - [Action Compiler](#action-compiler)
 - [Github](#github)
   - [config.json](#config)
@@ -562,7 +566,7 @@ const act = new Act();
 await act.list("pull_request");
 ```
 
-`list` returns an array of objects as defined below
+`list` returns an array of `Workflow` objects as defined below
 
 ```typescript
 [
@@ -577,6 +581,63 @@ await act.list("pull_request");
 ```
 
 ### Run a job
+
+#### Using job id
+
+You can execute a job using a job id. Equivalent of running `act -j job_id`.
+
+It returns an array of `Job` outputs. Described [below](#run-result)
+
+```typescript
+const act = new Act();
+
+let result = await act.runJob("job_id");
+
+/**
+ * This will pass your secrets to act
+ * Equivalent to running: act -j job_id -s secret1=value1 -s secret2=value2
+ */
+result = await act
+  .secret("secret1", "value1")
+  .secret("secret2", "value2")
+  .runJob("job_id");
+```
+
+#### Using event name
+
+You can trigger a workflow using an event name. Equivalent of running `act event_name`.
+
+It returns an array of `Job` outputs. Described [below](#run-result)
+
+```typescript
+const act = new Act();
+
+let result = await act.runEvent("pull_request");
+
+/**
+ * This will pass your secrets to act
+ * Equivalent to running: act pull_request -s secret1=value1 -s secret2=value2
+ */
+result = await act
+  .secret("secret1", "value1")
+  .secret("secret2", "value2")
+  .runJob("pull_request");
+```
+
+#### Run result
+
+Each run returns an array of `Job` objects that describes what was executed, what was the output and whether it failed or not. Schema:
+
+```typescript
+[
+  {
+    name: "the command/step name that was executed",
+    output: "output of the command",
+    // 0 implies it succeeded, 1 implies it failed and -1 implies something went wrong with the interface which should be reported to us
+    status: 0 | 1 | -1,
+  },
+];
+```
 
 ## Action Compiler
 
