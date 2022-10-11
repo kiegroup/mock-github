@@ -34,12 +34,15 @@ Provides a bunch of tools to configure and create a local github environment to 
     - [Run result](#run-result)
 - [Action Compiler](#action-compiler)
 - [Github](#github)
-  - [config.json](#config)
   - [Repositories](#repositories)
-  - [Github env vars](#github_env)
-  - [Action inputs](#action_input)
-  - [Action event](#action_event)
-  - [Action artifact archiver](#action_artifact_archiver)
+    - [Utility functions](#utility-functions)
+  - [Env](#env)
+    - [Utility functions](#utility-functions-1)
+  - [Action](#action)
+    - [Input](#input)
+      - [Utility functions](#utility-functions-2)
+    - [Archive artifacts](#archive-artifacts)
+      - [Utility functions](#utility-functions-3)
 
 ## Moctokit
 
@@ -666,166 +669,392 @@ await compiler.compile(
       .setResponse({ status: 200, data: { name: "main" } }),
   ],
   true // whether you want the compiled file to be minified or not
-); 
+);
 ```
 
-## Github<a name="github"></a>
+## Github
 
-### config.json<a name="config"></a>
+This class is used to create local repositories and mimic github environment, action inputs and artifact archiving. To configure this local "github", it reads a configuration object by passing the path of a json file or directly to the constructor arguments.
 
-To create your environment all you need specify its state in a `.json` file and provide the path to the config file to the `MockGithub` instance. The structure of the config file is
+Create everything in a directory you want
 
-```json
+```typescript
+const github = new MockGithub(
+  "path to config json file",
+  "path to a setup directory"
+);
+
+// actually creates all the repositories, set the env and start the artifact server if needed
+await github.setup();
+
+// Whatever actions you want to perform
+
+// delete repositories, clean up env and stop artifact server
+await github.teardown();
+```
+
+Use the default setup directory - `process.cwd()/repo`
+
+```typescript
+const github = new MockGithub("path to config json file");
+
+// actually creates all the repositories, set the env and start the artifact server if needed
+await github.setup();
+
+// Whatever actions you want to perform
+
+// delete repositories, clean up env and stop artifact server
+await github.teardown();
+```
+
+The configuration object/file has 3 sections and all of them are optional. So you can configure an combination of repositories, env and actions.
+
+```typescript
 {
-  "create": true,
-  "repositories": {
-    "name_of_repository": {
-      "pushedBranches": ["branch1", "branch2"],
-      "localBranches": ["branch3"],
-      "currentBranch": "branch2",
-      "history": "array of history objects to create a git history",
-      "files": "array of file object containing src and dest fields"
-    }
-  },
-  "env": {
-    "var_name": "value"
-  },
-  "action": {
-    "event": "",
-    "input": {
-      "var_name": "value"
+  repo: //more details below
+  env: //more details below
+  action: //more details below
+}
+```
+
+### Repositories
+
+A local repository is configured and created by adding a key to the `repo` section of the configuration. The key is the name of the repository. The value for that key is an object with the following fields:
+
+| Attribute Name | Type        | Required | Default                              | Description                                                                                                                                                                |
+| :------------- | :---------- | :------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pushedBranches | `string[]`  | No       |                                      | Contains the names of branches that are already pushed and available on "origin". "main" branch is always pushed                                                           |
+| localBranches  | `string[]`  | No       |                                      | Contains the names of branches that haven't been pushed to "origin"                                                                                                        |
+| currentBranch  | `string`    | No       | main                                 | Sets the current branch to whatever you want                                                                                                                               |
+| owner          | `string`    | No       | `$LOGNAME` if defined otherwise `""` | sets the owner of the repository                                                                                                                                           |
+| forkedFrom     | `string`    | No       |                                      | Sets the name of the repository it was forked from. This implies that the repository was a fork                                                                            |
+| files          | `Files[]`   | No       |                                      | Create all the files for the repository. Refer to [Files](#files) table                                                                                                    |
+| history        | `History[]` | No       |                                      | Create a git history for the repository using the actions mentioned in this array chronologically starting from array at index 0. Refer to [History](#history) table below |
+
+#### Files
+
+| Attribute Name | Type     | Required | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| :------------- | :------- | :------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| src            | `string` | Yes      |         | Specifies a path to a directory or a file that is to be copied into the repository. If the path is to a directory, then it will copy all the files and subdirectories in it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| dest           | `string` | Yes      |         | Specifies the location inside the repository, where the files from `src` need to be copied into. If `dest` was `"foo/bar/blah"` then this equivalent to `"path_to_repository/foo/bar/blah"`. Further more, it will create any directory in its path if it does not exist in the repository. If `src` is a path to a directory, for example `"/home/somedir"`, and say if `dest` is `"/foo/bar/blah"` then all of the contents of `somedir` will be copied into the `blah` directory inside the repository. If `src` is a path to a file, for example `"/home/test.txt"`, and say if `dest` is `"/foo/bar/renamed.txt"` then `test.txt` will be copied into the `bar` directory inside the repository and renamed as `renamed.txt` |
+
+#### History
+
+Each `History` object is either a `Push` object or a `Merge` object. See below
+
+Push
+| Attribute Name | Type | Required | Default | Description |
+| :------------- | :--- | :------- | :------ | :---------- |
+| action | `"push"` | Yes | | Identifies this history object as a "push" object |
+| branch | `string` | Yes | | The branch on which the push has to be performed |
+| files | `Files[]` | No | `dummy-file-${number}` | Create all the files that you want to push. Refer to [Files](#files) table. If not defined, it will push a dummy file |
+| commitMessage | `string` | No | `adding files to mimic history at index ${number}` | Define a custom commit message for the push |
+
+Merge
+| Attribute Name | Type | Required | Default | Description |
+| :------------- | :--- | :------- | :------ | :---------- |
+| action | `"merge"` | Yes | | Identifies this history object as a "merge" object |
+| head | `string` | Yes | | The branch you want to merge from
+| base | `string` | Yes | | The branch you want to merge into
+| commitMessage | `string` | No | `Merging ${head} to ${base}` | Define a custom commit message for the merge |
+
+#### Example
+
+```typescript
+const github = new MockGithub({
+  repo: {
+    repoA: {
+      pushedBranches: ["branch1", "branch2"],
+      localBranches: ["branch3"],
+      currentBranch: "branch2",
+      files: [
+        {
+          src: "/home/workflows",
+          dest: ".github/workflows",
+        },
+        {
+          src: "/home/code",
+          dest: "src/",
+        },
+      ],
+      history: [
+        {
+          action: "push",
+          branch: "branch1",
+          files: [
+            {
+              src: "/home/test",
+              dest: "test/",
+            },
+          ],
+        },
+        {
+          action: "merge",
+          head: "branch1",
+          base: "branch2",
+        },
+      ],
     },
-    "archive": ""
+    repoB: {},
+  },
+});
+
+/**
+ * Will create 2 repositories: repoA and repoB
+ * repoA will have 2 pushed branches, 1 local branch. After the setup the current branch will be branch2
+ * repoA file structure on main branch before history is executed:
+ *     .github
+ *          workflows
+ *            files from "/home/workflows"
+ *      src
+ *          files from "/home/code"
+ * repoA will have a push on branch1 and will merge branch1 into branch2
+ * repoA file structure on branch2 branch after history is executed:
+ *      .github
+ *          workflows
+ *            files from "/home/workflows"
+ *      src
+ *          files from "/home/code"
+ *      test
+ *          files from "/home/test"
+ * repoB is a bare bones repository with just the main branch
+ */
+await github.setup();
+```
+
+#### Utility functions
+
+There multiple utility functions available to extract information about the state of the repositories.
+
+```typescript
+const github = new MockGithub("path to config");
+
+// Will throw an error since setup() wasn't called
+github.repo.getState("repoA");
+
+await github.setup();
+
+/**
+ * Returns an object with fields:
+ *
+ * name: string;
+ * path?: string;
+ * owner?: string;
+ * forkedFrom?: string;
+ * branches?: {  localBranches: string[], pushedBranches: string[], currentBranch: string };
+ * files?: {  path: string, branch: string }[];
+ */
+const state = github.repo.getState("repoA");
+
+/**
+ * Returns the name of the repository if repoA was forked from a repo. if it wasn't then it returns undefined
+ */
+const fork = github.repo.getForkedFrom("repo");
+
+/**
+ * Returns true if repoA was forked otherwise false
+ */
+const isFork = github.repo.isFork("repo");
+
+/**
+ * Returns the location of the repository
+ */
+const path = github.repo.getPath("repo");
+
+/**
+ * Returns owner of the repository
+ */
+const owner = github.repo.getOwner("repo");
+
+/**
+ * Returns the current branch, local and pushed branches as an object
+ * {  localBranches: string[], pushedBranches: string[], currentBranch: string }
+ */
+const branches = github.repo.getBranchState("repo");
+
+/**
+ * Returns the location of all the files in the repository. A location comprises of the path of the file and the branch it is on
+ * {  path: string, branch: string }[]
+ */
+const repoFs = await github.repo.getFileSystemState("repo");
+```
+
+### Env
+
+Used to set github environment variable. Adds the prefix `GITHUB_` to all the variables. Specify it in the `env` section of the config.
+
+```typescript
+const github = new MockGithub({
+  env: {
+    hello: "world",
+  },
+});
+
+// process.env.GITHUB_HELLO would return "world"
+await github.setup();
+```
+
+#### Utility functions
+
+There utility functions available to dynamically update these variables as well
+
+```typescript
+const github = new MockGithub({
+  env: {
+    hello: "world"
   }
-}
+});
+
+// Will throw an error since setup() wasn't called
+github.env.update("hello", "update");
+
+await github.setup();
+
+/**
+ * Updates/Adds the variable
+ *
+ * First call to update will update the hello env var from before
+ * process.env.GITHUB_HELLO will return "update"
+ *
+ * Second call to update will add a new variable foo
+ * process.env.GITHUB_FOO will return "bar"
+ */
+github.env.update("hello", "update");
+github.env.update("foo", "bar");
+
+/**
+ * Deletes the env variable and returns its value
+ */
+const delete = github.env.delete("hello");
+
+/**
+ * Gets the current value of the env variable
+ */
+const value = github.env.get("hello");
+
+/**
+ * Gets the value for all env variables
+ */
+const valueAll = github.env.get();
 ```
 
-The sections below will explain each part of the config in detail
+### Action
 
-### Repositories<a name="repositories"></a>
+Comprises of 2 sections - input and archive
 
-A local repository is configured and created by adding a key to the `repositories` section of the config file. The key is the name of the repository. The value for that key is an object with the following fields:  
-`pushedBranches`  
-&emsp;type: string[]  
-&emsp;required: no  
-&emsp;description: contains the names of branches that are already pushed and available on the local "origin". "main" branch is always pushed  
-`localBranches`  
-&emsp;type: string[]  
-&emsp;required: no  
-&emsp;description: contains the names of branches that haven't been pushed to the local "origin"  
-`currentBranch`  
-&emsp;type: string  
-&emsp;required: no  
-&emsp;description: set the current branch to whatever you want. By default it is "main"  
-`owner`  
-&emsp;type: string  
-&emsp;required: no  
-&emsp;description: sets the owner of the repository  
-`forkedFrom`  
-&emsp;type: string  
-&emsp;required: no  
-&emsp;description: name of the repository it was forked from  
-`files`  
-&emsp;type: {src: string, dest: string}[]  
-&emsp;required: no  
-&emsp;description: Array of objects where each object has 2 fields `src` and `dest`. The `src` field is used to specify a directory or file that is to be copied into the repository. The `dest` field is used to specify the destination inside the repository. &emsp;So for example:
+#### Input
 
-```json
-{
-  "src": "/home/somedir",
-  "dest": "/foo/bar"
-}
+Mimics how github actions are set. Adds the prefix `INPUT_` to all the variables.
+
+```typescript
+const github = new MockGithub({
+  action: {
+    input: {
+      hello: "world",
+    },
+  },
+});
+
+// process.env.INPUT_HELLO would return "world"
+await github.setup();
 ```
 
-&emsp;This configuration will copy all files from `/home/somedir` directory into the repository `foo/bar` directory (it will create any required directories inside the repository). Similarly,
+#### Utility functions
 
-```json
-{
-  "src": "/home/test.txt",
-  "dest": "foo/test-renamed.txt"
-}
+There utility functions available to dynamically update these variables as well
+
+```typescript
+const github = new MockGithub({
+  action: {
+    input: {
+      hello: "world"
+    }
+  }
+});
+
+// Will throw an error since setup() wasn't called
+github.action.input.update("hello", "update");
+
+await github.setup();
+
+/**
+ * Updates/Adds the variable
+ *
+ * First call to update will update the hello env var from before
+ * process.env.INPUT_HELLO will return "update"
+ *
+ * Second call to update will add a new variable foo
+ * process.env.INPUT_FOO will return "bar"
+ */
+github.action.input.update("hello", "update");
+github.action.input.update("foo", "bar");
+
+/**
+ * Deletes the env variable and returns its value
+ */
+const delete = github.action.input.delete("hello");
+
+/**
+ * Gets the current value of the env variable
+ */
+const value = github.action.input.get("hello");
+
+/**
+ * Gets the value for all env variables
+ */
+const valueAll = github.action.input.get();
 ```
 
-&emsp;This configuration will copy the file from `/home/test.txt` into the repository `foo/` directory (it will create any required directories inside the repository) and rename it to `test-renamed.txt`  
-`history`  
-&emsp;type: array of `Push`, `Merge`, `Unknown` objects (see below)  
-&emsp;required: no  
-&emsp;description: create a git history for the repository using the actions mentioned in this array chronologically starting from array at index 0.  
-&emsp;&emsp;`Push`  
-&emsp;&emsp;&emsp;`branch`  
-&emsp;&emsp;&emsp;&emsp;type: string  
-&emsp;&emsp;&emsp;&emsp;required: yes  
-&emsp;&emsp;&emsp;&emsp;desciption: the branch on which this push should occur  
-&emsp;&emsp;&emsp;`files`  
-&emsp;&emsp;&emsp;&emsp;type: {src: string, dest: string}[]  
-&emsp;&emsp;&emsp;&emsp;required: no  
-&emsp;&emsp;&emsp;&emsp;desciption: Same as `files` field above  
-&emsp;&emsp;&emsp;`commitMessage`  
-&emsp;&emsp;&emsp;&emsp;type: string  
-&emsp;&emsp;&emsp;&emsp;required: no  
-&emsp;&emsp;&emsp;&emsp;desciption: custom commit message for pushing  
-&emsp;&emsp;`Merge`  
-&emsp;&emsp;&emsp;`head`  
-&emsp;&emsp;&emsp;&emsp;type: string  
-&emsp;&emsp;&emsp;&emsp;required: yes  
-&emsp;&emsp;&emsp;&emsp;desciption: source branch of the merge  
-&emsp;&emsp;&emsp;`base`  
-&emsp;&emsp;&emsp;&emsp;type: string  
-&emsp;&emsp;&emsp;&emsp;required: yes  
-&emsp;&emsp;&emsp;&emsp;desciption: base branch of the merge  
-&emsp;&emsp;&emsp;`commitMessage`  
-&emsp;&emsp;&emsp;&emsp;type: string  
-&emsp;&emsp;&emsp;&emsp;required: no  
-&emsp;&emsp;&emsp;&emsp;desciption: custom commit message for the merge
+### Archive artifacts
 
-There multiple utility functions available: `getState(repositoryName: string)`, `getForkedFrom(repositoryName: string)`, `isFork(repositoryName: string)`, `getPath(repositoryName: string)`, `getOwner(repositoryName: string)`, `getBranchState(repositoryName: string)`, `getFileSystemState(repositoryName: string)`
+Starts an express server that mimics the server actually used by github action to archive artifacts. Constructed from [nektos/act](https://github.com/nektos/act/blob/master/pkg/artifacts/server.go)
 
-### Github env vars<a name="github_env"></a>
+```typescript
+const github = new MockGithub({
+  action: {
+    archive: {
+      artifactStore: "/home/artifacts/",
+      port: "8000",
+    },
+  },
+});
 
-Used to set github environment variable. Adds the prefix `GITHUB_` to all the variables. Specify it in the `env` section of the config file. For eg:
-
-```json
-{
-  "hello": "world"
-}
+// starts the server
+await github.setup();
 ```
 
-This would set the the env var `GITHUB_HELLO` with value `world`.
-There also utility methods available which lets you dynamically set and update these variables. The utility methods are: `update(key), delete(key), get(key), getAll()`
+| Attribute Name | Type     | Required | Default               | Description                                                                         |
+| :------------- | :------- | :------- | :-------------------- | :---------------------------------------------------------------------------------- |
+| artifactStore  | `string` | No       | `process.cwd()/store` | The directory in which the uploaded artifacts will be stored in and downloaded from |
+| serverPort     | `string` | No       | 8080                  | The port of the server which will receive requests to upload/download artifacts     |
 
-### Action inputs<a name="action_input"></a>
+#### Utility functions
 
-Used to set input for github actions. Specify it in the `action.input` section of the config file. For eg:
+There are utility functions that return the location of the artifact store and runner id being used.
 
-```json
-{
-  "hello": "world"
-}
+```typescript
+const github = new MockGithub({
+  action: {
+    archive: {
+      artifactStore: "/home/artifacts/",
+      port: "8000",
+    },
+  },
+});
+
+// Will throw an error since setup() wasn't called
+github.action.archiver.getArtifactStore();
+
+// starts the server
+await github.setup();
+
+/**
+ * Returns the path to the store
+ */
+const store = github.action.archiver.getArtifactStore();
+
+/**
+ * Returns the runner id being used
+ */
+const runId = github.action.archiver.getRunId();
 ```
-
-This would set the input `hello` with value `world`.
-There also utility methods available which lets you dynamically set and update these variables. The utility methods are: `update(key), delete(key), get(key), getAll()`
-
-### Action event<a name="action_event"></a>
-
-Used to create the `event.json` payload file used by github actions to get information on the event. Also sets the corresponding `GITHUB_EVENT_PATH` env var to point to the json file. Configure it in the `action.event` section of the config file with the following fields:  
-`payload`  
-&emsp;type: Object {string: any}  
-&emsp;required: yes  
-&emsp;description: contains the actual payload  
-`filename`  
-&emsp;type: string
-&emsp;required: no  
-&emsp;description: name of the file in which the payload is store. By default it is `event.json`
-
-### Action artifact archiver<a name="action_artifact_archiver"></a>
-
-Starts an express server which used by the artifact archiver github action to upload and download artifacts. Constructed from: https://github.com/nektos/act/blob/master/pkg/artifacts/server.go. Configure it in the `action.archive` section of the config file with the following fields:  
-`serverPort`  
-&emsp;type: string  
-&emsp;required: yes  
-&emsp;description: the port to be used by the local express server  
-`artifactStore`  
-&emsp;type: string  
-&emsp;required: yes  
-&emsp;description: the directory in which the artifacts are to be uploaded to and downloaded from
