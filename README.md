@@ -641,84 +641,32 @@ Each run returns an array of `Job` objects that describes what was executed, wha
 
 ## Action Compiler
 
-The idea is that given a compiled (bundled and/or minified) github custom action entrypoint file (.js only), we can inject it with mocked apis such that when the action is run it used the data from the mocked api instead of making the actual api call.
+The idea is that given a compiled (bundled and/or minified) github custom action entrypoint file (.js only), we can inject it with mocked apis such that when the action is run it uses the data provided by the mocked api instead of making the actual api call.
 
 This can be used to run integration tests on actions without having to worry about github api rate limits as well as the fluid nature of the existing github repositories (for eg: a PR that was open 2 days ago might not be anymore)
 
-You can pass a custom API schema and inject those mocked api in your compiled action. You can also inject apis mocked by moctokit.
+You can inject mocked APIs using [Mockapi](#mockapi) and [Moctokit](#moctokit). It is important that you pass an array of objects that is returned by the `setResponse` method of mockapi and moctokit objects i.e. DO NOT CALL `reply` and then pass the object
 
-Simple usage
+Usage
 
 ```typescript
 const moctokit = new Moctokit();
-const compiler = new ActionCompiler({
-  google: {
-    // name for the API
-    baseUrl: "https://google.com",
-    endpoints: {
-      root: {
-        // scope to group similar endpoints together
-        get: {
-          // endpoint name
-          path: "/",
-          method: "get",
-          parameters: {
-            path: [],
-            query: ["search"],
-            body: [],
-          },
-        },
-      },
-    },
-  },
-});
+const mockapi = new Mockapi();
+const compiler = new ActionCompiler();
 
 await compiler.compile(
   "path to compiled action",
   "path to where you want to produce the injected action",
   [
-    compiler.mock.google.root
+    mockapi.mock.google.root
       .get({ search: /test.+/ })
       .setResponse({ status: 200, data: ["test worked"] }),
     moctokit.rest.repos
       .getBranch({ owner: /kie.*/, repo: "build-chain" })
       .setResponse({ status: 200, data: { name: "main" } }),
   ],
-  true
-); // whether you want the compiled file to be minified or not
-```
-
-You can also you this to conveniently mock APIs other than github.
-
-Example
-
-```typescript
-const compiler = new ActionCompiler({
-  google: {
-    // name for the API
-    baseUrl: "https://google.com",
-    endpoints: {
-      root: {
-        // scope to group similar endpoints together
-        get: {
-          // endpoint name
-          path: "/{param}",
-          method: "get",
-          parameters: {
-            path: ["param"],
-            query: ["search"],
-            body: [],
-          },
-        },
-      },
-    },
-  },
-});
-
-// the mock attribute exposes the endpoints defined in the schema just like moctokit's rest attribute
-compiler.mock.google.root
-  .get({ search: /test.+/, param: "search" })
-  .reply({ status: 200, data: ["test worked"] });
+  true // whether you want the compiled file to be minified or not
+); 
 ```
 
 ## Github<a name="github"></a>
