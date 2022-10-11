@@ -1,4 +1,3 @@
-import { DataMatcher, DataMatcherMap, RequestBodyMatcher } from "nock";
 import { MockRequestParameters } from "./request-mocker.types";
 import { paths } from "@octokit/openapi-types";
 import { MoctokitResponseMocker } from "../response/response-mocker";

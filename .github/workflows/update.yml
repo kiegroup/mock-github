@@ -1,0 +1,39 @@
+name: Update
+"on":
+  repository_dispatch:
+    types: [octokit/openapi release]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version of https://www.npmjs.com/package/@octokit/openapi
+        required: true
+jobs:
+  update_routes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+      - run: npm ci
+      - run: npm run update-all
+        if: >-
+          github.event_name == 'repository_dispatch' && github.event.action ==
+          'octokit/openapi release'
+        env:
+          VERSION: ${{ github.event.client_payload.release.tag_name }}
+      - run: npm run update-all
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+      - name: Create Pull Request
+        uses: gr2m/create-or-update-pull-request-action@v1.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          title: GitHub OpenAPI specifications changed
+          body: >
+            There is a new release of GitHub OpenAPI specification. Verify that there are no breaking changes
+          branch: openapi-update
+          commit-message: WIP octokit/openapi updated
