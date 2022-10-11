@@ -1,5 +1,5 @@
 import { MockRequestParameters } from "./request-mocker.types";
-import { paths } from "@octokit/openapi-types";
+import { paths } from "@octokit/openapi-types-ghec";
 import { MoctokitResponseMocker } from "../response/response-mocker";
 import { EndpointDetails } from "../../endpoint-mocker/endpoint-mocker.types";
 import { RequestMocker } from "../../endpoint-mocker/request/abstract-request-mocker";
