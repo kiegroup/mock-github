@@ -1463,6 +1463,11 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    getCodeqlDatabase: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/code-scanning/codeql/databases/{language}",
+      parameters: { path: ["owner", "repo", "language"], query: [], body: [] },
+    },
     getSarif: {
       method: "get",
       path: "/repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}",
@@ -1542,6 +1547,11 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listCodeqlDatabases: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/code-scanning/codeql/databases",
+      parameters: { path: ["owner", "repo"], query: [], body: [] },
+    },
     listRecentAnalyses: {
       method: "get",
       path: "/repos/{owner}/{repo}/code-scanning/analyses",
@@ -1608,6 +1618,15 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    addSelectedRepoToOrgSecret: {
+      method: "put",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}",
+      parameters: {
+        path: ["org", "secret_name", "repository_id"],
+        query: [],
+        body: [],
+      },
+    },
     codespaceMachinesForAuthenticatedUser: {
       method: "get",
       path: "/user/codespaces/{codespace_name}/machines",
@@ -1634,6 +1653,20 @@ const endpoints: Endpoints = {
           "pull_request",
           "pull_request.pull_request_number",
           "pull_request.repository_id",
+        ],
+      },
+    },
+    createOrUpdateOrgSecret: {
+      method: "put",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}",
+      parameters: {
+        path: ["org", "secret_name"],
+        query: [],
+        body: [
+          "encrypted_value",
+          "key_id",
+          "visibility",
+          "selected_repository_ids",
         ],
       },
     },
@@ -1708,6 +1741,11 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    deleteOrgSecret: {
+      method: "delete",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}",
+      parameters: { path: ["org", "secret_name"], query: [], body: [] },
+    },
     deleteRepoSecret: {
       method: "delete",
       path: "/repos/{owner}/{repo}/codespaces/secrets/{secret_name}",
@@ -1740,6 +1778,16 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/user/codespaces/{codespace_name}",
       parameters: { path: ["codespace_name"], query: [], body: [] },
+    },
+    getOrgPublicKey: {
+      method: "get",
+      path: "/organizations/{org}/codespaces/secrets/public-key",
+      parameters: { path: ["org"], query: [], body: [] },
+    },
+    getOrgSecret: {
+      method: "get",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}",
+      parameters: { path: ["org", "secret_name"], query: [], body: [] },
     },
     getPublicKeyForAuthenticatedUser: {
       method: "get",
@@ -1801,6 +1849,11 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listOrgSecrets: {
+      method: "get",
+      path: "/organizations/{org}/codespaces/secrets",
+      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
+    },
     listRepoSecrets: {
       method: "get",
       path: "/repos/{owner}/{repo}/codespaces/secrets",
@@ -1820,6 +1873,15 @@ const endpoints: Endpoints = {
       path: "/user/codespaces/secrets",
       parameters: { path: [], query: ["per_page", "page"], body: [] },
     },
+    listSelectedReposForOrgSecret: {
+      method: "get",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories",
+      parameters: {
+        path: ["org", "secret_name"],
+        query: ["page", "per_page"],
+        body: [],
+      },
+    },
     preFlightWithRepoForAuthenticatedUser: {
       method: "get",
       path: "/repos/{owner}/{repo}/codespaces/new",
@@ -1838,6 +1900,15 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    removeSelectedRepoFromOrgSecret: {
+      method: "delete",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}",
+      parameters: {
+        path: ["org", "secret_name", "repository_id"],
+        query: [],
+        body: [],
+      },
+    },
     repoMachinesForAuthenticatedUser: {
       method: "get",
       path: "/repos/{owner}/{repo}/codespaces/machines",
@@ -1852,6 +1923,15 @@ const endpoints: Endpoints = {
       path: "/user/codespaces/secrets/{secret_name}/repositories",
       parameters: {
         path: ["secret_name"],
+        query: [],
+        body: ["selected_repository_ids"],
+      },
+    },
+    setSelectedReposForOrgSecret: {
+      method: "put",
+      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories",
+      parameters: {
+        path: ["org", "secret_name"],
         query: [],
         body: ["selected_repository_ids"],
       },
@@ -1932,6 +2012,15 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    getAlert: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/dependabot/alerts/{alert_number}",
+      parameters: {
+        path: ["owner", "repo", "alert_number"],
+        query: [],
+        body: [],
+      },
+    },
     getOrgPublicKey: {
       method: "get",
       path: "/orgs/{org}/dependabot/secrets/public-key",
@@ -1953,6 +2042,26 @@ const endpoints: Endpoints = {
       parameters: {
         path: ["owner", "repo", "secret_name"],
         query: [],
+        body: [],
+      },
+    },
+    listAlertsForRepo: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/dependabot/alerts",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [
+          "state",
+          "severity",
+          "ecosystem",
+          "package",
+          "manifest",
+          "scope",
+          "sort",
+          "direction",
+          "page",
+          "per_page",
+        ],
         body: [],
       },
     },
@@ -1995,6 +2104,15 @@ const endpoints: Endpoints = {
         path: ["org", "secret_name"],
         query: [],
         body: ["selected_repository_ids"],
+      },
+    },
+    updateAlert: {
+      method: "patch",
+      path: "/repos/{owner}/{repo}/dependabot/alerts/{alert_number}",
+      parameters: {
+        path: ["owner", "repo", "alert_number"],
+        query: [],
+        body: ["state", "dismissed_reason", "dismissed_comment"],
       },
     },
   },
@@ -6045,7 +6163,7 @@ const endpoints: Endpoints = {
       parameters: {
         path: ["owner", "repo", "alert_number"],
         query: [],
-        body: ["state", "resolution"],
+        body: ["state", "resolution", "resolution_comment"],
       },
     },
   },
