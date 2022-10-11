@@ -397,6 +397,8 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}", "get">(baseUrl, endpoints["codeScanning"]["getAlert"]).request,
     getAnalysis:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}", "get">(baseUrl, endpoints["codeScanning"]["getAnalysis"]).request,
+    getCodeqlDatabase:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/codeql/databases/{language}", "get">(baseUrl, endpoints["codeScanning"]["getCodeqlDatabase"]).request,
     getSarif:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}", "get">(baseUrl, endpoints["codeScanning"]["getSarif"]).request,
     listAlertInstances:
@@ -409,6 +411,8 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/alerts", "get">(baseUrl, endpoints["codeScanning"]["listAlertsForRepo"]).request,
     listAlertsInstances:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "get">(baseUrl, endpoints["codeScanning"]["listAlertsInstances"]).request,
+    listCodeqlDatabases:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/codeql/databases", "get">(baseUrl, endpoints["codeScanning"]["listCodeqlDatabases"]).request,
     listRecentAnalyses:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/analyses", "get">(baseUrl, endpoints["codeScanning"]["listRecentAnalyses"]).request,
     updateAlert:
@@ -425,10 +429,14 @@ const endpointToMethod = (baseUrl: string) => ({
   codespaces: {
     addRepositoryForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories/{repository_id}", "put">(baseUrl, endpoints["codespaces"]["addRepositoryForSecretForAuthenticatedUser"]).request,
+    addSelectedRepoToOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}", "put">(baseUrl, endpoints["codespaces"]["addSelectedRepoToOrgSecret"]).request,
     codespaceMachinesForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/machines", "get">(baseUrl, endpoints["codespaces"]["codespaceMachinesForAuthenticatedUser"]).request,
     createForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces", "post">(baseUrl, endpoints["codespaces"]["createForAuthenticatedUser"]).request,
+    createOrUpdateOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}", "put">(baseUrl, endpoints["codespaces"]["createOrUpdateOrgSecret"]).request,
     createOrUpdateRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/secrets/{secret_name}", "put">(baseUrl, endpoints["codespaces"]["createOrUpdateRepoSecret"]).request,
     createOrUpdateSecretForAuthenticatedUser:
@@ -441,6 +449,8 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteForAuthenticatedUser"]).request,
     deleteFromOrganization:
       new MoctokitRequestMocker<"/orgs/{org}/members/{username}/codespaces/{codespace_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteFromOrganization"]).request,
+    deleteOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteOrgSecret"]).request,
     deleteRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/secrets/{secret_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteRepoSecret"]).request,
     deleteSecretForAuthenticatedUser:
@@ -451,6 +461,10 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/exports/{export_id}", "get">(baseUrl, endpoints["codespaces"]["getExportDetailsForAuthenticatedUser"]).request,
     getForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}", "get">(baseUrl, endpoints["codespaces"]["getForAuthenticatedUser"]).request,
+    getOrgPublicKey:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/public-key", "get">(baseUrl, endpoints["codespaces"]["getOrgPublicKey"]).request,
+    getOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}", "get">(baseUrl, endpoints["codespaces"]["getOrgSecret"]).request,
     getPublicKeyForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/public-key", "get">(baseUrl, endpoints["codespaces"]["getPublicKeyForAuthenticatedUser"]).request,
     getRepoPublicKey:
@@ -467,20 +481,28 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/orgs/{org}/codespaces", "get">(baseUrl, endpoints["codespaces"]["listInOrganization"]).request,
     listInRepositoryForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces", "get">(baseUrl, endpoints["codespaces"]["listInRepositoryForAuthenticatedUser"]).request,
+    listOrgSecrets:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listOrgSecrets"]).request,
     listRepoSecrets:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listRepoSecrets"]).request,
     listRepositoriesForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories", "get">(baseUrl, endpoints["codespaces"]["listRepositoriesForSecretForAuthenticatedUser"]).request,
     listSecretsForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listSecretsForAuthenticatedUser"]).request,
+    listSelectedReposForOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories", "get">(baseUrl, endpoints["codespaces"]["listSelectedReposForOrgSecret"]).request,
     preFlightWithRepoForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/new", "get">(baseUrl, endpoints["codespaces"]["preFlightWithRepoForAuthenticatedUser"]).request,
     removeRepositoryForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["codespaces"]["removeRepositoryForSecretForAuthenticatedUser"]).request,
+    removeSelectedRepoFromOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["codespaces"]["removeSelectedRepoFromOrgSecret"]).request,
     repoMachinesForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/machines", "get">(baseUrl, endpoints["codespaces"]["repoMachinesForAuthenticatedUser"]).request,
     setRepositoriesForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["codespaces"]["setRepositoriesForSecretForAuthenticatedUser"]).request,
+    setSelectedReposForOrgSecret:
+      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["codespaces"]["setSelectedReposForOrgSecret"]).request,
     startForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/start", "post">(baseUrl, endpoints["codespaces"]["startForAuthenticatedUser"]).request,
     stopForAuthenticatedUser:
@@ -501,6 +523,8 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/orgs/{org}/dependabot/secrets/{secret_name}", "delete">(baseUrl, endpoints["dependabot"]["deleteOrgSecret"]).request,
     deleteRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/secrets/{secret_name}", "delete">(baseUrl, endpoints["dependabot"]["deleteRepoSecret"]).request,
+    getAlert:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/alerts/{alert_number}", "get">(baseUrl, endpoints["dependabot"]["getAlert"]).request,
     getOrgPublicKey:
       new MoctokitRequestMocker<"/orgs/{org}/dependabot/secrets/public-key", "get">(baseUrl, endpoints["dependabot"]["getOrgPublicKey"]).request,
     getOrgSecret:
@@ -509,6 +533,8 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/secrets/public-key", "get">(baseUrl, endpoints["dependabot"]["getRepoPublicKey"]).request,
     getRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/secrets/{secret_name}", "get">(baseUrl, endpoints["dependabot"]["getRepoSecret"]).request,
+    listAlertsForRepo:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/alerts", "get">(baseUrl, endpoints["dependabot"]["listAlertsForRepo"]).request,
     listOrgSecrets:
       new MoctokitRequestMocker<"/orgs/{org}/dependabot/secrets", "get">(baseUrl, endpoints["dependabot"]["listOrgSecrets"]).request,
     listRepoSecrets:
@@ -519,6 +545,8 @@ const endpointToMethod = (baseUrl: string) => ({
       new MoctokitRequestMocker<"/orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["dependabot"]["removeSelectedRepoFromOrgSecret"]).request,
     setSelectedReposForOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/dependabot/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["dependabot"]["setSelectedReposForOrgSecret"]).request,
+    updateAlert:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/alerts/{alert_number}", "patch">(baseUrl, endpoints["dependabot"]["updateAlert"]).request,
   },
   dependencyGraph: {
     createRepositorySnapshot:
