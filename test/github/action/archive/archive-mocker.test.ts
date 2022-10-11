@@ -21,28 +21,30 @@ describe("setup", () => {
     expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(
       true
     );
-    expect(archiveMocker.getArtifactStore()).toBe(storePath);
+    expect(archiveMocker.getArtifactStore()).toBe(
+      path.join(storePath, "store")
+    );
 
     await archiveMocker.teardown();
   });
 
-  test("default constructor arguments", async () => {
-    const storePath = path.join(process.cwd(), "store");
-    const archiveMocker = new ArchiveArtifactsMocker();
+  test("no port specified", async () => {
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd());
 
     await archiveMocker.setup();
-    expect(process.env["ACTIONS_RUNTIME_URL"]).toBe("http://localhost:8080/");
-    expect(process.env["GITHUB_RUN_ID"]).toBe(archiveMocker.getRunId());
-    expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(
-      true
+    expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_URL")).toBe(
+      false
     );
-    expect(archiveMocker.getArtifactStore()).toBe(storePath);
+    expect(Object.keys(process.env).includes("GITHUB_RUN_ID")).toBe(false);
+    expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(
+      false
+    );
 
     await archiveMocker.teardown();
   });
 
   test("server has already been started", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker();
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8080");
     await archiveMocker.setup();
     await expect(archiveMocker.setup()).rejects.toThrowError();
     await archiveMocker.teardown();
@@ -51,7 +53,7 @@ describe("setup", () => {
 
 describe("teardown", () => {
   test("artifact store was created", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker();
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8080");
 
     await archiveMocker.setup();
     // mimic the store being created
@@ -70,13 +72,15 @@ describe("teardown", () => {
   });
 
   test("archive store was not created", async () => {
-    const storePath = path.join(__dirname, "store1");
+    const storePath = path.join(__dirname, "store");
     mkdirSync(storePath);
-    const archiveMocker = new ArchiveArtifactsMocker(storePath);
+    const archiveMocker = new ArchiveArtifactsMocker(__dirname, "8080");
     await archiveMocker.setup();
     await archiveMocker.teardown();
 
-    expect(existsSync(archiveMocker.getArtifactStore())).toBe(true);
+    expect(existsSync(path.dirname(archiveMocker.getArtifactStore()))).toBe(
+      true
+    );
     expect(Object.keys(process.env).includes("ACTIONS_RUNTIME_TOKEN")).toBe(
       false
     );
@@ -88,17 +92,19 @@ describe("teardown", () => {
   });
 
   test("server has not been started", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker();
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8080");
     await expect(archiveMocker.teardown()).rejects.toThrowError();
+  });
+
+  test("no port specified", async () => {
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd());
+    await expect(archiveMocker.teardown()).resolves.not.toThrowError();
   });
 });
 
 describe("upload", () => {
   test("upload artifacts", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker(
-      path.join(__dirname, "store1"),
-      "3434"
-    );
+    const archiveMocker = new ArchiveArtifactsMocker(__dirname, "3434");
     await archiveMocker.setup();
 
     const files = [
@@ -134,7 +140,7 @@ describe("upload", () => {
 
 describe("download", () => {
   test("download", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker();
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "3435");
     await archiveMocker.setup();
 
     const files = [
@@ -175,10 +181,7 @@ describe("download", () => {
   });
 
   test("download all", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker(
-      path.join(__dirname, "store2"),
-      "3436"
-    );
+    const archiveMocker = new ArchiveArtifactsMocker(__dirname, "3436");
     await archiveMocker.setup();
 
     const files = [

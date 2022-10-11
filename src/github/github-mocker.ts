@@ -19,15 +19,12 @@ export class MockGithub implements Mocker {
   private setupDirCreated: boolean;
   private hasCalledSetup: boolean;
 
-  constructor(config: string | Config, setupPath: string = __dirname) {
+  constructor(config: string | Config, setupPath: string = process.cwd()) {
     this.config = this.validateConfig(config);
     this.setupPath = setupPath;
     this.actionMocker = new ActionMocker(this.config.action, this.setupPath);
     this.envMocker = new EnvMocker(this.config.env);
-    this.repoMocker = new RepositoryMocker(
-      this.config.repositories ?? {},
-      this.setupPath
-    );
+    this.repoMocker = new RepositoryMocker(this.config.repo, this.setupPath);
     this.setupDirCreated = false;
     this.hasCalledSetup = false;
   }
@@ -68,13 +65,12 @@ export class MockGithub implements Mocker {
       update: this.envMocker.update,
       delete: this.envMocker.delete,
       get: this.envMocker.get,
-      getAll: this.envMocker.getAll,
     };
   }
 
-  get repository(): RepositoryStateMethods {
+  get repo(): RepositoryStateMethods {
     if (!this.hasCalledSetup) {
-      throw new Error("Repository has not been setup");
+      throw new Error("Repositories have not been setup");
     }
     return this.repoMocker.repositoryState;
   }

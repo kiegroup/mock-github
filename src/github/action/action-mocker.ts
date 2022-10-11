@@ -1,4 +1,3 @@
-import path from "path";
 import { Mocker } from "../mocker";
 import { Action, ActionMockerMethods } from "./action-mocker.types";
 import { ArchiveArtifactsMocker } from "./archive/archive-mocker";
@@ -13,7 +12,7 @@ export class ActionMocker implements Mocker, ActionMockerMethods {
   constructor(action: Action | undefined, setupPath: string) {
     this.inputMocker = new InputMocker(action?.input);
     this.archiveArtifactsMocker = new ArchiveArtifactsMocker(
-      path.join(setupPath, action?.archive?.artifactStore ?? ""),
+      setupPath,
       action?.archive?.serverPort
     );
   }
@@ -37,7 +36,6 @@ export class ActionMocker implements Mocker, ActionMockerMethods {
       get: this.inputMocker.get,
       delete: this.inputMocker.delete,
       update: this.inputMocker.update,
-      getAll: this.inputMocker.getAll,
     };
   }
 

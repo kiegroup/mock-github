@@ -25,12 +25,10 @@ export class EnvMocker implements Mocker, EnvMethods {
     return value;
   }
 
-  get(key: string): string {
-    const value = this.currentEnv[key] ?? process.env[key];
-    return value ?? "";
-  }
-
-  getAll(): Env {
+  get(key?: string): string | Env {
+    if (key) {
+      return this.currentEnv[key] ?? process.env[key] ?? "";
+    }
     return this.currentEnv;
   }
 

@@ -110,7 +110,7 @@ describe("getters", () => {
     const github = new MockGithub(path.join(resources, "config-correct.json"));
     expect(() => github.env).toThrowError();
     expect(() => github.action).toThrowError();
-    expect(() => github.repository).toThrowError();
+    expect(() => github.repo).toThrowError();
   });
 
   test("accessing getters after teardown", async () => {
@@ -119,7 +119,7 @@ describe("getters", () => {
     await github.teardown();
     expect(() => github.env).toThrowError();
     expect(() => github.action).toThrowError();
-    expect(() => github.repository).toThrowError();
+    expect(() => github.repo).toThrowError();
   });
 
   test("accessing getters after setup", async () => {
@@ -127,6 +127,6 @@ describe("getters", () => {
     await github.setup();
     expect(() => github.env).not.toThrowError();
     expect(() => github.action).not.toThrowError();
-    expect(() => github.repository).not.toThrowError();
+    expect(() => github.repo).not.toThrowError();
   });
 });

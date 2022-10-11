@@ -17,7 +17,7 @@ import {
 let repoMocker: RepositoryMocker;
 let historyMocker: RepositoryHistory;
 let git: SimpleGit;
-const repoPath = path.join(__dirname, "repoA");
+const repoPath = path.join(__dirname, "repo", "repoA");
 
 beforeEach(async () => {
   // setup an empty repository

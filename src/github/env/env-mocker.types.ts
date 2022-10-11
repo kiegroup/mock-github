@@ -8,6 +8,5 @@ export const ENV_PREFIX = "GITHUB_";
 export interface EnvMethods {
   update(key: string, value: string): void;
   delete(key: string): string;
-  get(key: string): string;
-  getAll(): Env;
+  get(key?: string): string | Env;
 }
