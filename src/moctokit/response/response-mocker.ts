@@ -1,4 +1,4 @@
-import { paths } from "@octokit/openapi-types";
+import { paths } from "@octokit/openapi-types-ghec";
 import { ExtractMockResponse } from "./respone-mocker.types";
 import { ResponseMocker } from "../../endpoint-mocker/response/abstract-response-mocker";
 
