@@ -303,7 +303,7 @@ describe("getState", () => {
       localBranches: ["local1", "local2"],
       pushedBranches: ["pushed1", "pushed2"],
       currentBranch: "local1",
-      forkedFrom: "project-forked"
+      forkedFrom: "project-forked",
     };
     const repoState = new RepositoryState({ projectA: repoConfig }, setupPath);
     await expect(repoState.getState("projectA")).resolves.toStrictEqual({

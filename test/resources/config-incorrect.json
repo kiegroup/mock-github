@@ -1,5 +1,5 @@
 {
-  "repositories": {
+  "repo": {
     "repoA": {
       "localBranches": ["branch1"]
     }
@@ -11,8 +11,6 @@
     "input": {
       "actionInput": "input"
     },
-    "archive": {
-      "artifactStore": "/store"
-    }
+    "archive": {}
   }
 }

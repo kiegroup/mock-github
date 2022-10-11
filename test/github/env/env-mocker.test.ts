@@ -6,7 +6,7 @@ describe("setup", () => {
     const envMocker = new EnvMocker(undefined);
     const spy = jest.spyOn(envMocker, "update");
     await envMocker.setup();
-    expect(envMocker.getAll()).toStrictEqual(DEFAULT_ENV);
+    expect(envMocker.get()).toStrictEqual(DEFAULT_ENV);
     expect(spy).toHaveBeenCalledTimes(0);
     await envMocker.teardown();
   });
@@ -19,7 +19,7 @@ describe("setup", () => {
     const envMocker = new EnvMocker(customEnv);
     const spy = jest.spyOn(envMocker, "update");
     await envMocker.setup();
-    expect(envMocker.getAll()).toStrictEqual(customEnv);
+    expect(envMocker.get()).toStrictEqual(customEnv);
     expect(spy).toHaveBeenCalledTimes(2);
     expect(process.env["GITHUB_TEST1"]).toBe(customEnv["test1"]);
     expect(process.env["GITHUB_TEST2"]).toBe(customEnv["test2"]);
@@ -33,7 +33,7 @@ describe("teardown", () => {
     const spy = jest.spyOn(envMocker, "delete");
     await envMocker.setup();
     await envMocker.teardown();
-    expect(envMocker.getAll()).toStrictEqual(DEFAULT_ENV);
+    expect(envMocker.get()).toStrictEqual(DEFAULT_ENV);
     expect(spy).toHaveBeenCalledTimes(0);
   });
 
@@ -46,7 +46,7 @@ describe("teardown", () => {
     const spy = jest.spyOn(envMocker, "delete");
     await envMocker.setup();
     await envMocker.teardown();
-    expect(envMocker.getAll()).toStrictEqual(DEFAULT_ENV);
+    expect(envMocker.get()).toStrictEqual(DEFAULT_ENV);
     expect(spy).toHaveBeenCalledTimes(2);
     expect(Object.keys(process.env).includes("GITHUB_TEST1")).toBe(false);
     expect(Object.keys(process.env).includes("GITHUB_TEST2")).toBe(false);

@@ -6,7 +6,7 @@ import { RepositorySchema } from "./repository";
 export const GithubConfigSchema: JSONSchemaType<Config> = {
   type: "object",
   properties: {
-    repositories: {
+    repo: {
       type: "object",
       additionalProperties: RepositorySchema,
       required: [],

@@ -33,12 +33,11 @@ export class InputMocker implements Mocker, InputMockerMethods {
     return value;
   }
 
-  getAll(): Input {
+  get(key?: string): string | Input {
+    if (key) {
+      return this.currentInput[key] ?? "";
+    }
     return this.currentInput;
-  }
-
-  get(key: string): string {
-    return this.currentInput[key] ?? "";
   }
 
   async setup(): Promise<void> {

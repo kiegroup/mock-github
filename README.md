@@ -693,7 +693,7 @@ await github.setup();
 await github.teardown();
 ```
 
-Use the default setup directory - `process.cwd()/repo`
+Use the default setup directory - `process.cwd()`
 
 ```typescript
 const github = new MockGithub("path to config json file");
@@ -719,7 +719,7 @@ The configuration object/file has 3 sections and all of them are optional. So yo
 
 ### Repositories
 
-A local repository is configured and created by adding a key to the `repo` section of the configuration. The key is the name of the repository. The value for that key is an object with the following fields:
+Local repositories can be configured and created by adding a key to the `repo` section of the configuration. The key is the name of the repository. The value for that key is an object with fields described in the table below. All the repositories are created in `${setupPath}/repo` where `setupPath` is the path which is passed to `MockGithub`
 
 | Attribute Name | Type        | Required | Default                              | Description                                                                                                                                                                |
 | :------------- | :---------- | :------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -849,34 +849,34 @@ const state = github.repo.getState("repoA");
 /**
  * Returns the name of the repository if repoA was forked from a repo. if it wasn't then it returns undefined
  */
-const fork = github.repo.getForkedFrom("repo");
+const fork = github.repo.getForkedFrom("repoA");
 
 /**
  * Returns true if repoA was forked otherwise false
  */
-const isFork = github.repo.isFork("repo");
+const isFork = github.repo.isFork("repoA");
 
 /**
  * Returns the location of the repository
  */
-const path = github.repo.getPath("repo");
+const path = github.repo.getPath("repoA");
 
 /**
  * Returns owner of the repository
  */
-const owner = github.repo.getOwner("repo");
+const owner = github.repo.getOwner("repoA");
 
 /**
  * Returns the current branch, local and pushed branches as an object
  * {  localBranches: string[], pushedBranches: string[], currentBranch: string }
  */
-const branches = github.repo.getBranchState("repo");
+const branches = github.repo.getBranchState("repoA");
 
 /**
  * Returns the location of all the files in the repository. A location comprises of the path of the file and the branch it is on
  * {  path: string, branch: string }[]
  */
-const repoFs = await github.repo.getFileSystemState("repo");
+const repoFs = await github.repo.getFileSystemState("repoA");
 ```
 
 ### Env
@@ -1007,14 +1007,13 @@ const valueAll = github.action.input.get();
 
 ### Archive artifacts
 
-Starts an express server that mimics the server actually used by github action to archive artifacts. Constructed from [nektos/act](https://github.com/nektos/act/blob/master/pkg/artifacts/server.go)
+Starts an express server that mimics the server actually used by github action to archive artifacts. Constructed from [nektos/act](https://github.com/nektos/act/blob/master/pkg/artifacts/server.go). The artifacts are stored in `${setupPath}/store` where `setupPath` is the path passed to `MockGithub`
 
 ```typescript
 const github = new MockGithub({
   action: {
     archive: {
-      artifactStore: "/home/artifacts/",
-      port: "8000",
+      serverPort: "8000",
     },
   },
 });
@@ -1023,10 +1022,9 @@ const github = new MockGithub({
 await github.setup();
 ```
 
-| Attribute Name | Type     | Required | Default               | Description                                                                         |
-| :------------- | :------- | :------- | :-------------------- | :---------------------------------------------------------------------------------- |
-| artifactStore  | `string` | No       | `process.cwd()/store` | The directory in which the uploaded artifacts will be stored in and downloaded from |
-| serverPort     | `string` | No       | 8080                  | The port of the server which will receive requests to upload/download artifacts     |
+| Attribute Name | Type     | Required | Default | Description                                                                                                                           |
+| :------------- | :------- | :------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------ |
+| serverPort     | `string` | Yes      |         | The port of the server which will receive requests to upload/download artifacts. If no port is specified, then the server won't start |
 
 #### Utility functions
 
@@ -1036,8 +1034,7 @@ There are utility functions that return the location of the artifact store and r
 const github = new MockGithub({
   action: {
     archive: {
-      artifactStore: "/home/artifacts/",
-      port: "8000",
+      serverPort: "8000",
     },
   },
 });

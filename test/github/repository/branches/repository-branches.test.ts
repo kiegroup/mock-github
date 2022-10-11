@@ -6,7 +6,7 @@ import { RepositoryMocker } from "../../../../src/github/repository/repository-m
 let repoMocker: RepositoryMocker;
 let branchCreator: RepositoryBranches;
 let git: SimpleGit;
-const repoPath = path.join(__dirname, "repoA");
+const repoPath = path.join(__dirname, "repo", "repoA");
 
 beforeEach(async () => {
   // setup an empty repository

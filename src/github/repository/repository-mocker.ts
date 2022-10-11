@@ -2,7 +2,7 @@ import simpleGit, { SimpleGit } from "simple-git";
 import { Mocker } from "../mocker";
 import { Repositories, Repository } from "./repository-mocker.types";
 import path from "path";
-import { mkdirSync, rm, writeFile } from "fs-extra";
+import { existsSync, mkdirSync, rm, writeFile } from "fs-extra";
 import { RepositoryHistory } from "./history/repository-history-mocker";
 import { RepositoryBranches } from "./branches/repository-branches";
 import {
@@ -22,10 +22,12 @@ export class RepositoryMocker implements Mocker {
   private repositories: Repositories;
   private setupPath: string;
   private _repositoryState: RepositoryState;
+  private setupDirCreated: boolean;
 
-  constructor(repositories: Repositories, setupPath: string) {
-    this.repositories = repositories;
-    this.setupPath = setupPath;
+  constructor(repositories: Repositories | undefined, setupPath: string) {
+    this.repositories = repositories ?? {};
+    this.setupPath = path.join(setupPath, "repo");
+    this.setupDirCreated = !existsSync(this.setupPath);
     this._repositoryState = new RepositoryState(
       this.repositories,
       this.setupPath
@@ -48,12 +50,14 @@ export class RepositoryMocker implements Mocker {
    */
   async teardown(): Promise<void> {
     await Promise.all(
-      Object.keys(this.repositories).map((repoName) =>
-        rm(this._repositoryState.getPath(repoName)!, {
-          recursive: true,
-          force: true,
-        })
-      )
+      this.setupDirCreated
+        ? [rm(this.setupPath, { recursive: true, force: true })]
+        : Object.keys(this.repositories).map((repoName) =>
+            rm(this._repositoryState.getPath(repoName)!, {
+              recursive: true,
+              force: true,
+            })
+          )
     );
   }
 

@@ -7,8 +7,7 @@ export const DEFAULT_INPUT: Input = {};
 export const INPUT_PREFIX = "INPUT_";
 
 export interface InputMockerMethods {
-  getAll(): Input;
-  get(key: string): string;
+  get(key?: string): string | Input;
   update(key: string, value: string): void;
   delete(key: string): string;
 }

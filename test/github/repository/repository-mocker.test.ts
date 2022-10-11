@@ -92,10 +92,7 @@ describe("setup", () => {
       }).status
     ).toBe(0);
 
-    await Promise.all([
-      rm(pathA, { recursive: true }),
-      rm(pathB, { recursive: true }),
-    ]);
+    await Promise.all([rm(path.dirname(pathA), { recursive: true })]);
   });
 });
 

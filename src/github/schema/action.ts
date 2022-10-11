@@ -18,11 +18,8 @@ export const ActionSchema: JSONSchemaType<Action> = {
         serverPort: {
           type: "string",
         },
-        artifactStore: {
-          type: "string",
-        },
       },
-      required: ["artifactStore", "serverPort"],
+      required: ["serverPort"],
       nullable: true,
     },
   },
