@@ -177,7 +177,28 @@ mockedCreateForRepo.reply();
 
 #### Chaining responses
 
-To be implemented
+You can chain multiple responses together
+
+```typescript
+const moctokit = new Moctokit();
+/**
+ * For the 1st, 2nd, 3rd, 4th and 5th api call the response status would be 200
+ * For the 6th api call the response status would be 201
+ * For the 7th and 8th api call the response status would be 400
+ * For the 9th api call the response status would be 404
+ */
+moctokit.rest.projects.createForRepo()
+                      .reply({
+                        status: 200,
+                        data: {owner_url: "whatever url"}, repeat: 5
+                      })
+                      .setResponse([
+                        {status: 201, data: {owner_url: "something"}},
+                        {status: 400, data: {owner_url: "something else"}, repeat: 2},
+                      ])
+                      .reply()
+                      .reply({status: 404, data: {owner_url: "something completely difference"}})
+```
 
 ### Typescript Support
 
@@ -498,7 +519,46 @@ mockedGoogle.reply();
 
 #### Chaining responses
 
-To be implemented
+You can chain multiple responses together
+
+```typescript
+const mockapi = new Mockapi({
+  google: {
+    baseUrl: "https://google.com",
+    endpoints: {
+      root: {
+        get: {
+          path: "/{search}",
+          method: "get",
+          parameters: {
+            path: ["search"],
+            query: ["logo"],
+            body: [],
+          },
+        },
+      },
+    },
+  }
+});
+
+/**
+ * For the 1st, 2nd, 3rd, 4th and 5th api call the response status would be 200
+ * For the 6th api call the response status would be 201
+ * For the 7th and 8th api call the response status would be 400
+ * For the 9th api call the response status would be 404
+ */
+mockapi.mock.google.root.get()
+                      .reply({
+                        status: 200,
+                        data: {owner_url: "whatever url"}, repeat: 5
+                      })
+                      .setResponse([
+                        {status: 201, data: {owner_url: "something"}},
+                        {status: 400, data: {owner_url: "something else"}, repeat: 2},
+                      ])
+                      .reply()
+                      .reply({status: 404, data: {owner_url: "something completely difference"}})
+```
 
 ### Typescript Support
 
