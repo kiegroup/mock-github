@@ -71,7 +71,9 @@ export abstract class ResponseMocker<T, S extends number> {
           .reply(response.status, response.data as nock.Body);
         this.interceptor = this.createInterceptor();
       });
+      this.responses = [];
     }
+    return this;
   }
 
   private createInterceptor(): nock.Interceptor {
