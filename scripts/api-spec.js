@@ -4,7 +4,10 @@ const path = require("path");
 const graphql = require("github-openapi-graphql-query");
 const prettier = require("prettier");
 
-const version = process.env.VERSION?.replace(/^v/, "") ?? "7.14.0";
+if (!process.env.VERSION) {
+  throw new Error(`VERSION environment variable must be set`);
+}
+const version = process.env.VERSION.replace(/^v/, "");
 
 const QUERY = `
   query ($version: String!, $ignoreChangesBefore: String!) {
