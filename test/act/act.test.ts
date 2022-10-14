@@ -128,13 +128,11 @@ describe("secrets", () => {
     } as any);
 
     await act.setSecret("secret1", "val").runEvent("pull_request");
-    expect(spawnSyncSpy).toHaveBeenCalledWith("act", [
-      "-W",
-      resources,
-      "pull_request",
-      "-s",
-      "secret1=val",
-    ]);
+    expect(spawnSyncSpy).toHaveBeenCalledWith(
+      "act",
+      ["-W", resources, "pull_request", "-s", "secret1=val"],
+      { cwd: resources }
+    );
     spawnSyncSpy.mockRestore();
   });
 
@@ -152,13 +150,11 @@ describe("secrets", () => {
       .setSecret("secret2", "val2")
       .deleteSecret("secret1")
       .runEvent("pull_request");
-    expect(spawnSyncSpy).toHaveBeenCalledWith("act", [
-      "-W",
-      resources,
-      "pull_request",
-      "-s",
-      "secret2=val2",
-    ]);
+    expect(spawnSyncSpy).toHaveBeenCalledWith(
+      "act",
+      ["-W", resources, "pull_request", "-s", "secret2=val2"],
+      { cwd: resources }
+    );
     spawnSyncSpy.mockRestore();
   });
 
@@ -176,11 +172,11 @@ describe("secrets", () => {
       .setSecret("secret2", "val2")
       .clearSecrets()
       .runEvent("pull_request");
-    expect(spawnSyncSpy).toHaveBeenCalledWith("act", [
-      "-W",
-      resources,
-      "pull_request",
-    ]);
+    expect(spawnSyncSpy).toHaveBeenCalledWith(
+      "act",
+      ["-W", resources, "pull_request"],
+      { cwd: resources }
+    );
     spawnSyncSpy.mockRestore();
   });
 });
