@@ -49,7 +49,7 @@ export class ActionCompiler {
         // Silence circular dependency warning for nock package
         if (
           warning.code === "CIRCULAR_DEPENDENCY" &&
-          !warning.importer?.indexOf(path.normalize("node_modules/nock/lib/"))
+          warning.importer?.includes("node_modules/nock/lib/")
         ) {
           return;
         }
