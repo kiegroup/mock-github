@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { DEFAULT_JOB, Step, Workflow } from "./act.types";
+import { DEFAULT_JOB, RunOpts, Step, Workflow } from "./act.types";
 
 export class Act {
   private storedSecrets: Record<string, string>;
@@ -68,26 +68,43 @@ export class Act {
     return output;
   }
 
-  async runJob(jobId: string, cwd: string = this.cwd): Promise<Step[]> {
-    return this.run(["-j", jobId], cwd);
+  async runJob(jobId: string, opts?: RunOpts): Promise<Step[]> {
+    return this.run(["-j", jobId], opts);
   }
 
-  async runEvent(event: string, cwd: string = this.cwd): Promise<Step[]> {
-    return this.run([event], cwd);
+  async runEvent(event: string, opts?: RunOpts): Promise<Step[]> {
+    return this.run([event], opts);
   }
 
   // wrapper around the act cli command
   private act(cwd: string, ...args: string[]) {
     const response = spawnSync("act", ["-W", cwd, ...args], { cwd });
-    if (response.status === null) {
+    if (
+      response.status === null ||
+      /Cannot connect to the Docker daemon at .+/.test(
+        response.stderr?.toString()
+      )
+    ) {
       throw new Error(response.error?.message);
     }
     return response.stdout.toString();
   }
 
-  private async run(cmd: string[], cwd: string): Promise<Step[]> {
+  private async run(cmd: string[], opts?: RunOpts): Promise<Step[]> {
     const secrets = this.generateSecrets();
-    const response = this.act(cwd, ...cmd, ...secrets);
+    const response = this.act(
+      opts?.cwd ?? this.cwd,
+      ...cmd,
+      ...secrets,
+      ...(opts?.artifactServer
+        ? [
+            "--artifact-server-path",
+            opts?.artifactServer.path,
+            "--artifact-server-port",
+            opts?.artifactServer.port,
+          ]
+        : [])
+    );
     return this.extractRunOutput(response);
   }
 

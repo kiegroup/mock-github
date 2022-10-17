@@ -75,7 +75,7 @@ describe("run", () => {
     const act = new Act();
     const output = await act
       .setSecret("SECRET1", "secret1")
-      .runJob("push1", resources);
+      .runJob("push1", { cwd: resources });
 
     // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toMatchObject([
@@ -98,7 +98,7 @@ describe("run", () => {
     const act = new Act();
     const output = await act
       .setSecret("SECRET1", "secret1")
-      .runEvent("pull_request", resources);
+      .runEvent("pull_request", { cwd: resources });
     // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toStrictEqual([
       {

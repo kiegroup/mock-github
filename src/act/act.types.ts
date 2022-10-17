@@ -17,3 +17,11 @@ export const DEFAULT_JOB: Step = {
   status: -1,
   output: "",
 };
+
+export type RunOpts = {
+  cwd?: string;
+  artifactServer?: {
+    path: string;
+    port: string;
+  };
+};
