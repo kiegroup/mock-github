@@ -187,17 +187,22 @@ const moctokit = new Moctokit();
  * For the 7th and 8th api call the response status would be 400
  * For the 9th api call the response status would be 404
  */
-moctokit.rest.projects.createForRepo()
-                      .reply({
-                        status: 200,
-                        data: {owner_url: "whatever url"}, repeat: 5
-                      })
-                      .setResponse([
-                        {status: 201, data: {owner_url: "something"}},
-                        {status: 400, data: {owner_url: "something else"}, repeat: 2},
-                      ])
-                      .reply()
-                      .reply({status: 404, data: {owner_url: "something completely difference"}})
+moctokit.rest.projects
+  .createForRepo()
+  .reply({
+    status: 200,
+    data: { owner_url: "whatever url" },
+    repeat: 5,
+  })
+  .setResponse([
+    { status: 201, data: { owner_url: "something" } },
+    { status: 400, data: { owner_url: "something else" }, repeat: 2 },
+  ])
+  .reply()
+  .reply({
+    status: 404,
+    data: { owner_url: "something completely difference" },
+  });
 ```
 
 ### Typescript Support
@@ -538,7 +543,7 @@ const mockapi = new Mockapi({
         },
       },
     },
-  }
+  },
 });
 
 /**
@@ -547,17 +552,22 @@ const mockapi = new Mockapi({
  * For the 7th and 8th api call the response status would be 400
  * For the 9th api call the response status would be 404
  */
-mockapi.mock.google.root.get()
-                      .reply({
-                        status: 200,
-                        data: {owner_url: "whatever url"}, repeat: 5
-                      })
-                      .setResponse([
-                        {status: 201, data: {owner_url: "something"}},
-                        {status: 400, data: {owner_url: "something else"}, repeat: 2},
-                      ])
-                      .reply()
-                      .reply({status: 404, data: {owner_url: "something completely difference"}})
+mockapi.mock.google.root
+  .get()
+  .reply({
+    status: 200,
+    data: { owner_url: "whatever url" },
+    repeat: 5,
+  })
+  .setResponse([
+    { status: 201, data: { owner_url: "something" } },
+    { status: 400, data: { owner_url: "something else" }, repeat: 2 },
+  ])
+  .reply()
+  .reply({
+    status: 404,
+    data: { owner_url: "something completely difference" },
+  });
 ```
 
 ### Typescript Support
@@ -574,7 +584,7 @@ If you are using `act` programmatically in your test cases and are running your 
 
 ### Current working directory
 
-You can set the current working directory. This directory is from where `act` will read the workflow files from. Setting a current working directory is equivalent to calling `act` with `-W /path/to/cwd` option for any subsequent call. By default, the root of the current project is used as the current working directory.
+You can set the current working directory. This directory is from where `act` will read the workflow files from. Setting a current working directory is equivalent to calling `act` with `-W /path/to/cwd` option in the `/path/to/cwd` directory for any subsequent call. By default, the root of the current project is used as the current working directory.
 
 ```typescript
 // define it during construction
@@ -645,11 +655,24 @@ await act.list("pull_request");
 
 ### Run a job
 
+When running a job (which ever way), you can optionally pass run options
+
+```typescript
+{
+  cwd?: string, // overrides the global cwd and uses the one passed in options
+  // activates the artifact server
+  artifactServer?: {
+    path: string; // where to store the uploaded artifacts
+    port: string; // where to run the artifact server
+  };
+}
+```
+
 #### Using job id
 
 You can execute a job using a job id. Equivalent of running `act -j job_id`.
 
-It returns an array of `Job` outputs. Described [below](#run-result)
+It returns an array of `Step` outputs. Described [below](#run-result)
 
 ```typescript
 const act = new Act();
@@ -689,7 +712,7 @@ result = await act
 
 #### Run result
 
-Each run returns an array of `Job` objects that describes what was executed, what was the output and whether it failed or not. Schema:
+Each run returns an array of `Step` objects that describes what was executed, what was the output and whether it failed or not. Schema:
 
 ```typescript
 [

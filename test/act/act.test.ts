@@ -75,7 +75,7 @@ describe("run", () => {
     const act = new Act();
     const output = await act
       .setSecret("SECRET1", "secret1")
-      .runJob("push1", resources);
+      .runJob("push1", { cwd: resources });
 
     // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toMatchObject([
@@ -98,7 +98,7 @@ describe("run", () => {
     const act = new Act();
     const output = await act
       .setSecret("SECRET1", "secret1")
-      .runEvent("pull_request", resources);
+      .runEvent("pull_request", { cwd: resources });
     // act seems to behave a bit differently in different env - In GHA, name has a prefix Main
     expect(output).toStrictEqual([
       {
@@ -128,13 +128,11 @@ describe("secrets", () => {
     } as any);
 
     await act.setSecret("secret1", "val").runEvent("pull_request");
-    expect(spawnSyncSpy).toHaveBeenCalledWith("act", [
-      "-W",
-      resources,
-      "pull_request",
-      "-s",
-      "secret1=val",
-    ]);
+    expect(spawnSyncSpy).toHaveBeenCalledWith(
+      "act",
+      ["-W", resources, "pull_request", "-s", "secret1=val"],
+      { cwd: resources }
+    );
     spawnSyncSpy.mockRestore();
   });
 
@@ -152,13 +150,11 @@ describe("secrets", () => {
       .setSecret("secret2", "val2")
       .deleteSecret("secret1")
       .runEvent("pull_request");
-    expect(spawnSyncSpy).toHaveBeenCalledWith("act", [
-      "-W",
-      resources,
-      "pull_request",
-      "-s",
-      "secret2=val2",
-    ]);
+    expect(spawnSyncSpy).toHaveBeenCalledWith(
+      "act",
+      ["-W", resources, "pull_request", "-s", "secret2=val2"],
+      { cwd: resources }
+    );
     spawnSyncSpy.mockRestore();
   });
 
@@ -176,11 +172,11 @@ describe("secrets", () => {
       .setSecret("secret2", "val2")
       .clearSecrets()
       .runEvent("pull_request");
-    expect(spawnSyncSpy).toHaveBeenCalledWith("act", [
-      "-W",
-      resources,
-      "pull_request",
-    ]);
+    expect(spawnSyncSpy).toHaveBeenCalledWith(
+      "act",
+      ["-W", resources, "pull_request"],
+      { cwd: resources }
+    );
     spawnSyncSpy.mockRestore();
   });
 });
