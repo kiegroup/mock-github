@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
     "test": "jest",
-    "test:report": "npm test -- --coverage",
+    "test:report": "npm test -- --coverage --testResultsProcessor=jest-sonar-reporter",
     "pretest:build": "tsc",
     "test:build": "npm test -- build-test/",
     "posttest:build": "rm -rf ./build-test",
