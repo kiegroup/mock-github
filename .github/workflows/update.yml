@@ -1,5 +1,5 @@
 name: Update
-"on":
+on:
   repository_dispatch:
     types: [octokit/openapi release]
   workflow_dispatch:

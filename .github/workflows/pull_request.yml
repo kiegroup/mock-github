@@ -48,23 +48,3 @@ jobs:
         env:
           LOGNAME: username
 
-  coverage:
-    runs-on: ubuntu-latest  
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup node and act cli
-        uses: ./.github/actions/setup-node-and-act
-        with:
-          node-version: 14.x
-          default-runner-size: medium
-      - name: test report
-        id: coverage
-        uses: ArtiomTr/jest-coverage-report-action@v2
-        env:
-          LOGNAME: username
-        with:
-          output: report-markdown
-      - uses: marocchino/sticky-pull-request-comment@v2
-        if: always()
-        with:
-          message: ${{ steps.coverage.outputs.report }}
