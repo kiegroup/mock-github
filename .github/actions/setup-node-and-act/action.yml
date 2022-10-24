@@ -21,6 +21,6 @@ runs:
         node-version: ${{ inputs.node-version }}
       
     - name: Set up act
-      uses: shubhbapna/setup-act@v1
+      uses: shubhbapna/setup-act@v2
       with:
         default-runner-size: ${{ inputs.default-runner-size }}
