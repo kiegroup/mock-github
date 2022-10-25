@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened]
+
+name: coverage report
+
+jobs:
+  test-coverage:
+    name: Publish coverage report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup sonarqube
+        uses: warchant/setup-sonar-scanner@v3     
+      - name: Setup node and act cli
+        uses: ./.github/actions/setup-node-and-act
+        with:
+          node-version: 14
+          default-runner-size: medium
+      - run: npm ci
+      - run: npm run test:report
+        env:
+          LOGNAME: username
+
+      - run: sonar-scanner
+          -Dsonar.organization=kiegroup
+          -Dsonar.projectKey=mock-github
+          -Dsonar.projectName="Mock Github"
+          -Dsonar.sources=$GITHUB_WORKSPACE/src
+          -Dsonar.host.url=${{ secrets.SONAR_URL }}
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.tests=test
+          -Dsonar.testExecutionReportPaths=coverage/test-report.xml
+          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          -Dsonar.exclusions=test/**,**/__mocks__/**,jest.config.ts,src/action-compiler/mocker/**,src/moctokit/generated/**,src/**/*.types.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
