@@ -27,8 +27,8 @@ jobs:
 
       - run: sonar-scanner
           -Dsonar.organization=kiegroup
-          -Dsonar.projectKey=mock-github
-          -Dsonar.projectName="Mock Github"
+          -Dsonar.projectKey=kiegroup_mock-github
+          -Dsonar.projectName="mock-github"
           -Dsonar.sources=$GITHUB_WORKSPACE/src
           -Dsonar.host.url=${{ secrets.SONAR_URL }}
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
