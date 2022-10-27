@@ -7,6 +7,20 @@
   "files": [
     "build"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kiegroup/mock-github.git"
+  },
+  "homepage": "https://github.com/kiegroup/mock-github#readme",
+  "bugs": {
+    "url": "https://github.com/kiegroup/mock-github/issues"
+  },
+  "keywords": [
+    "github",
+    "github actions",
+    "mock",
+    "test"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
     "test": "jest",
