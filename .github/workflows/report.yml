@@ -2,8 +2,8 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, reopened]
+    paths:
+      - "src/**"
 
 name: coverage report
 
