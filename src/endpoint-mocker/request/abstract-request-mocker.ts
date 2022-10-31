@@ -19,31 +19,7 @@ export abstract class RequestMocker {
   }
 
   protected parseParams(params?: Params) {
-    let pathParams: Record<string, unknown> = {};
-    let query: DataMatcherMap | undefined = undefined;
-    let requestBody: RequestBodyMatcher | undefined = undefined;
-    if (params) {
-      // separate out the path, query and body params
-      for (const [param, value] of Object.entries(params)) {
-        if (this.endpointDetails.parameters.path.includes(param)) {
-          pathParams[param as string] = value;
-        }
-
-        if (this.endpointDetails.parameters.query.includes(param)) {
-          if (!query) {
-            query = {};
-          }
-          query[param as string] = value as DataMatcher;
-        }
-
-        if (this.endpointDetails.parameters.body.includes(param)) {
-          if (!requestBody) {
-            requestBody = {};
-          }
-          requestBody[param as string] = value as DataMatcher;
-        }
-      }
-    }
+    const { pathParams, query, requestBody } = this.extractParams(params);
 
     let path: string | RegExp = this.endpointDetails.path;
     let regexFlag = false;
@@ -60,7 +36,7 @@ export abstract class RequestMocker {
         replacementParam = ".+";
         regexFlag = true;
       }
-      path = (path as string).replace(new RegExp(match), replacementParam);
+      path = path.replace(new RegExp(match), replacementParam);
     }
 
     // if a regex expression was encountered then path is used as a regex expression
@@ -69,5 +45,37 @@ export abstract class RequestMocker {
     }
 
     return { path, query, requestBody };
+  }
+
+  private extractParams(params?: Params) {
+    let pathParams: Record<string, unknown> = {};
+    let query: DataMatcherMap | undefined = undefined;
+    let requestBody: RequestBodyMatcher | undefined = undefined;
+    if (!params) {
+      return { pathParams, query, requestBody };
+    }
+
+    // separate out the path, query and body params
+    for (const [param, value] of Object.entries(params)) {
+      if (this.endpointDetails.parameters.path.includes(param)) {
+        pathParams[param] = value;
+      }
+
+      if (this.endpointDetails.parameters.query.includes(param)) {
+        if (!query) {
+          query = {};
+        }
+        query[param] = value as DataMatcher;
+      }
+
+      if (this.endpointDetails.parameters.body.includes(param)) {
+        if (!requestBody) {
+          requestBody = {};
+        }
+        requestBody[param] = value as DataMatcher;
+      }
+    }
+
+    return { pathParams, query, requestBody };
   }
 }

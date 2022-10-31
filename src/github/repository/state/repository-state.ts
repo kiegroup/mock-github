@@ -114,7 +114,7 @@ export class RepositoryState implements RepositoryStateMethods {
       if (action.action === GitActionTypes.PUSH) {
         const pushAction = action as Push;
         if (pushAction.files) {
-          for (const file of pushAction.files ?? []) {
+          for (const file of pushAction.files) {
             promises.push(this.getFile(file, pushAction.branch));
           }
         } else {
