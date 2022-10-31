@@ -51,7 +51,7 @@ export class Act {
   async list(event?: string, cwd: string = this.cwd): Promise<Workflow[]> {
     const response = this.act(cwd, ...(event ? [event, "-l"] : ["-l"]));
 
-    const output = response
+    return response
       .split("\n")
       .slice(1, -1) // remove first (title columns) and last column
       .filter((element) => element !== "" && element.split("  ").length > 1) // remove empty strings and warnings
@@ -65,7 +65,6 @@ export class Act {
           events: splitElement[5].trim(),
         };
       });
-    return output;
   }
 
   async runJob(jobId: string, opts?: RunOpts): Promise<Step[]> {

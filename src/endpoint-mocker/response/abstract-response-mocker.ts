@@ -65,10 +65,10 @@ export abstract class ResponseMocker<T, S extends number> {
         .reply(response.status, response.data as nock.Body);
       this.interceptor = this.createInterceptor();
     } else {
-      this.responses.forEach((response) => {
+      this.responses.forEach((res) => {
         this.scope = this.interceptor
-          .times(response.repeat ?? 1)
-          .reply(response.status, response.data as nock.Body);
+          .times(res.repeat ?? 1)
+          .reply(res.status, res.data as nock.Body);
         this.interceptor = this.createInterceptor();
       });
       this.responses = [];
@@ -83,7 +83,7 @@ export abstract class ResponseMocker<T, S extends number> {
       .query(this.query ?? true);
   }
 
-  private isRegex<T>(data: T | RegExp) {
+  private isRegex<R>(data: R | RegExp) {
     return {
       value: data instanceof RegExp ? data.source : data,
       isRegex: data instanceof RegExp,
