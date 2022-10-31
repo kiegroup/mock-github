@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - "src/**"
+      - "test/**"
 
 name: coverage report
 
