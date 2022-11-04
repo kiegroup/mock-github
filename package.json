@@ -1,7 +1,7 @@
 {
   "name": "@kie/mock-github",
   "version": "0.1.0",
-  "description": "",
+  "description": "A bunch of tools to configure and create a local github environment to test your github actions in without having to clutter your github with test repositories, actions or hitting github api rate limits.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
@@ -19,7 +19,9 @@
     "github",
     "github actions",
     "mock",
-    "test"
+    "test",
+    "act",
+    "nektos/act"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",

@@ -39,7 +39,7 @@ export class ArchiveServer {
 
     this.server.patch(
       "/_apis/pipelines/workflows/:runId/artifacts",
-      (req, res) => {
+      (_req, res) => {
         res.status(200).json({ message: "success" });
       }
     );
@@ -77,7 +77,7 @@ export class ArchiveServer {
         const { runId } = req.params;
         const artifacts: Record<string, string>[] = [];
         const baseURL = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
-        totalist(path.join(this.store, runId), (name, abs, stats) => {
+        totalist(path.join(this.store, runId), (name, _abs, _stats) => {
           name = name.replace("\\", "/");
           const fileDetails = {
             name: name.split("/")[0],
@@ -93,19 +93,16 @@ export class ArchiveServer {
       const { container } = req.params;
       const baseURL = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
       const files: Record<string, string>[] = [];
-      totalist(
-        path.join(this.store, container as string),
-        (name, abs, stats) => {
-          files.push({
-            path: path.normalize(name),
-            itemType: "file",
-            contentLocation: `${baseURL}/download/${container}/${name.replace(
-              "\\",
-              "/"
-            )}`,
-          });
-        }
-      );
+      totalist(path.join(this.store, container), (name, _abs, _stats) => {
+        files.push({
+          path: path.normalize(name),
+          itemType: "file",
+          contentLocation: `${baseURL}/download/${container}/${name.replace(
+            "\\",
+            "/"
+          )}`,
+        });
+      });
       res.status(200).json({ value: files });
     });
 
