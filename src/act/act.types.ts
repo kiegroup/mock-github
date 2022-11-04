@@ -3,7 +3,15 @@ export type Workflow = {
   jobName: string;
   workflowName: string;
   workflowFile: string;
-  events: string;
+  events: string[];
+};
+
+export type WorkflowFilter = {
+  jobId?: string;
+  jobName?: string;
+  workflowName?: string;
+  workflowFile?: string;
+  events?: string[];
 };
 
 export type Step = {
@@ -12,11 +20,21 @@ export type Step = {
   output: string;
 };
 
+export type MockStep = {
+  name: string;
+  run: string;
+};
+
 export const DEFAULT_JOB: Step = {
   name: "",
   status: -1,
   output: "",
 };
+
+export type RunOptsSteps = {
+  skip?: string[];
+  mock?: MockStep[];
+}
 
 export type RunOpts = {
   cwd?: string;
@@ -24,4 +42,11 @@ export type RunOpts = {
     path: string;
     port: string;
   };
+  steps?: RunOptsSteps
 };
+
+export type ListOpts = {
+  event?: string,
+  workflowFilter?: WorkflowFilter,
+  cwd?: string
+}

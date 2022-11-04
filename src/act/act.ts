@@ -1,5 +1,7 @@
 import { spawnSync } from "child_process";
-import { DEFAULT_JOB, RunOpts, Step, Workflow } from "./act.types";
+import path from "path";
+import { extractRunOutput, filterWorkflows, generateSecrets, treatSteps } from "./act-helper";
+import { ListOpts, RunOpts, Step, Workflow, WorkflowFilter } from "./act.types";
 
 export class Act {
   private storedSecrets: Record<string, string>;
@@ -45,35 +47,45 @@ export class Act {
    * List available workflows.
    * If working directory is not specified then node's current working directory is used
    * You can also list workflows specific to an event by passing the event name
-   * @param cwd
-   * @param event
+   * @param options
    */
-  async list(event?: string, cwd: string = this.cwd): Promise<Workflow[]> {
-    const response = this.act(cwd, ...(event ? [event, "-l"] : ["-l"]));
-
-    const output = response
+  async list(options?: ListOpts): Promise<Workflow[]> {
+    const response = this.act(options?.cwd ?? this.cwd, ...(options?.event ? [options.event, "-l"] : ["-l"]));
+    const workflowList = response
       .split("\n")
       .slice(1, -1) // remove first (title columns) and last column
-      .filter((element) => element !== "" && element.split("  ").length > 1) // remove empty strings and warnings
-      .map((element) => {
+      .filter(element => element !== "" && element.split("  ").length > 1) // remove empty strings and warnings
+      .map(element => {
         const splitElement = element.split("  ").filter((val) => val !== ""); // remove emoty strings
         return {
           jobId: splitElement[1].trim(),
           jobName: splitElement[2].trim(),
           workflowName: splitElement[3].trim(),
           workflowFile: splitElement[4].trim(),
-          events: splitElement[5].trim(),
+          events: splitElement[5].trim().split(","),
         };
       });
-    return output;
+    return options?.workflowFilter && Object.keys(options.workflowFilter).length ? workflowList.filter(e => filterWorkflows(e, options.workflowFilter ?? {})) : workflowList;
   }
 
   async runJob(jobId: string, opts?: RunOpts): Promise<Step[]> {
+    await this.handleStepsBeforeRunningJobs({ jobId }, opts)
     return this.run(["-j", jobId], opts);
   }
 
   async runEvent(event: string, opts?: RunOpts): Promise<Step[]> {
+    await this.handleStepsBeforeRunningJobs({ events: [event] }, opts)
     return this.run([event], opts);
+  }
+
+  private async handleStepsBeforeRunningJobs(workflowFilter: WorkflowFilter, opts?: RunOpts) {
+    if (opts?.steps?.skip?.length || opts?.steps?.mock?.length) {
+      const jobs = await this.list({ workflowFilter });
+      if (!jobs?.length) {
+        throw new Error(`There are no jobs for filter ${workflowFilter}.`)
+      }
+      treatSteps(jobs, path.join(this.cwd, ".github", "workflows"), opts.steps)
+    }
   }
 
   // wrapper around the act cli command
@@ -91,114 +103,20 @@ export class Act {
   }
 
   private async run(cmd: string[], opts?: RunOpts): Promise<Step[]> {
-    const secrets = this.generateSecrets();
+    const secrets = generateSecrets(this.storedSecrets);
     const response = this.act(
       opts?.cwd ?? this.cwd,
       ...cmd,
       ...secrets,
       ...(opts?.artifactServer
         ? [
-            "--artifact-server-path",
-            opts?.artifactServer.path,
-            "--artifact-server-port",
-            opts?.artifactServer.port,
-          ]
+          "--artifact-server-path",
+          opts?.artifactServer.path,
+          "--artifact-server-port",
+          opts?.artifactServer.port,
+        ]
         : [])
     );
-    return this.extractRunOutput(response);
-  }
-
-  /**
-   * Parse the output produced by running act successfully. Produces an object
-   * describing whether the job was successful or not and what was the output of the job
-   * @param output
-   * @returns
-   */
-  private extractRunOutput(output: string): Step[] {
-    // line that has a star followed by Run and job name
-    const runMatcher = /^\s*(\[.+\])\s*\u2B50\s*Run\s*(.*)/;
-    // line that has a green tick mark
-    const successMatcher = /^\s*(\[.+\])\s*\u2705\s*Success\s*-\s*(.*)/;
-    // line that has a red cross
-    const failureMatcher = /^\s*(\[.+\])\s*\u274C\s*Failure\s*-\s*(.*)/;
-    // lines that have no emoji
-    const runOutputMatcher = /^\s*(\[.+\])\s*\|\s*(.*)/;
-
-    // keep track of steps for each job
-    const matrix: Record<string, Record<string, Step>> = {};
-
-    // keep track of the most recent output for a job
-    const matrixOutput: Record<string, string> = {};
-
-    const lines = output.split("\n").map((line) => line.trim());
-    for (const line of lines) {
-      const runMatcherResult = runMatcher.exec(line);
-      const successMatcherResult = successMatcher.exec(line);
-      const failureMatcherResult = failureMatcher.exec(line);
-      const runOutputMatcherResult = runOutputMatcher.exec(line);
-
-      // if the line indicates the start of a step
-      if (runMatcherResult !== null) {
-        // initialize bookkeeping variables
-        if (!matrix[runMatcherResult[1]]) {
-          matrix[runMatcherResult[1]] = {};
-          matrixOutput[runMatcherResult[1]] = "";
-        }
-
-        // create a step object
-        matrix[runMatcherResult[1]][runMatcherResult[2].trim()] = {
-          ...DEFAULT_JOB,
-          name: runMatcherResult[2].trim(),
-        };
-      }
-      // if the line indicates that a step was successful
-      else if (successMatcherResult !== null) {
-        // store output in step
-        matrix[successMatcherResult[1]][successMatcherResult[2].trim()] = {
-          ...matrix[successMatcherResult[1]][successMatcherResult[2].trim()],
-          status: 0,
-          output: matrixOutput[successMatcherResult[1]].trim(),
-        };
-
-        // reset output
-        matrixOutput[successMatcherResult[1]] = "";
-      }
-      // if the line indicates that a step failed
-      else if (failureMatcherResult !== null) {
-        // store output in step
-        matrix[failureMatcherResult[1]][failureMatcherResult[2].trim()] = {
-          ...matrix[failureMatcherResult[1]][failureMatcherResult[2].trim()],
-          status: 1,
-          output: matrixOutput[failureMatcherResult[1]].trim(),
-        };
-
-        // reset output
-        matrixOutput[failureMatcherResult[1]] = "";
-      }
-      // if the line is an output line
-      else if (runOutputMatcherResult !== null) {
-        matrixOutput[runOutputMatcherResult[1]] +=
-          runOutputMatcherResult[2] + "\n";
-      }
-    }
-
-    let result: Step[] = [];
-    Object.values(matrix).forEach((jobs) => {
-      Object.values(jobs).forEach((step) => {
-        result.push(step);
-      });
-    });
-    return result;
-  }
-
-  /**
-   * Appends "-s" to each secret to produce a string of arguments to be passed to act
-   * @returns
-   */
-  private generateSecrets(): string[] {
-    return Object.keys(this.storedSecrets).reduce((arr: string[], key) => {
-      arr.push("-s", `${key}=${this.storedSecrets[key]}`);
-      return arr;
-    }, []);
+    return extractRunOutput(response);
   }
 }

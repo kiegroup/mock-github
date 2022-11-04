@@ -44,6 +44,11 @@ Provides a bunch of tools to configure and create a local github environment to 
     - [Archive artifacts](#archive-artifacts)
       - [Utility functions](#utility-functions-3)
 
+## System Requirements
+
+* [Act](https://github.com/nektos/act) is required, please see [installation details](https://github.com/nektos/act#installation). Remember to execute `act` for the first time in order to finish installation.
+* [Docker](https://docs.docker.com/engine/install/) up and running
+
 ## Moctokit
 
 Provides a simple interface to mock any github api endpoints. This interface is just like the one from [@octokit/rest](https://octokit.github.io/rest.js/v19).
@@ -636,7 +641,7 @@ Or you can list workflows for a specific event in the current working directory.
 const act = new Act();
 
 // lists all workflows which are triggered due to a pull request event
-await act.list("pull_request");
+await act.list({ event: "pull_request" });
 ```
 
 `list` returns an array of `Workflow` objects as defined below
@@ -648,7 +653,7 @@ await act.list("pull_request");
     jobName: "job name as defined in the workflow",
     workflowName: "name of the workflow",
     workflowFile: "the name of the workflow file",
-    events: "event that triggers this workflow",
+    events: "the list of events triggering this workflow",
   },
 ];
 ```

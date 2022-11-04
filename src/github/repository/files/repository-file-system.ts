@@ -46,7 +46,7 @@ export class RepositoryFileSystem {
   private async createDest(dest: string, isFile: boolean): Promise<void> {
     if (this.checkDest(dest)) {
       throw new Error(
-        "Cannot create a file in the remote directory. Directory remote is reserved"
+        `Cannot create a file in the remote directory. Directory "${REMOTE}" is reserved. Please avoid "${GITIGNORE}" file too`
       );
     }
     const destinationPath = path.join(this.repoPath, dest);

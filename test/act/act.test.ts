@@ -33,7 +33,7 @@ describe("cwd", () => {
 describe("list", () => {
   test("without event", async () => {
     const act = new Act();
-    const list = await act.list(undefined, resources);
+    const list = await act.list({ cwd: resources });
     // act seems to behave a bit differently in different env - In GHA the pull request worklow is listed while on local machin it isn't
     expect(list).toEqual(
       expect.arrayContaining([
@@ -42,14 +42,14 @@ describe("list", () => {
           jobName: "push1",
           workflowName: "Act Push Test 1",
           workflowFile: "push1.yml",
-          events: "push",
+          events: ["push"],
         },
         {
           jobId: "push2",
           jobName: "push2",
           workflowName: "Act Push Test 2",
           workflowFile: "push2.yml",
-          events: "push",
+          events: ["push"],
         },
       ])
     );
@@ -57,14 +57,14 @@ describe("list", () => {
 
   test("with event", async () => {
     const act = new Act();
-    const list = await act.list("pull_request", resources);
+    const list = await act.list({ event: "pull_request", cwd: resources });
     expect(list).toStrictEqual([
       {
         jobId: "pr",
         jobName: "pr",
         workflowName: "Pull Request",
         workflowFile: "pull_request.yml",
-        events: "pull_request",
+        events: ["pull_request"],
       },
     ]);
   });
