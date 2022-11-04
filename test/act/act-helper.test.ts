@@ -120,7 +120,7 @@ describe("treatSteps parametrized", () => {
                         name: "w1jobId1-step1",
                         if: "${{ false }}"
                     }, {
-                        run: "w1jobId1-step2"
+                        uses: "w1jobId1-step2"
                     }]
                 }, "w1jobId2": {
                     "runs-on": "ubuntu-latest",
@@ -157,7 +157,7 @@ describe("treatSteps parametrized", () => {
                             run: "w1jobId1-step1-run",
                         },
                         {
-                            run: "w1jobId1-step2",
+                            uses: "w1jobId1-step2",
                         },
                     ],
                 },
@@ -203,7 +203,7 @@ describe("treatSteps parametrized", () => {
                             if: "${{ false }}"
                         },
                         {
-                            run: "w1jobId1-step2",
+                            uses: "w1jobId1-step2",
                         },
                     ],
                 },
@@ -238,6 +238,39 @@ describe("treatSteps parametrized", () => {
                     ],
                 },
             },
+        }],
+        [{
+            on: "push",
+            jobs: {
+                w1jobId1: {
+                    "runs-on": "ubuntu-latest",
+                    steps: [{
+                        name: "w1jobId1-step1"
+                    }, {
+                        uses: "w1jobId1-step2",
+                        if: "${{ false }}"
+                    }]
+                }, w1jobId2: {
+                    "runs-on": "ubuntu-latest",
+                    steps: [{
+                        name: "w1jobId2-step1"
+                    }, {
+                        run: "w1jobId2-step2"
+                    }]
+                }
+            }
+        }, {
+            on: "push",
+            jobs: {
+                w2jobId2: {
+                    "runs-on": "ubuntu-latest",
+                    steps: [{
+                        name: "w2jobId2-step1"
+                    }, {
+                        run: "w2jobId2-step2"
+                    }]
+                }
+            }
         }]
     ]
 
@@ -245,7 +278,8 @@ describe("treatSteps parametrized", () => {
         ["no options", {}, ...expectedResult[0]],
         ["skip to treat", { skip: ["w1jobId1-step1", "w1jobId2-step2", "w2jobId2-step2"] } as RunOptsSteps, ...expectedResult[1]],
         ["mock to treat", { mock: [{ name: "w1jobId1-step1", run: "w1jobId1-step1-run" }, { name: "w1jobId2-step2", run: "w1jobId2-step2-run" }, { name: "w2jobId2-step2", run: "w2jobId2-step2-run" }] } as RunOptsSteps, ...expectedResult[2]],
-        ["mock and skip to treat", { skip: ["w1jobId1-step1", "w1jobId2-step2", "w2jobId2-step2"], mock: [{ name: "w1jobId1-step1", run: "w1jobId1-step1-run" }, { name: "w1jobId2-step2", run: "w1jobId2-step2-run" }, { name: "w2jobId2-step2", run: "w2jobId2-step2-run" }] } as RunOptsSteps, ...expectedResult[3]]
+        ["mock and skip to treat", { skip: ["w1jobId1-step1", "w1jobId2-step2", "w2jobId2-step2"], mock: [{ name: "w1jobId1-step1", run: "w1jobId1-step1-run" }, { name: "w1jobId2-step2", run: "w1jobId2-step2-run" }, { name: "w2jobId2-step2", run: "w2jobId2-step2-run" }] } as RunOptsSteps, ...expectedResult[3]],
+        ["skip filtering by uses", { skip: ["w1jobId1-step2"] } as RunOptsSteps, ...expectedResult[4]]
     ])("multiple jobs: %p", (title: string, runOpts: RunOptsSteps, expectedWorkflow1: GithubWorkflow | undefined, expectedWorkflow2: GithubWorkflow | undefined) => {
         // Arrange
         const folder = "folderx";
@@ -274,7 +308,7 @@ describe("treatSteps parametrized", () => {
                     steps: [{
                         name: "w1jobId1-step1"
                     }, {
-                        run: "w1jobId1-step2"
+                        uses: "w1jobId1-step2"
                     }]
                 }, w1jobId2: {
                     "runs-on": "ubuntu-latest",

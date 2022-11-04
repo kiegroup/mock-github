@@ -730,6 +730,79 @@ Each run returns an array of `Step` objects that describes what was executed, wh
 ];
 ```
 
+#### Skip step
+
+There are cases where some of the steps have to be directly skept due to not possible to perform whatever operation (npm publish for instance), so `skip` mechanism is provided to overcome those cases.
+
+Let's suppose this is the workflow to test (forgive the nonsense of having publish step twice, it is just for learning purposes)
+
+```yaml
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+      - run: npm install
+      - run: npm run build
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: publish step
+        run: npm publish --access public
+          env:
+            NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+```
+
+The two final steps has to be skept since the package shouldn't be really published (and most probably it will fail due to NPM_TOKEN or already existing version on the registry). In order to do that it is just a matter of adding new `skip` option to either `runJob` or `runEvent` with the list of steps to skip.
+
+```typescript
+const act = new Act();
+
+let result = await act.runJob("job_id", {skip: ["npm publish --access public", "publish step"]});
+```
+
+> **_Note:_** Notice either `name`, `run` or `uses` are used for identifying the steps.
+
+
+#### Mock step
+
+There are cases where some of the steps can be replaced by any other execution, for whatever the reason.
+
+Let's suppose this is the workflow to test
+
+```yaml
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+      - run: npm install
+      - run: npm run build
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+```
+
+The final step can be replace by whatever the command. In order to do that it is just a matter of adding new `mock` option to either `runJob` or `runEvent` with the list of `{name: "step identifier", run: "the new command to execute"}`.
+
+```typescript
+const act = new Act();
+
+let result = await act.runJob("job_id", [{name: "npm publish --access public", run: "echo 'publish step mocked'"}]);
+```
+
+this way "publish step mocked" will be printed instead.
+
+> **_Note:_** Notice either `name`, `run` or `uses` are used for identifying the steps.
+
 ## Action Compiler
 
 The idea is that given a compiled (bundled and/or minified) github custom action entrypoint file (.js only), we can inject it with mocked apis such that when the action is run it uses the data provided by the mocked api instead of making the actual api call.

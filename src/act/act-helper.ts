@@ -150,7 +150,7 @@ const findSteps = (workflowFileContent: GithubWorkflow, stepsToFilter: string[])
     Object.values(workflowFileContent.jobs ?? {})
         .filter(job => job.steps?.length)
         .reduce((acc: GithubWorkflowStep[], job) => {
-            const newSteps = job.steps?.filter(step => stepsToFilter.find(stepToFilter => [step.name, step.run].includes(stepToFilter)));
+            const newSteps = job.steps?.filter(step => stepsToFilter.find(stepToFilter => [step.name, step.run, step.uses].includes(stepToFilter)));
             acc.push(...(newSteps?.length ? newSteps : []))
             return acc;
         }, [])
