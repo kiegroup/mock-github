@@ -1,12 +1,10 @@
 import nock, { DataMatcherMap } from "nock";
-import { MockerParams } from "../../action-compiler/mocker/mocker.types";
 import { Response } from "./abstract-response-mocker.types";
 
 export abstract class ResponseMocker<T, S extends number> {
   private interceptor: nock.Interceptor;
   private scope: nock.Scope;
   private responses: Response<T, S>[];
-  private baseUrl: string;
   private path: string | RegExp;
   private query?: DataMatcherMap;
   private requestBody?: DataMatcherMap;
@@ -21,32 +19,11 @@ export abstract class ResponseMocker<T, S extends number> {
   ) {
     this.scope = nock(baseUrl);
     this.responses = [];
-    this.baseUrl = baseUrl;
     this.path = path;
     this.query = query;
     this.requestBody = requestBody;
     this.method = method;
     this.interceptor = this.createInterceptor();
-  }
-
-  toJSON(): MockerParams {
-    const query: MockerParams["query"] = {};
-    Object.entries(this.query ?? {}).forEach(([key, value]) => {
-      query[key] = this.isRegex<typeof value>(value);
-    });
-
-    const requestBody: MockerParams["requestBody"] = {};
-    Object.entries(this.requestBody ?? {}).forEach(([key, value]) => {
-      requestBody[key] = this.isRegex<typeof value>(value);
-    });
-    return {
-      baseUrl: this.baseUrl,
-      path: this.isRegex<string>(this.path),
-      method: this.method,
-      responses: this.responses,
-      query,
-      requestBody,
-    };
   }
 
   setResponse(responses: Response<T, S> | Response<T, S>[]) {
@@ -81,12 +58,5 @@ export abstract class ResponseMocker<T, S extends number> {
     return this.scope
       .intercept(this.path, this.method, this.requestBody)
       .query(this.query ?? true);
-  }
-
-  private isRegex<R>(data: R | RegExp) {
-    return {
-      value: data instanceof RegExp ? data.source : data,
-      isRegex: data instanceof RegExp,
-    };
   }
 }
