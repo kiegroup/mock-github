@@ -36,6 +36,7 @@ Using this library along with [kiegroup/act-js](https://github.com/kiegroup/act-
       - [Utility functions](#utility-functions-2)
     - [Archive artifacts](#archive-artifacts)
       - [Utility functions](#utility-functions-3)
+- [Example with act-js](#example-with-act-js)
 
 ## Moctokit
 
@@ -950,3 +951,10 @@ const store = github.action.archiver.getArtifactStore();
  */
 const runId = github.action.archiver.getRunId();
 ```
+
+## Example with act-js
+
+You can use this library along with [act-js](https://github.com/kiegroup/act-js) to test your workflow files as well as your custom actions.
+Here are some [examples](https://github.com/shubhbapna/mock-github-act-js-examples) on how to do so.
+
+You can also take look at how the workflow files are being tested in the act-js repository - [ci-check.yaml](https://github.com/shubhbapna/act-js/blob/main/.github/workflows/ci-checks.yaml)
