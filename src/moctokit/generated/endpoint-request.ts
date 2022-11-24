@@ -1,4 +1,4 @@
-import {MoctokitRequestMocker} from "@mg/moctokit/request/request-mocker"
+import { MoctokitRequestMocker } from "@mg/moctokit/request/request-mocker";
 import endpoints from "./endpoint-details";
 const endpointToMethod = (baseUrl: string) => ({
   actions: {
