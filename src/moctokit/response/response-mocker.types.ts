@@ -1,4 +1,4 @@
-import { Response } from "../../endpoint-mocker/response/abstract-response-mocker.types";
+import { Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
 
 /** Adapted from: https://github.com/octokit/types.ts/blob/bd5f9f7bce9fa448c87fcfadb7bd547de66ad115/src/generated/Endpoints.ts */
 type KnownJsonResponseTypes =

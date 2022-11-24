@@ -1,5 +1,5 @@
 import { SimpleGit } from "simple-git";
-import { DEFAULT_BRANCH, ORIGIN } from "../repository.constants";
+import { DEFAULT_BRANCH, ORIGIN } from "@mg/github/repository/repository.constants";
 
 export class RepositoryBranches {
   private readonly git: SimpleGit;

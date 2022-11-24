@@ -1,6 +1,6 @@
-import { Action } from "./action/action-mocker.types";
-import { Env } from "./env/env-mocker.types";
-import { Repositories } from "./repository/repository-mocker.types";
+import { Action } from "@mg/github/action/action-mocker.types";
+import { Env } from "@mg/github/env/env-mocker.types";
+import { Repositories } from "@mg/github/repository/repository-mocker.types";
 
 export type Config = {
   repo?: Repositories;

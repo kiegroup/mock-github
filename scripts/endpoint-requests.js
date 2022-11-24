@@ -46,7 +46,7 @@ async function generateEndpointRequest() {
   });
   const content = prettier
     .format(
-      `import {MoctokitRequestMocker} from "../request/request-mocker";
+      `import {MoctokitRequestMocker} from "@mg/moctokit/request/request-mocker";
     import endpoints from "./endpoint-details";
      const endpointToMethod = (baseUrl: string) => (${JSON.stringify(
        newEndpointRequest

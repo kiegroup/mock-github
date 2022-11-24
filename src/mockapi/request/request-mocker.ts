@@ -1,6 +1,6 @@
-import { EndpointDetails } from "../../endpoint-mocker/endpoint-mocker.types";
-import { RequestMocker } from "../../endpoint-mocker/request/abstract-request-mocker";
-import { MockapiResponseMocker } from "../response/response-mocker";
+import { EndpointDetails } from "@mg/endpoint-mocker/endpoint-mocker.types";
+import { RequestMocker } from "@mg/endpoint-mocker/request/abstract-request-mocker";
+import { MockapiResponseMocker } from "@mg/mockapi/response/response-mocker";
 
 export class MockapiRequestMocker extends RequestMocker {
   constructor(baseUrl: string, endpointDetails: EndpointDetails) {

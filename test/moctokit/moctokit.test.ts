@@ -1,4 +1,4 @@
-import { Moctokit } from "../../src/moctokit/moctokit";
+import { Moctokit } from "@mg/moctokit/moctokit";
 import { Octokit } from "@octokit/rest";
 
 test("with default base url", async () => {

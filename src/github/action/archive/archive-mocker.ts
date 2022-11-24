@@ -1,8 +1,8 @@
 import { existsSync, rm } from "fs-extra";
 import path from "path";
-import { Mocker } from "../../mocker";
-import { ArchiveArtifactsMockerMethods } from "./archive-mocker.types";
-import { ArchiveServer } from "./archive-server";
+import { Mocker } from "@mg/github/mocker";
+import { ArchiveArtifactsMockerMethods } from "@mg/github/action/archive/archive-mocker.types";
+import { ArchiveServer } from "@mg/github/action/archive/archive-server";
 
 export class ArchiveArtifactsMocker
   implements Mocker, ArchiveArtifactsMockerMethods

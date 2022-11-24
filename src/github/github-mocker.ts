@@ -1,14 +1,14 @@
-import { ActionMocker } from "./action/action-mocker";
-import { EnvMocker } from "./env/env-mocker";
-import { Config } from "./github-mocker.types";
-import { Mocker } from "./mocker";
-import { RepositoryMocker } from "./repository/repository-mocker";
+import { ActionMocker } from "@mg/github/action/action-mocker";
+import { EnvMocker } from "@mg/github/env/env-mocker";
+import { Config } from "@mg/github/github-mocker.types";
+import { Mocker } from "@mg/github/mocker";
+import { RepositoryMocker } from "@mg/github/repository/repository-mocker";
 import { readFileSync, mkdirSync, existsSync, rmSync } from "fs-extra";
-import { EnvMethods } from "./env/env-mocker.types";
-import { ActionMockerMethods } from "./action/action-mocker.types";
-import { RepositoryStateMethods } from "./repository/state/repository-state.types";
+import { EnvMethods } from "@mg/github/env/env-mocker.types";
+import { ActionMockerMethods } from "@mg/github/action/action-mocker.types";
+import { RepositoryStateMethods } from "@mg/github/repository/state/repository-state.types";
 import Ajv from "ajv";
-import { GithubConfigSchema } from "./schema/github";
+import { GithubConfigSchema } from "@mg/github/schema/github";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;

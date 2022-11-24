@@ -1,5 +1,5 @@
 import nock, { DataMatcherMap } from "nock";
-import { Response } from "./abstract-response-mocker.types";
+import { Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
 
 export abstract class ResponseMocker<T, S extends number> {
   private interceptor: nock.Interceptor;

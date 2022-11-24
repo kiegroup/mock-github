@@ -5,6 +5,9 @@ const jestConfig: Config.InitialOptions = {
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
+  moduleNameMapper: {
+    "^@mg/(.*)$": "<rootDir>/src/$1",
+  },
   clearMocks: true,
   resetMocks: true,
   collectCoverageFrom: [

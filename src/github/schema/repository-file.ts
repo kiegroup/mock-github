@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { CreateRepositoryFile } from "../repository/files/repository-file-system.types";
+import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
 
 export const CreateRepositoryFileSchema: JSONSchemaType<
   CreateRepositoryFile[]

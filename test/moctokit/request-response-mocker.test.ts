@@ -1,6 +1,6 @@
 import axios from "axios";
-import { EndpointMethod } from "../../src/endpoint-mocker/endpoint-mocker.types";
-import { MoctokitRequestMocker } from "../../src/moctokit/request/request-mocker";
+import { EndpointMethod } from "@mg/endpoint-mocker/endpoint-mocker.types";
+import { MoctokitRequestMocker } from "@mg/moctokit/request/request-mocker";
 
 const url = "http://localhost:8000";
 const instance = axios.create({

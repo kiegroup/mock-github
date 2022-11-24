@@ -1,5 +1,5 @@
-import { Mocker } from "../mocker";
-import { DEFAULT_ENV, Env, EnvMethods, ENV_PREFIX } from "./env-mocker.types";
+import { Mocker } from "@mg/github/mocker";
+import { DEFAULT_ENV, Env, EnvMethods, ENV_PREFIX } from "@mg/github/env/env-mocker.types";
 
 export class EnvMocker implements Mocker, EnvMethods {
   private envFromConfig: Env | undefined;

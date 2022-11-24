@@ -1,5 +1,5 @@
 import { DataMatcher, DataMatcherMap, RequestBodyMatcher } from "nock/types";
-import { EndpointDetails, Params } from "../endpoint-mocker.types";
+import { EndpointDetails, Params } from "@mg/endpoint-mocker/endpoint-mocker.types";
 
 export abstract class RequestMocker {
   private _endpointDetails: EndpointDetails;

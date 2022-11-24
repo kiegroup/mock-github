@@ -1,7 +1,7 @@
 import { copy, ensureDir, ensureFile, lstatSync, writeFile } from "fs-extra";
 import path from "path";
-import { GITIGNORE, REMOTE } from "../repository.constants";
-import { CreateRepositoryFile } from "./repository-file-system.types";
+import { GITIGNORE, REMOTE } from "@mg/github/repository/repository.constants";
+import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
 
 export class RepositoryFileSystem {
   private readonly repoPath: string;

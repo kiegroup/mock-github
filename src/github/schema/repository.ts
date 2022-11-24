@@ -1,8 +1,8 @@
 import { JSONSchemaType } from "ajv";
-import { Repository } from "../repository/repository-mocker.types";
-import { BranchSchema } from "./branch";
-import { MergeSchema, PushSchema } from "./history";
-import { CreateRepositoryFileSchema } from "./repository-file";
+import { Repository } from "@mg/github/repository/repository-mocker.types";
+import { BranchSchema } from "@mg/github/schema/branch";
+import { MergeSchema, PushSchema } from "@mg/github/schema/history";
+import { CreateRepositoryFileSchema } from "@mg/github/schema/repository-file";
 
 export const RepositorySchema: JSONSchemaType<Repository> = {
   type: "object",

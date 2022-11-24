@@ -1,5 +1,5 @@
-import { CreateRepositoryFile } from "./files/repository-file-system.types";
-import { Merge, Push } from "./history/repository-history.types";
+import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
+import { Merge, Push } from "@mg/github/repository/history/repository-history.types";
 
 export type Repository = {
   pushedBranches?: string[];
