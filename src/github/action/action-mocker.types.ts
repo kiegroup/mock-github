@@ -1,8 +1,8 @@
 import {
   ArchiveArtifacts,
   ArchiveArtifactsMockerMethods,
-} from "./archive/archive-mocker.types";
-import { Input, InputMockerMethods } from "./input/input-mocker.types";
+} from "@mg/github/action/archive/archive-mocker.types";
+import { Input, InputMockerMethods } from "@mg/github/action/input/input-mocker.types";
 
 export type Action = {
   input?: Input;

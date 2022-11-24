@@ -1,8 +1,8 @@
 import { readFileSync } from "fs-extra";
 import Ajv from "ajv";
-import { APISchema } from "./schema/api-schema";
-import { API, MockapiMethod } from "./mockapi.types";
-import { MockapiRequestMocker } from "./request/request-mocker";
+import { APISchema } from "@mg/mockapi/schema/api-schema";
+import { API, MockapiMethod } from "@mg/mockapi/mockapi.types";
+import { MockapiRequestMocker } from "@mg/mockapi/request/request-mocker";
 
 export class Mockapi {
   private apiSchema: API;

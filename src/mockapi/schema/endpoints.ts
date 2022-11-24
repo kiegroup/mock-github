@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { Endpoints } from "../../endpoint-mocker/endpoint-mocker.types";
+import { Endpoints } from "@mg/endpoint-mocker/endpoint-mocker.types";
 export const EndpointSchema: JSONSchemaType<Endpoints> = {
   type: "object",
   additionalProperties: {

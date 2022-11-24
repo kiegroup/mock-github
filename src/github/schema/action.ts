@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { Action } from "../action/action-mocker.types";
+import { Action } from "@mg/github/action/action-mocker.types";
 
 export const ActionSchema: JSONSchemaType<Action> = {
   type: "object",

@@ -1,7 +1,7 @@
 import { JSONSchemaType } from "ajv";
-import { Config } from "../github-mocker.types";
-import { ActionSchema } from "./action";
-import { RepositorySchema } from "./repository";
+import { Config } from "@mg/github/github-mocker.types";
+import { ActionSchema } from "@mg/github/schema/action";
+import { RepositorySchema } from "@mg/github/schema/repository";
 
 export const GithubConfigSchema: JSONSchemaType<Config> = {
   type: "object",

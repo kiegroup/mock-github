@@ -1,10 +1,10 @@
-import { Mocker } from "../../mocker";
+import { Mocker } from "@mg/github/mocker";
 import {
   DEFAULT_INPUT,
   Input,
   InputMockerMethods,
   INPUT_PREFIX,
-} from "./input-mocker.types";
+} from "@mg/github/action/input/input-mocker.types";
 
 export class InputMocker implements Mocker, InputMockerMethods {
   private inputFromConfig: Input | undefined;

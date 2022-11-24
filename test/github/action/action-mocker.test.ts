@@ -1,6 +1,6 @@
-import { ActionMocker } from "../../../src/github/action/action-mocker";
-import { ArchiveArtifactsMocker } from "../../../src/github/action/archive/archive-mocker";
-import { InputMocker } from "../../../src/github/action/input/input-mocker";
+import { ActionMocker } from "@mg/github/action/action-mocker";
+import { ArchiveArtifactsMocker } from "@mg/github/action/archive/archive-mocker";
+import { InputMocker } from "@mg/github/action/input/input-mocker";
 
 test("setup", async () => {
   const spyInputMocker = jest

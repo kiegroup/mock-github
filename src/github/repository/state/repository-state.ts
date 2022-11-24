@@ -1,20 +1,20 @@
 import { lstatSync } from "fs-extra";
 import path from "path";
 import { totalist } from "totalist";
-import { CreateRepositoryFile } from "../files/repository-file-system.types";
+import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
 import {
   GitAction,
   GitActionTypes,
   Push,
-} from "../history/repository-history.types";
-import { Repositories } from "../repository-mocker.types";
-import { DEFAULT_BRANCH, DUMMY_FILE_NAME } from "../repository.constants";
+} from "@mg/github/repository/history/repository-history.types";
+import { Repositories } from "@mg/github/repository/repository-mocker.types";
+import { DEFAULT_BRANCH, DUMMY_FILE_NAME } from "@mg/github/repository/repository.constants";
 import {
   BranchState,
   FileState,
   RepositoryStateMethods,
   State,
-} from "./repository-state.types";
+} from "@mg/github/repository/state/repository-state.types";
 
 export class RepositoryState implements RepositoryStateMethods {
   private repositories: Repositories;

@@ -1,5 +1,5 @@
-import { Endpoints } from "../endpoint-mocker/endpoint-mocker.types";
-import { MockapiRequestMocker } from "./request/request-mocker"
+import { Endpoints } from "@mg/endpoint-mocker/endpoint-mocker.types";
+import { MockapiRequestMocker } from "@mg/mockapi/request/request-mocker"
 
 export type API = {
   [apiName: string]: {

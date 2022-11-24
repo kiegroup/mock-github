@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, rmSync } from "fs-extra";
 import path from "path";
-import { MockGithub } from "../../src";
-import { ActionMocker } from "../../src/github/action/action-mocker";
-import { EnvMocker } from "../../src/github/env/env-mocker";
-import { RepositoryMocker } from "../../src/github/repository/repository-mocker";
+import { MockGithub } from "@mg/github/github-mocker";
+import { ActionMocker } from "@mg/github/action/action-mocker";
+import { EnvMocker } from "@mg/github/env/env-mocker";
+import { RepositoryMocker } from "@mg/github/repository/repository-mocker";
 const resources = path.resolve(process.cwd(), "test", "resources");
 
 beforeEach(() => {

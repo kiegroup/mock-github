@@ -1,9 +1,9 @@
-import { Mocker } from "../mocker";
-import { Action, ActionMockerMethods } from "./action-mocker.types";
-import { ArchiveArtifactsMocker } from "./archive/archive-mocker";
-import { ArchiveArtifactsMockerMethods } from "./archive/archive-mocker.types";
-import { InputMocker } from "./input/input-mocker";
-import { InputMockerMethods } from "./input/input-mocker.types";
+import { Mocker } from "@mg/github/mocker";
+import { Action, ActionMockerMethods } from "@mg/github/action/action-mocker.types";
+import { ArchiveArtifactsMocker } from "@mg/github/action/archive/archive-mocker";
+import { ArchiveArtifactsMockerMethods } from "@mg/github/action/archive/archive-mocker.types";
+import { InputMocker } from "@mg/github/action/input/input-mocker";
+import { InputMockerMethods } from "@mg/github/action/input/input-mocker.types";
 
 export class ActionMocker implements Mocker, ActionMockerMethods {
   private inputMocker: InputMocker;

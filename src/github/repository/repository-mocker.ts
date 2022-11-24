@@ -1,10 +1,10 @@
 import simpleGit, { SimpleGit } from "simple-git";
-import { Mocker } from "../mocker";
-import { Repositories, Repository } from "./repository-mocker.types";
+import { Mocker } from "@mg/github/mocker";
+import { Repositories, Repository } from "@mg/github/repository/repository-mocker.types";
 import path from "path";
 import { existsSync, mkdirSync, rm, writeFile } from "fs-extra";
-import { RepositoryHistory } from "./history/repository-history-mocker";
-import { RepositoryBranches } from "./branches/repository-branches";
+import { RepositoryHistory } from "@mg/github/repository/history/repository-history-mocker";
+import { RepositoryBranches } from "@mg/github/repository/branches/repository-branches";
 import {
   DEFAULT_BRANCH,
   DEFAULT_INIT_COMMIT_MSG,
@@ -12,11 +12,11 @@ import {
   ORIGIN,
   REMOTE,
   UPSTREAM,
-} from "./repository.constants";
-import { RepositoryFileSystem } from "./files/repository-file-system";
-import { GitAction } from "./history/repository-history.types";
-import { CreateRepositoryFile } from "./files/repository-file-system.types";
-import { RepositoryState } from "./state/repository-state";
+} from "@mg/github/repository/repository.constants";
+import { RepositoryFileSystem } from "@mg/github/repository/files/repository-file-system";
+import { GitAction } from "@mg/github/repository/history/repository-history.types";
+import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
+import { RepositoryState } from "@mg/github/repository/state/repository-state";
 
 export class RepositoryMocker implements Mocker {
   private repositories: Repositories;

@@ -2,17 +2,17 @@ import { existsSync } from "fs";
 import { writeFile, rm } from "fs/promises";
 import path from "path";
 import simpleGit, { SimpleGit } from "simple-git";
-import { RepositoryHistory } from "../../../../src/github/repository/history/repository-history-mocker";
+import { RepositoryHistory } from "@mg/github/repository/history/repository-history-mocker";
 import {
   GitActionTypes,
   Merge,
   Push,
-} from "../../../../src/github/repository/history/repository-history.types";
-import { RepositoryMocker } from "../../../../src/github/repository/repository-mocker";
+} from "@mg/github/repository/history/repository-history.types";
+import { RepositoryMocker } from "@mg/github/repository/repository-mocker";
 import {
   DEFAULT_COMMIT_MSG,
   DUMMY_FILE_NAME,
-} from "../../../../src/github/repository/repository.constants";
+} from "@mg/github/repository/repository.constants";
 
 let repoMocker: RepositoryMocker;
 let historyMocker: RepositoryHistory;

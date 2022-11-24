@@ -1,4 +1,4 @@
-import { CreateRepositoryFile } from "../files/repository-file-system.types";
+import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
 
 export interface GitAction {
   action: GitActionTypes;

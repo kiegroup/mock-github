@@ -1,7 +1,7 @@
 import * as artifact from "@actions/artifact";
 import { existsSync, mkdirSync, readFile, rm, writeFile } from "fs-extra";
 import path from "path";
-import { ArchiveArtifactsMocker } from "../../../../src/github/action/archive/archive-mocker";
+import { ArchiveArtifactsMocker } from "@mg/github/action/archive/archive-mocker";
 
 // disable console outputs thrown by @actions/artifacts
 beforeEach(() => {

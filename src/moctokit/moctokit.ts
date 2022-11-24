@@ -1,4 +1,4 @@
-import endpointToMethod from "./generated/endpoint-request";
+import endpointToMethod from "@mg/moctokit/generated/endpoint-request";
 
 export class Moctokit {
   private _rest;

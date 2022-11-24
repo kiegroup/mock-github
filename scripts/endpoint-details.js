@@ -58,7 +58,7 @@ async function generateEndpointDetails() {
   writeFileSync(
     ROUTES_PATH,
     prettier.format(
-      `import {Endpoints} from "../../endpoint-mocker/endpoint-mocker.types";
+      `import {Endpoints} from "@mg/endpoint-mocker/endpoint-mocker.types";
        const endpoints: Endpoints = ${JSON.stringify(endpointDetails)}
   
       export default endpoints`,

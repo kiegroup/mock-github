@@ -1,6 +1,6 @@
 import axios from "axios";
 import path from "path";
-import { Mockapi } from "../../src";
+import { Mockapi } from "@mg/mockapi/mockapi";
 
 describe("from file", () => {
   const resources = path.resolve(process.cwd(), "test", "resources");

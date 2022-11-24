@@ -4,15 +4,15 @@ import {
   GitActionTypes,
   Merge,
   Push,
-} from "./repository-history.types";
+} from "@mg/github/repository/history/repository-history.types";
 import {
   DEFAULT_COMMIT_MSG,
   DEFAULT_MERGE_COMMIT_MSG,
   DUMMY_FILE_DATA,
   DUMMY_FILE_NAME,
   ORIGIN,
-} from "../repository.constants";
-import { RepositoryFileSystem } from "../files/repository-file-system";
+} from "@mg/github/repository/repository.constants";
+import { RepositoryFileSystem } from "@mg/github/repository/files/repository-file-system";
 
 export class RepositoryHistory {
   private readonly git: SimpleGit;

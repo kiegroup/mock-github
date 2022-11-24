@@ -3,8 +3,8 @@ import {
   Push,
   Merge,
   GitActionTypes,
-} from "../repository/history/repository-history.types";
-import { CreateRepositoryFileSchema } from "./repository-file";
+} from "@mg/github/repository/history/repository-history.types";
+import { CreateRepositoryFileSchema } from "@mg/github/schema/repository-file";
 
 export const PushSchema: JSONSchemaType<Push> = {
   type: "object",
