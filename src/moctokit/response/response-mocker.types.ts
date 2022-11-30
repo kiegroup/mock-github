@@ -6,7 +6,14 @@ type KnownJsonResponseTypes =
   | "application/scim+json"
   | "text/html";
 
-type MockResponse<T, S extends number> = Response<Partial<T>, S>;
+type Subset<T> = T extends object | null | undefined
+  ? {
+      [K in keyof T]?: Subset<T[K]>;
+    }
+  : T;
+type MockResponse<T, S extends number> = T extends Array<any>
+  ? Response<Subset<T[number]>[], S>
+  : Response<Subset<T>, S>;
 
 type DataType<T> = {
   [K in KnownJsonResponseTypes & keyof T]: T[K];

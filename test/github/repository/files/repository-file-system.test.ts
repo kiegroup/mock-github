@@ -3,10 +3,7 @@ import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
 import { RepositoryFileSystem } from "@mg/github/repository/files/repository-file-system";
 import { RepositoryMocker } from "@mg/github/repository/repository-mocker";
-import {
-  GITIGNORE,
-  REMOTE,
-} from "@mg/github/repository/repository.constants";
+import { GITIGNORE, REMOTE } from "@mg/github/repository/repository.constants";
 
 let repoMocker: RepositoryMocker;
 let fileCreator: RepositoryFileSystem;
@@ -122,6 +119,62 @@ describe("copyFile", () => {
       fileCreator.copyFiles([{ src, dest: GITIGNORE }])
     ).rejects.toThrowError();
     await rm(src);
+  });
+
+  test("filter files", async () => {
+    const src = path.join(__dirname, "root");
+    mkdirSync(path.join(src, "foo", "bar", "blah"), {
+      recursive: true,
+    });
+    mkdirSync(path.join(src, "foo", "blah"), { recursive: true });
+    await Promise.all([
+      writeFile(path.join(src, "dummy1"), "dummy1"),
+      writeFile(path.join(src, "foo", "bar", "dummy2"), "dummy2"),
+      writeFile(path.join(src, "foo", "dummy3"), "dummy3"),
+      writeFile(path.join(src, "foo", "bar", "blah", "dummy4"), "dummy4"),
+    ]);
+
+    const filesToCreate = [
+      { src, dest: "/", filter: ["**/dummy(2|4)"] },
+      {
+        src: path.join(src, "foo", "bar", "dummy2"),
+        dest: "src/dummy2",
+        filter: ["dummy2"], // shouldn't be ignored if the src is a file
+      },
+      { src: __dirname, dest: "files", filter: ["root"] },
+    ];
+
+    await expect(fileCreator.copyFiles(filesToCreate)).resolves.toBe(true);
+
+    await Promise.all([
+      expect(readFile(path.join(repoPath, "dummy1"), "utf8")).resolves.toBe(
+        "dummy1"
+      ),
+      expect(
+        readFile(path.join(repoPath, "src", "dummy2"), "utf8")
+      ).resolves.toBe("dummy2"),
+      expect(
+        readFile(path.join(repoPath, "foo", "dummy3"), "utf8")
+      ).resolves.toBe("dummy3"),
+    ]);
+    expect(existsSync(path.join(repoPath, "foo", "blah"))).toBe(true);
+    expect(
+      existsSync(path.join(repoPath, "foo", "bar", "blah", "dummy4"))
+    ).toBe(false);
+    expect(
+      existsSync(path.join(repoPath, "foo", "bar", "dummy2"))
+    ).toBe(false);
+    expect(
+      existsSync(path.join(repoPath, "files", "repo", "repoA"))
+    ).toBe(false);
+    expect(
+      existsSync(path.join(repoPath, "files", "root"))
+    ).toBe(false);
+    expect(
+      existsSync(path.join(repoPath, "files", path.basename(__filename)))
+    ).toBe(true);
+
+    await rm(src, { recursive: true });
   });
 });
 

@@ -14,6 +14,13 @@ export const CreateRepositoryFileSchema: JSONSchemaType<
       dest: {
         type: "string",
       },
+      filter: {
+        type: "array",
+        items: {
+          type: "string",
+        },
+        nullable: true,
+      },
     },
     required: ["dest", "src"],
   },

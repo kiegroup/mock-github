@@ -1,7 +1,17 @@
-import { copy, ensureDir, ensureFile, lstatSync, writeFile } from "fs-extra";
+import {
+  copy,
+  ensureDir,
+  ensureFile,
+  lstatSync,
+  writeFile,
+  mkdtemp,
+  rm,
+} from "fs-extra";
 import path from "path";
 import { GITIGNORE, REMOTE } from "@mg/github/repository/repository.constants";
 import { CreateRepositoryFile } from "@mg/github/repository/files/repository-file-system.types";
+import { tmpdir } from "os";
+import * as fg from "fast-glob";
 
 export class RepositoryFileSystem {
   private readonly repoPath: string;
@@ -14,10 +24,29 @@ export class RepositoryFileSystem {
     if (files) {
       await Promise.all(
         files.map(async (file) => {
-          await this.createDest(file.dest, lstatSync(file.src).isFile());
-          return copy(file.src, path.join(this.repoPath, file.dest), {
+          const isFile = lstatSync(file.src).isFile();
+          const [dest, src] = await Promise.all([
+            this.createDest(file.dest, isFile),
+            this.createTemp(file.src, path.join(this.repoPath, file.dest)),
+          ]);
+          const entries =
+            file.filter && !isFile
+              ? fg.sync(file.filter, {
+                  absolute: true,
+                  cwd: src,
+                  dot: true,
+                  onlyFiles: false,
+                })
+              : [];
+
+          await copy(src, dest, {
             overwrite: true,
+            dereference: true,
+            filter: (filterSrc: string, _dest: string) =>
+              !filterSrc.startsWith(this.repoPath) &&
+              !entries.includes(filterSrc),
           });
+          return this.cleanupTemp(src);
         })
       );
       return true;
@@ -43,7 +72,7 @@ export class RepositoryFileSystem {
     return beginsWith === REMOTE || beginsWith === GITIGNORE;
   }
 
-  private async createDest(dest: string, isFile: boolean): Promise<void> {
+  private async createDest(dest: string, isFile: boolean): Promise<string> {
     if (this.checkDest(dest)) {
       throw new Error(
         "Cannot create a file in the remote directory. Directory remote is reserved"
@@ -56,6 +85,34 @@ export class RepositoryFileSystem {
       await ensureFile(destinationPath);
     } else {
       await ensureDir(destinationPath);
+    }
+    return destinationPath;
+  }
+
+  private isSubDir(parent: string, dir: string) {
+    const relative = path.relative(parent, dir);
+    return !relative.startsWith("..") && !path.isAbsolute(relative);
+  }
+
+  private async createTemp(src: string, dest: string) {
+    if (this.isSubDir(src, dest)) {
+      const tmpPath = await mkdtemp(`${tmpdir()}${path.sep}`);
+      await copy(src, tmpPath, {
+        overwrite: true,
+        dereference: true,
+        filter: (filterSrc: string, _filterDest) => {
+          return filterSrc !== this.repoPath;
+        },
+      });
+      return tmpPath;
+    }
+    return src;
+  }
+
+  private async cleanupTemp(src: string) {
+    const tmpPath = `${tmpdir()}${path.sep}`;
+    if (src.startsWith(tmpPath)) {
+      await rm(src, { recursive: true });
     }
   }
 }
