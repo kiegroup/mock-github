@@ -42,13 +42,9 @@ export class RepositoryFileSystem {
           await copy(src, dest, {
             overwrite: true,
             dereference: true,
-            filter: (filterSrc: string, _dest: string) => {
-              if (filterSrc.startsWith(this.repoPath)) {
-                return false;
-              } else {
-                return !entries.includes(filterSrc);
-              }
-            },
+            filter: (filterSrc: string, _dest: string) =>
+              !filterSrc.startsWith(this.repoPath) &&
+              !entries.includes(filterSrc),
           });
           return this.cleanupTemp(src);
         })
