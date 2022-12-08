@@ -62,9 +62,9 @@ export class MockGithub implements Mocker {
       throw new Error("Env has not been setup");
     }
     return {
-      update: this.envMocker.update,
-      delete: this.envMocker.delete,
-      get: this.envMocker.get,
+      update: this.envMocker.update.bind(this.envMocker),
+      delete: this.envMocker.delete.bind(this.envMocker),
+      get: this.envMocker.get.bind(this.envMocker),
     };
   }
 

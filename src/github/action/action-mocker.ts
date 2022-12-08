@@ -1,5 +1,8 @@
 import { Mocker } from "@mg/github/mocker";
-import { Action, ActionMockerMethods } from "@mg/github/action/action-mocker.types";
+import {
+  Action,
+  ActionMockerMethods,
+} from "@mg/github/action/action-mocker.types";
 import { ArchiveArtifactsMocker } from "@mg/github/action/archive/archive-mocker";
 import { ArchiveArtifactsMockerMethods } from "@mg/github/action/archive/archive-mocker.types";
 import { InputMocker } from "@mg/github/action/input/input-mocker";
@@ -33,16 +36,20 @@ export class ActionMocker implements Mocker, ActionMockerMethods {
 
   get input(): InputMockerMethods {
     return {
-      get: this.inputMocker.get,
-      delete: this.inputMocker.delete,
-      update: this.inputMocker.update,
+      get: this.inputMocker.get.bind(this.inputMocker),
+      delete: this.inputMocker.delete.bind(this.inputMocker),
+      update: this.inputMocker.update.bind(this.inputMocker),
     };
   }
 
   get archiver(): ArchiveArtifactsMockerMethods {
     return {
-      getArtifactStore: this.archiveArtifactsMocker.getArtifactStore,
-      getRunId: this.archiveArtifactsMocker.getRunId,
+      getArtifactStore: this.archiveArtifactsMocker.getArtifactStore.bind(
+        this.archiveArtifactsMocker
+      ),
+      getRunId: this.archiveArtifactsMocker.getRunId.bind(
+        this.archiveArtifactsMocker
+      ),
     };
   }
 }
