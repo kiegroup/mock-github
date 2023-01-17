@@ -1,6 +1,5 @@
 import { MockGithub } from "@mg/github/github-mocker";
 import { Moctokit } from "@mg/moctokit/moctokit";
-import { Mockapi } from "@mg/mockapi/mockapi";
 import {
   FileState,
   State,
@@ -15,10 +14,13 @@ import { CreateRepositoryFile } from "@mg/github/repository/files/repository-fil
 import { Env } from "@mg/github/env/env-mocker.types";
 import { Input } from "@mg/github/action/input/input-mocker.types";
 import { Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
+import { ResponseMocker } from "@mg/endpoint-mocker/response/abstract-response-mocker";
+import { RequestMocker } from "@mg/endpoint-mocker/request/abstract-request-mocker";
+import { EndpointDetails, EndpointMethod } from "@mg/endpoint-mocker/endpoint-mocker.types";
+import { Endpoints } from "@mg/endpoint-mocker/endpoint-mocker.types";
 
 export {
   MockGithub,
-  Mockapi,
   Moctokit,
   FileState,
   State,
@@ -30,4 +32,9 @@ export {
   Env,
   Input,
   Response,
+  ResponseMocker,
+  RequestMocker,
+  EndpointDetails,
+  EndpointMethod,
+  Endpoints
 };
