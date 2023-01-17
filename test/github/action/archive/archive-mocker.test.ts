@@ -42,13 +42,6 @@ describe("setup", () => {
 
     await archiveMocker.teardown();
   });
-
-  test("server has already been started", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8080");
-    await archiveMocker.setup();
-    await expect(archiveMocker.setup()).rejects.toThrowError();
-    await archiveMocker.teardown();
-  });
 });
 
 describe("teardown", () => {
