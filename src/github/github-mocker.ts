@@ -52,7 +52,7 @@ export class MockGithub implements Mocker {
     ]);
 
     // rm the setup dir only if we had created it
-    if (this.setupDirCreated) rmSync(this.setupPath, { recursive: true });
+    if (this.setupDirCreated) {rmSync(this.setupPath, { recursive: true });}
 
     this.hasCalledSetup = false;
   }

@@ -114,7 +114,7 @@ describe.each([
     await simpleGit(repoPath).checkout(base);
     expect(existsSync(filePath)).toBe(true);
     expect(logs.latest?.message).toBe(DEFAULT_COMMIT_MSG(0));
-    const splitRefs = logs.latest?.refs.split(",").map((s) => s.trim());
+    const splitRefs = logs.latest?.refs.split(",").map(s => s.trim());
     expect(splitRefs?.includes(`HEAD -> ${base}`)).toBe(true);
     expect(splitRefs?.includes(head)).toBe(true);
     expect(splitRefs?.includes(`origin/${head}`)).toBe(true);

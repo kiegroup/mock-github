@@ -1,5 +1,5 @@
 /** Adapted from: https://github.com/octokit/types.ts/blob/bd5f9f7bce9fa448c87fcfadb7bd547de66ad115/src/generated/Endpoints.ts */
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (
   k: infer I
 ) => void
   ? I
@@ -15,7 +15,7 @@ export type Parameters<T> = "parameters" extends keyof T
         [K in keyof T["parameters"]]: T["parameters"][K];
       }[keyof T["parameters"]]
     >
-  : {};
+  : Record<never, never>;
 
 type RequestBody<T> = "requestBody" extends keyof T
   ? "content" extends keyof T["requestBody"]
@@ -33,7 +33,7 @@ type RequestBody<T> = "requestBody" extends keyof T
           [K in keyof T["requestBody"]]: T["requestBody"][K];
         }[keyof T["requestBody"]];
       }
-  : {};
+  : Record<never, never>;
 
 export type MockRequestParameters<T> = UnionWithRegex<
   Partial<Parameters<T> & RequestBody<T>>

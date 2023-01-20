@@ -25,7 +25,7 @@ export abstract class RequestMocker {
     let regexFlag = false;
 
     // replace any path variables with either values or regex expression
-    for (const match of this.endpointDetails.path.match(/\{[^\{\}]+\}/g) ??
+    for (const match of this.endpointDetails.path.match(/{[^{}]+}/g) ??
       []) {
       let replacementParam;
       if (pathParams[match.slice(1, -1)]) {
@@ -48,7 +48,7 @@ export abstract class RequestMocker {
   }
 
   private extractParams(params?: Params) {
-    let pathParams: Record<string, unknown> = {};
+    const pathParams: Record<string, unknown> = {};
     let query: DataMatcherMap | undefined = undefined;
     let requestBody: RequestBodyMatcher | undefined = undefined;
     if (!params) {

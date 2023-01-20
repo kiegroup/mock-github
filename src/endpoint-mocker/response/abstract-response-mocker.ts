@@ -42,7 +42,7 @@ export abstract class ResponseMocker<T, S extends number> {
         .reply(response.status, response.data as nock.Body);
       this.interceptor = this.createInterceptor();
     } else {
-      this.responses.forEach((res) => {
+      this.responses.forEach(res => {
         this.scope = this.interceptor
           .times(res.repeat ?? 1)
           .reply(res.status, res.data as nock.Body);
