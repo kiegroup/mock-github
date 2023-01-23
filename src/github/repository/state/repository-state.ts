@@ -127,7 +127,7 @@ export class RepositoryState implements RepositoryStateMethods {
       counter += 0;
     }
 
-    (await Promise.all(promises)).forEach((res) => result.push(...res));
+    (await Promise.all(promises)).forEach(res => result.push(...res));
 
     return result;
   }

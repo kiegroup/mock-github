@@ -37,7 +37,7 @@ export class EnvMocker implements Mocker, EnvMethods {
       return;
     }
     this.currentEnv = this.envFromConfig;
-    Object.keys(this.currentEnv).forEach((key) => {
+    Object.keys(this.currentEnv).forEach(key => {
       this.update(key, this.currentEnv[key]);
     });
   }
@@ -47,7 +47,7 @@ export class EnvMocker implements Mocker, EnvMethods {
       return;
     }
     const env = this.envFromConfig;
-    Object.keys(env).forEach((key) => {
+    Object.keys(env).forEach(key => {
       this.delete(key);
     });
     this.currentEnv = DEFAULT_ENV;

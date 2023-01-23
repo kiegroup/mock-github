@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { EndpointMethod } from "@mg/endpoint-mocker/endpoint-mocker.types";
 import { MoctokitRequestMocker } from "@mg/moctokit/request/request-mocker";

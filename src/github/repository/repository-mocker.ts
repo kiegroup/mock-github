@@ -52,7 +52,7 @@ export class RepositoryMocker implements Mocker {
     await Promise.all(
       this.setupDirCreated
         ? [rm(this.setupPath, { recursive: true, force: true })]
-        : Object.keys(this.repositories).map((repoName) =>
+        : Object.keys(this.repositories).map(repoName =>
             rm(this._repositoryState.getPath(repoName)!, {
               recursive: true,
               force: true,

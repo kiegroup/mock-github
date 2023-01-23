@@ -11,7 +11,7 @@ type Subset<T> = T extends object | null | undefined
       [K in keyof T]?: Subset<T[K]>;
     }
   : T;
-type MockResponse<T, S extends number> = T extends Array<any>
+type MockResponse<T, S extends number> = T extends Array<unknown>
   ? Response<Subset<T[number]>[], S>
   : Response<Subset<T>, S>;
 

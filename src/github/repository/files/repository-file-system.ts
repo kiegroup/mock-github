@@ -23,7 +23,7 @@ export class RepositoryFileSystem {
   async copyFiles(files?: CreateRepositoryFile[]): Promise<boolean> {
     if (files) {
       await Promise.all(
-        files.map(async (file) => {
+        files.map(async file => {
           const isFile = lstatSync(file.src).isFile();
           const [dest, src] = await Promise.all([
             this.createDest(file.dest, isFile),

@@ -1,4 +1,4 @@
-import { existsSync, mkdir, mkdirSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { readFile, rm, writeFile } from "fs/promises";
 import path from "path";
 import { RepositoryFileSystem } from "@mg/github/repository/files/repository-file-system";

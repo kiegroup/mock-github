@@ -41,14 +41,14 @@ export class InputMocker implements Mocker, InputMockerMethods {
   }
 
   async setup(): Promise<void> {
-    if (!this.inputFromConfig) return;
-    Object.keys(this.inputFromConfig).forEach((key) => {
+    if (!this.inputFromConfig) {return;}
+    Object.keys(this.inputFromConfig).forEach(key => {
       this.update(key, this.inputFromConfig![key]);
     });
   }
 
   async teardown(): Promise<void> {
-    Object.keys(this.currentInput).forEach((key) => {
+    Object.keys(this.currentInput).forEach(key => {
       this.delete(key);
     });
     this.currentInput = DEFAULT_INPUT;

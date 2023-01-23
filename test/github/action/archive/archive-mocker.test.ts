@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as artifact from "@actions/artifact";
 import { existsSync, mkdirSync, readFile, rm, writeFile } from "fs-extra";
 import path from "path";

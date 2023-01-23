@@ -122,7 +122,7 @@ export class ArchiveServer {
         this.app = app;
         resolve();
       });
-      app.on("error", (err) => {
+      app.on("error", err => {
         reject(err);
       });
     });
@@ -131,7 +131,7 @@ export class ArchiveServer {
   stop(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.app) {
-        this.app.close((err) => {
+        this.app.close(err => {
           if (err) {
             reject(err);
           } else {
