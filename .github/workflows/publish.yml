@@ -14,10 +14,23 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm install
+      
+      - name: check for version change
+        id: version-check
+        uses: EndBug/version-check@v2
+        with:
+          file-url: https://unpkg.com/@kie/mock-github@latest/package.json
+          static-checking: localIsNew
+      
+      - run: npm ci
+        if: steps.version-check.outputs.changed == 'true'
+
       - run: npm run build
+        if: steps.version-check.outputs.changed == 'true'
+
       - run: npm publish --access public
+        if: steps.version-check.outputs.changed == 'true'
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
