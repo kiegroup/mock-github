@@ -29,8 +29,7 @@ Using this library along with [kiegroup/act-js](https://github.com/kiegroup/act-
 - [Example with act-js](#example-with-act-js)
 
 ## Moctokit
-
-Provides a simple interface to mock any github api endpoints. This interface is just like the one from [@octokit/rest](https://octokit.github.io/rest.js/v19).
+Allows you to mock [octokit](https://octokit.github.io/rest.js/v19) using an octokit like interface.
 
 Example
 
