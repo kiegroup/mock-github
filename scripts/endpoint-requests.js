@@ -42,13 +42,13 @@ async function generateEndpointRequest() {
 
     newEndpointRequest[scope][
       endpoint.id
-    ] = `new MoctokitRequestMocker<"${path}", "${method}">(baseUrl, endpoints["${scope}"]["${endpoint.id}"]).request`;
+    ] = `new MoctokitRequestMocker<"${path}", "${method}">(baseUrl, endpoints["${scope}"]["${endpoint.id}"], allowUnmocked).request`;
   });
   const content = prettier
     .format(
       `import {MoctokitRequestMocker} from "@mg/moctokit/request/request-mocker";
     import endpoints from "./endpoint-details";
-     const endpointToMethod = (baseUrl: string) => (${JSON.stringify(
+     const endpointToMethod = (baseUrl: string, allowUnmocked = false) => (${JSON.stringify(
        newEndpointRequest
      )})
 
@@ -56,7 +56,7 @@ async function generateEndpointRequest() {
       { parser: "typescript" }
     )
     .replace(
-      /('|")(new MoctokitRequestMocker<.+>\(baseUrl, endpoints\[.+\]\[.+\]\).request)('|")/g,
+      /('|")(new MoctokitRequestMocker<.+>\(baseUrl, endpoints\[.+\]\[.+\], allowUnmocked\).request)('|")/g,
       "$2"
     );
 
