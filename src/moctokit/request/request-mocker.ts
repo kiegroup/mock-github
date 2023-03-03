@@ -8,8 +8,9 @@ export class MoctokitRequestMocker<
   Path extends keyof paths,
   Method extends keyof paths[Path]
 > extends RequestMocker {
-  constructor(baseUrl: string, endpointDetails: EndpointDetails) {
-    super(baseUrl, endpointDetails);
+
+  constructor(baseUrl: string, endpointDetails: EndpointDetails, allowUnmocked = false) {
+    super(baseUrl, endpointDetails, allowUnmocked);
 
     // need to bind the instance context to the function. otherwise it is lost during endpointToMethod generation
     this.request = this.request.bind(this);
@@ -22,7 +23,8 @@ export class MoctokitRequestMocker<
       path,
       this.endpointDetails.method,
       query,
-      requestBody
+      requestBody,
+      this.allowUnmocked
     );
   }
 }
