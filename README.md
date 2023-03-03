@@ -7,7 +7,7 @@ Using this library along with [kiegroup/act-js](https://github.com/kiegroup/act-
 ## Table of Content
 
 - [Moctokit](#moctokit)
-  - [Specifying which base url to use](#specifying-which-base-url-to-use)
+  - [Initialization options](#initialization-options)
   - [Mock an api](#mock-an-api)
     - [Mock the entire endpoint](#mock-the-entire-endpoint)
     - [Mock an endpoint for specific parameter(s)](#mock-an-endpoint-for-specific-parameters)
@@ -43,7 +43,7 @@ mock.rest.repos
   .reply({ status: 200, data: { full_name: "it worked" } });
 ```
 
-### Specifying which base url to use
+### Initialization options
 
 By default a moctokit instance uses `https://api.github.com` as the base url
 
@@ -55,6 +55,12 @@ You can also specify a base url when a creating a new instance. Useful when you 
 
 ```typescript
 const moctokit = new Moctokit("http://localhost:8000"); // mocks github apis for http://localhost:8000
+```
+
+You can enable other APIs to pass through if there is no exact match  
+
+```typescript
+const moctokit = new Moctokit(undefined, true); // mocks github apis for https://api.github.com and lets unmatched apis to pass through
 ```
 
 ### Mock an api
