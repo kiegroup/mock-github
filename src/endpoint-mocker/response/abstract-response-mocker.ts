@@ -15,9 +15,10 @@ export abstract class ResponseMocker<T, S extends number> {
     path: string | RegExp,
     method: string,
     query?: DataMatcherMap,
-    requestBody?: DataMatcherMap
+    requestBody?: DataMatcherMap,
+    allowUnmocked = false
   ) {
-    this.scope = nock(baseUrl);
+    this.scope = nock(baseUrl, { allowUnmocked });
     this.responses = [];
     this.path = path;
     this.query = query;
