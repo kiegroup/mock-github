@@ -194,16 +194,17 @@ describe.each(["get", "post", "delete", "put", "patch"])(
 
       requestMocker
         .request()
-        .setResponse({ status: 200, data: { msg: "hello world" } } as never)
+        .setResponse({ status: 200, data: { msg: "hello world" }, headers: {"test-header": "value"} } as never)
         .reply();
 
-      const { status, data } = await instance({
+      const { status, data, headers } = await instance({
         method,
         url: "/response/any/response?query1=hello",
         params: { query2: 1 },
       });
       expect(status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
+      expect(headers).toMatchObject({ "test-header": "value" });
     });
 
     test("setResponse: multiple response", async () => {
@@ -220,7 +221,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       requestMocker
         .request()
         .setResponse([
-          { status: 200, data: { msg: "hello world" } },
+          { status: 200, data: { msg: "hello world" }, headers: {"test-header": "value"} },
           { status: 201, data: { msg: "another response" } },
         ] as never)
         .reply();
@@ -232,6 +233,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       });
       expect(response1.status).toBe(200);
       expect(response1.data).toStrictEqual({ msg: "hello world" });
+      expect(response1.headers).toMatchObject({"test-header": "value"});
 
       const response2 = await instance({
         method,
@@ -240,6 +242,32 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       });
       expect(response2.status).toBe(201);
       expect(response2.data).toStrictEqual({ msg: "another response" });
+      expect(response2.headers).not.toMatchObject({"test-header": "value"});
+    });
+
+    test("reply: with headers", async () => {
+      const requestMocker = new MoctokitRequestMocker(url, {
+        path: "/response/{param1}/response",
+        method: method as EndpointMethod,
+        parameters: {
+          path: ["param1"],
+          query: ["query1", "query2", "query3"],
+          body: [],
+        },
+      });
+
+      requestMocker
+        .request()
+        .reply({ status: 200, data: { msg: "hello world" }, headers: {"test-header": "value"} } as never);
+
+      const { status, data, headers } = await instance({
+        method,
+        url: "/response/any/response?query1=hello",
+        params: { query2: 1 },
+      });
+      expect(status).toBe(200);
+      expect(data).toStrictEqual({ msg: "hello world" });
+      expect(headers).toMatchObject({ "test-header": "value" });
     });
   }
 );
