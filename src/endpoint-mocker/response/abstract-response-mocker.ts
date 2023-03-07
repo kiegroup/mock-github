@@ -40,13 +40,13 @@ export abstract class ResponseMocker<T, S extends number> {
     if (response) {
       this.scope = this.interceptor
         .times(response.repeat ?? 1)
-        .reply(response.status, response.data as nock.Body);
+        .reply(response.status, response.data as nock.Body, response.headers);
       this.interceptor = this.createInterceptor();
     } else {
       this.responses.forEach(res => {
         this.scope = this.interceptor
           .times(res.repeat ?? 1)
-          .reply(res.status, res.data as nock.Body);
+          .reply(res.status, res.data as nock.Body, res.headers);
         this.interceptor = this.createInterceptor();
       });
       this.responses = [];
