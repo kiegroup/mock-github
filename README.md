@@ -113,7 +113,7 @@ const moctokit = new Moctokit();
  */
 moctokit.rest.projects
   .createForRepo()
-  .reply({ status: 200, data: { owner_url: "whatever url" } });
+  .reply({ status: 200, data: { owner_url: "whatever url" }, headers: {"some-header": "value"} });
 ```
 
 #### Reply N times
@@ -149,7 +149,7 @@ const mockedCreateForRepo = moctokit.rest.projects.createForRepo()
  * Adds all of these responses after the above response in the array. Again doesn't actually mock the api
  */
 mockedCreateForRepo.setResponse([
-  {status: 201, data: {owner_url: "something"}},
+  {status: 201, data: {owner_url: "something"}, headers: {"some-header": "value"}},
   {status: 400, data: {owner_url: "something else"}, repeat: 2}
   {status: 404, data: {owner_url: "something completely difference"}}
 ]);
