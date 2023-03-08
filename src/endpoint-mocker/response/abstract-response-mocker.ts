@@ -24,7 +24,7 @@ export abstract class ResponseMocker<T, S extends number> {
     this.allowUnmocked = allowUnmocked;
     this.scope = nock(baseUrl, { allowUnmocked });
     this.responses = [];
-    this.headers = {}
+    this.headers = {};
     this.path = path;
     this.query = query;
     this.requestBody = requestBody;
@@ -32,9 +32,9 @@ export abstract class ResponseMocker<T, S extends number> {
   }
 
   matchReqHeaders(headers: Header) {
-    this.headers = {...this.headers, ...headers}
+    this.headers = {...this.headers, ...headers};
     if (Object.keys(this.headers).length > 0) {
-      this.scope = nock(this.baseUrl, { allowUnmocked: this.allowUnmocked, reqheaders: this.headers })
+      this.scope = nock(this.baseUrl, { allowUnmocked: this.allowUnmocked, reqheaders: this.headers });
     }
     return this;
   }
@@ -59,11 +59,11 @@ export abstract class ResponseMocker<T, S extends number> {
         this.scope = interceptor
           .times(res.repeat ?? 1)
           .reply(res.status, res.data as nock.Body, res.headers);
-        interceptor = this.createInterceptor()
+        interceptor = this.createInterceptor();
       });
       this.responses = [];
     }
-    this.headers = {}
+    this.headers = {};
     return this;
   }
 

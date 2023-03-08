@@ -211,7 +211,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       });
       expect(status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
-    })
+    });
 
     test("setResponse: singular response", async () => {
       const requestMocker = new MoctokitRequestMocker(url, {
