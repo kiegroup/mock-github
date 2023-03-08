@@ -1,14 +1,16 @@
 import nock, { DataMatcherMap } from "nock";
-import { Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
+import { Header, Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
 
 export abstract class ResponseMocker<T, S extends number> {
-  private interceptor: nock.Interceptor;
   private scope: nock.Scope;
   private responses: Response<T, S>[];
+  private headers: Header;
   private path: string | RegExp;
   private query?: DataMatcherMap;
   private requestBody?: DataMatcherMap;
   private method: string;
+  private baseUrl: string;
+  private allowUnmocked: boolean;
 
   constructor(
     baseUrl: string,
@@ -18,13 +20,23 @@ export abstract class ResponseMocker<T, S extends number> {
     requestBody?: DataMatcherMap,
     allowUnmocked = false
   ) {
+    this.baseUrl = baseUrl;
+    this.allowUnmocked = allowUnmocked;
     this.scope = nock(baseUrl, { allowUnmocked });
     this.responses = [];
+    this.headers = {}
     this.path = path;
     this.query = query;
     this.requestBody = requestBody;
     this.method = method;
-    this.interceptor = this.createInterceptor();
+  }
+
+  matchReqHeaders(headers: Header) {
+    this.headers = {...this.headers, ...headers}
+    if (Object.keys(this.headers).length > 0) {
+      this.scope = nock(this.baseUrl, { allowUnmocked: this.allowUnmocked, reqheaders: this.headers })
+    }
+    return this;
   }
 
   setResponse(responses: Response<T, S> | Response<T, S>[]) {
@@ -37,20 +49,21 @@ export abstract class ResponseMocker<T, S extends number> {
   }
 
   reply(response?: Response<T, S>) {
+    let interceptor = this.createInterceptor();
     if (response) {
-      this.scope = this.interceptor
+      this.scope = interceptor
         .times(response.repeat ?? 1)
         .reply(response.status, response.data as nock.Body, response.headers);
-      this.interceptor = this.createInterceptor();
     } else {
       this.responses.forEach(res => {
-        this.scope = this.interceptor
+        this.scope = interceptor
           .times(res.repeat ?? 1)
           .reply(res.status, res.data as nock.Body, res.headers);
-        this.interceptor = this.createInterceptor();
+        interceptor = this.createInterceptor()
       });
       this.responses = [];
     }
+    this.headers = {}
     return this;
   }
 
