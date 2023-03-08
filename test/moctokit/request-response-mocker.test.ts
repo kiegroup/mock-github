@@ -180,6 +180,38 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       expect(status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
     });
+    
+    test("mock headers", async () => {
+      const requestMocker = new MoctokitRequestMocker(url, {
+        path: "/query/{param1}/query",
+        method: method as EndpointMethod,
+        parameters: {
+          path: ["param1"],
+          query: ["query1", "query2", "query3"],
+          body: [],
+        },
+      });
+
+      requestMocker
+        .request({
+          param1: "hello"
+        } as any)
+        .matchReqHeaders({
+          "authorization": /bearer */,
+        })
+        .reply({ status: 200, data: { msg: "hello world" } } as never);
+
+      const { status, data } = await instance({
+        method,
+        url: "/query/hello/query?query1=hello",
+        headers: {
+          authorization: "bearer some_token",
+          "custom-header": "value"
+        },
+      });
+      expect(status).toBe(200);
+      expect(data).toStrictEqual({ msg: "hello world" });
+    })
 
     test("setResponse: singular response", async () => {
       const requestMocker = new MoctokitRequestMocker(url, {
