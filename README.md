@@ -10,7 +10,7 @@ Using this library along with [kiegroup/act-js](https://github.com/kiegroup/act-
   - [Initialization options](#initialization-options)
   - [Mock an api](#mock-an-api)
     - [Mock the entire endpoint](#mock-the-entire-endpoint)
-    - [Mock an endpoint for specific parameter(s)](#mock-an-endpoint-for-specific-parameters)
+    - [Mock an endpoint for specific parameter(s) and header(s)](#mock-an-endpoint-for-specific-parameters-and-headers)
   - [Replying with a response](#replying-with-a-response)
     - [Reply once](#reply-once)
     - [Reply N times](#reply-n-times)
@@ -81,7 +81,7 @@ moctokit.rest.projects
   .reply({ status: 200, data: { owner_url: "whatever url" } });
 ```
 
-#### Mock an endpoint for specific parameter(s)
+#### Mock an endpoint for specific parameter(s) and header(s)
 
 You can mock an endpoint for certain paramters. So only if the call to the api has parameters which match the values you defined it will be get the mocked response.
 
@@ -95,6 +95,16 @@ const moctokit = new Moctokit();
  */
 moctokit.rest.projects
   .createForRepo({ owner: "kie", repo: /d.+/, name: "project" })
+  .reply({ status: 200, data: { owner_url: "whatever url" } });
+
+/**
+ * Mocks the same api as above but only for requests which match the same parameters as above as well contains the following 2 request headers:
+ * 1. "custom-header" with value as "value"
+ * 2. "test-header" with value as any number 
+ */
+moctokit.rest.projects
+  .createForRepo({ owner: "kie", repo: /d.+/, name: "project" })
+  .matchReqHeaders({"custom-header": "value", "test-header": /\d+/})
   .reply({ status: 200, data: { owner_url: "whatever url" } });
 ```
 
