@@ -16,7 +16,8 @@ Using this library along with [kiegroup/act-js](https://github.com/kiegroup/act-
     - [Reply N times](#reply-n-times)
     - [Chaining responses](#chaining-responses)
   - [Typescript Support](#typescript-support)
-- [Github](#github)
+- [MockGithub](#mockgithub)
+  - [Requirements](#requirements)
   - [Repositories](#repositories)
     - [Utility functions](#utility-functions)
   - [Env](#env)
@@ -211,7 +212,7 @@ When using with typescript, for each endpoint typescript will tell you what para
 Note no key in either params or response data will be a required key. All keys are optional. This merely checks that no key which is not defined in the openapi specification is passed in either params or response data for the given endpoint. It also enforces datatypes for any key defined in the openapi specification for the given endpoint.
 
 
-## Github
+## MockGithub
 
 This class is used to create local repositories and mimic github environment, action inputs and artifact archiving. To configure this local "github", it reads a configuration object by passing the path of a json file or directly to the constructor arguments.
 
@@ -255,6 +256,10 @@ The configuration object/file has 3 sections and all of them are optional. So yo
   action: //more details below
 }
 ```
+
+### Requirements
+
+To use MockGithub you need to have `git` version 2.28 or up installed
 
 ### Repositories
 
