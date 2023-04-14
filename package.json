@@ -31,7 +31,9 @@
     "update-all": "npm-run-all update:*",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "file": "ts-node"
+    "file": "ts-node",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged"
   },
   "author": "Shubh Bapna <sbapna@redhat.com>",
   "license": "SEE LICENSE IN LICENSE",
@@ -48,8 +50,10 @@
     "axios": "^0.27.2",
     "eslint": "^8.32.0",
     "github-openapi-graphql-query": "^2.1.2",
+    "husky": "^8.0.3",
     "jest": "^28.1.1",
     "jest-sonar-reporter": "^2.0.0",
+    "lint-staged": "^13.2.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "ts-jest": "^28.0.5",
@@ -69,5 +73,8 @@
   },
   "jestSonar": {
     "reportPath": "coverage"
+  },
+  "lint-staged": {
+    "*.ts": "npm run lint:fix"
   }
 }
