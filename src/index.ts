@@ -1,4 +1,5 @@
 import { MockGithub } from "@mg/github/github-mocker";
+import { Config as MockGithubConfig } from "@mg/github/github-mocker.types";
 import { Moctokit } from "@mg/moctokit/moctokit";
 import {
   FileState,
@@ -21,6 +22,7 @@ import { Endpoints } from "@mg/endpoint-mocker/endpoint-mocker.types";
 
 export {
   MockGithub,
+  MockGithubConfig,
   Moctokit,
   FileState,
   State,
