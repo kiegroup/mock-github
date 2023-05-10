@@ -9,6 +9,7 @@ import { ActionMockerMethods } from "@mg/github/action/action-mocker.types";
 import { RepositoryStateMethods } from "@mg/github/repository/state/repository-state.types";
 import Ajv from "ajv";
 import { GithubConfigSchema } from "@mg/github/schema/github";
+import path from "path";
 
 export class MockGithub implements Mocker {
   private actionMocker: ActionMocker;
@@ -21,7 +22,9 @@ export class MockGithub implements Mocker {
 
   constructor(config: string | Config, setupPath: string = process.cwd()) {
     this.config = this.validateConfig(config);
-    this.setupPath = setupPath;
+    this.setupPath = setupPath.startsWith("/")
+      ? setupPath
+      : path.resolve(process.cwd(), setupPath);
     this.actionMocker = new ActionMocker(this.config.action, this.setupPath);
     this.envMocker = new EnvMocker(this.config.env);
     this.repoMocker = new RepositoryMocker(this.config.repo, this.setupPath);
