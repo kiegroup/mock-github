@@ -1,14 +1,14 @@
 import { ActionMocker } from "@mg/github/action/action-mocker";
+import { ActionMockerMethods } from "@mg/github/action/action-mocker.types";
 import { EnvMocker } from "@mg/github/env/env-mocker";
+import { EnvMethods } from "@mg/github/env/env-mocker.types";
 import { Config } from "@mg/github/github-mocker.types";
 import { Mocker } from "@mg/github/mocker";
 import { RepositoryMocker } from "@mg/github/repository/repository-mocker";
-import { readFileSync, mkdirSync, existsSync, rmSync } from "fs-extra";
-import { EnvMethods } from "@mg/github/env/env-mocker.types";
-import { ActionMockerMethods } from "@mg/github/action/action-mocker.types";
 import { RepositoryStateMethods } from "@mg/github/repository/state/repository-state.types";
-import Ajv from "ajv";
 import { GithubConfigSchema } from "@mg/github/schema/github";
+import Ajv from "ajv";
+import { existsSync, mkdirSync, readFileSync, rmSync } from "fs-extra";
 import path from "path";
 
 export class MockGithub implements Mocker {
@@ -55,7 +55,7 @@ export class MockGithub implements Mocker {
     ]);
 
     // rm the setup dir only if we had created it
-    if (this.setupDirCreated) {rmSync(this.setupPath, { recursive: true });}
+    if (this.setupDirCreated) { rmSync(this.setupPath, { recursive: true }); }
 
     this.hasCalledSetup = false;
   }
