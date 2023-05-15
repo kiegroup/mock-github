@@ -18,8 +18,7 @@ import { Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.
 import { ResponseMocker } from "@mg/endpoint-mocker/response/abstract-response-mocker";
 import { RequestMocker } from "@mg/endpoint-mocker/request/abstract-request-mocker";
 import { EndpointDetails, EndpointMethod, Endpoints } from "@mg/endpoint-mocker/endpoint-mocker.types";
-import { Repository, Repositories } from "./github/repository/repository-mocker.types";
-import { RepositoryMocker } from "./github/repository/repository-mocker";
+import { Repository, Repositories } from "@mg/github/repository/repository-mocker.types";
 
 export {
   MockGithub,
@@ -36,7 +35,6 @@ export {
   Input,
   Repositories,
   Repository,
-  RepositoryMocker,
   Response,
   ResponseMocker,
   RequestMocker,
