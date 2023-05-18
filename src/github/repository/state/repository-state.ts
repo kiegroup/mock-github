@@ -15,6 +15,7 @@ import {
   RepositoryStateMethods,
   State,
 } from "@mg/github/repository/state/repository-state.types";
+import simpleGit from "simple-git";
 
 export class RepositoryState implements RepositoryStateMethods {
   private repositories: Repositories;
@@ -81,6 +82,28 @@ export class RepositoryState implements RepositoryStateMethods {
         localBranches,
       };
     }
+  }
+
+  async checkout(repositoryName: string, branch: string): Promise<void> {
+    const repoPath = this.getPath(repositoryName);
+    const currBranches = this.getBranchState(repositoryName);
+    if (!repoPath) {
+      throw new Error("Repository does not exist");
+    }
+
+    if (
+      !currBranches?.localBranches.includes(branch) &&
+      !currBranches?.pushedBranches.includes(branch)
+    ) {
+      throw new Error("Branch does not exist");
+    }
+
+    await simpleGit(repoPath).checkout(branch);
+
+    this.repositories[repositoryName] = {
+      ...this.repositories[repositoryName],
+      currentBranch: branch
+    };
   }
 
   async getFileSystemState(
