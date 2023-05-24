@@ -26,4 +26,5 @@ export interface RepositoryStateMethods {
   getOwner(repositoryName: string): string | undefined;
   getBranchState(repositoryName: string): BranchState | undefined;
   getFileSystemState(repositoryName: string): Promise<FileState[] | undefined>;
+  checkout(repositoryName: string, branch: string): Promise<void>;
 }

@@ -369,7 +369,7 @@ await github.setup();
 
 #### Utility functions
 
-There multiple utility functions available to extract information about the state of the repositories.
+There multiple utility functions available to extract information about the state of the repositories and perform some action on them.
 
 ```typescript
 const github = new MockGithub("path to config");
@@ -422,6 +422,11 @@ const branches = github.repo.getBranchState("repoA");
  * {  path: string, branch: string }[]
  */
 const repoFs = await github.repo.getFileSystemState("repoA");
+
+/**
+ * Checkout the given branch in the given repo. Will throw an error if the repo or the branch does not exist
+ */ 
+await github.repo.checkout("repoA", "branchA");
 ```
 
 ### Env

@@ -8,8 +8,11 @@ import {
 } from "@mg/github/repository/history/repository-history.types";
 import { DEFAULT_BRANCH } from "@mg/github/repository/repository.constants";
 import { RepositoryState } from "@mg/github/repository/state/repository-state";
+import simpleGit from "simple-git";
 
 const setupPath = __dirname;
+
+jest.mock("simple-git");
 
 describe("getFileSystemState", () => {
   test("undefined repository", async () => {
@@ -318,5 +321,50 @@ describe("getState", () => {
       forkedFrom: "project-forked",
       files: [],
     });
+  });
+});
+
+describe("checkout", () => {
+  test.each([
+    ["repository does not exist", {}],
+    [
+      "repository exists but branch doesn't",
+      {
+        repoA: {
+          owner: "owner",
+          localBranches: ["local1", "local2"],
+          pushedBranches: ["pushed1", "pushed2"],
+          currentBranch: "local1",
+          forkedFrom: "project-forked",
+        },
+      },
+    ],
+  ])("%p", async (_title, config) => {
+    const repoState = new RepositoryState(config, setupPath);
+    await expect(repoState.checkout("repoA", "branchA")).rejects.toThrowError();
+  });
+
+  test("repository and branch does exist", async () => {
+    const simpleGitMock = simpleGit as jest.Mock;
+    const checkoutMock = jest.fn(async _branch => undefined);
+    
+    simpleGitMock.mockReturnValue({
+      checkout: checkoutMock
+    });
+
+    const repoState = new RepositoryState({
+      repoA: {
+        owner: "owner",
+        localBranches: ["local1", "local2"],
+        pushedBranches: ["pushed1", "pushed2"],
+        currentBranch: "local1",
+        forkedFrom: "project-forked",
+      },
+    }, setupPath);
+    
+    await expect(repoState.checkout("repoA", "pushed1")).resolves.not.toThrowError();
+    expect(repoState.getBranchState("repoA")).toMatchObject({currentBranch: "pushed1"});
+    expect(simpleGitMock).toHaveBeenCalledWith(repoState.getPath("repoA"));
+    expect(checkoutMock).toHaveBeenCalledWith("pushed1");
   });
 });
