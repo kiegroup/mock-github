@@ -11,7 +11,7 @@ const version = process.env.VERSION.replace(/^v/, "");
 
 const QUERY = `
   query ($version: String!, $ignoreChangesBefore: String!) {
-    endpoints(version: $version, ignoreChangesBefore: $ignoreChangesBefore, filter: { isGithubCloudOnly: false }) {
+    endpoints(version: $version, ignoreChangesBefore: $ignoreChangesBefore, ghecCompatibilityMode: true, filter: { isGithubCloudOnly: false }) {
       name
       scope(format: CAMELCASE)
       id(format: CAMELCASE)
