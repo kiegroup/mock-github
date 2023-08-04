@@ -8,16 +8,24 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/{runner_id}/labels", "post">(baseUrl, endpoints["actions"]["addCustomLabelsToSelfHostedRunnerForRepo"], allowUnmocked).request,
     addSelectedRepoToOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}", "put">(baseUrl, endpoints["actions"]["addSelectedRepoToOrgSecret"], allowUnmocked).request,
+    addSelectedRepoToOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}/repositories/{repository_id}", "put">(baseUrl, endpoints["actions"]["addSelectedRepoToOrgVariable"], allowUnmocked).request,
+    addSelectedRepoToRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories/{repository_id}", "put">(baseUrl, endpoints["actions"]["addSelectedRepoToRequiredWorkflow"], allowUnmocked).request,
     approveWorkflowRun:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/approve", "post">(baseUrl, endpoints["actions"]["approveWorkflowRun"], allowUnmocked).request,
     cancelWorkflowRun:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/cancel", "post">(baseUrl, endpoints["actions"]["cancelWorkflowRun"], allowUnmocked).request,
+    createEnvironmentVariable:
+      new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/variables", "post">(baseUrl, endpoints["actions"]["createEnvironmentVariable"], allowUnmocked).request,
     createOrUpdateEnvironmentSecret:
       new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}", "put">(baseUrl, endpoints["actions"]["createOrUpdateEnvironmentSecret"], allowUnmocked).request,
     createOrUpdateOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}", "put">(baseUrl, endpoints["actions"]["createOrUpdateOrgSecret"], allowUnmocked).request,
     createOrUpdateRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/secrets/{secret_name}", "put">(baseUrl, endpoints["actions"]["createOrUpdateRepoSecret"], allowUnmocked).request,
+    createOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables", "post">(baseUrl, endpoints["actions"]["createOrgVariable"], allowUnmocked).request,
     createRegistrationTokenForOrg:
       new MoctokitRequestMocker<"/orgs/{org}/actions/runners/registration-token", "post">(baseUrl, endpoints["actions"]["createRegistrationTokenForOrg"], allowUnmocked).request,
     createRegistrationTokenForRepo:
@@ -26,6 +34,10 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/actions/runners/remove-token", "post">(baseUrl, endpoints["actions"]["createRemoveTokenForOrg"], allowUnmocked).request,
     createRemoveTokenForRepo:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/remove-token", "post">(baseUrl, endpoints["actions"]["createRemoveTokenForRepo"], allowUnmocked).request,
+    createRepoVariable:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/variables", "post">(baseUrl, endpoints["actions"]["createRepoVariable"], allowUnmocked).request,
+    createRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows", "post">(baseUrl, endpoints["actions"]["createRequiredWorkflow"], allowUnmocked).request,
     createWorkflowDispatch:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", "post">(baseUrl, endpoints["actions"]["createWorkflowDispatch"], allowUnmocked).request,
     deleteActionsCacheById:
@@ -36,10 +48,18 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/artifacts/{artifact_id}", "delete">(baseUrl, endpoints["actions"]["deleteArtifact"], allowUnmocked).request,
     deleteEnvironmentSecret:
       new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}", "delete">(baseUrl, endpoints["actions"]["deleteEnvironmentSecret"], allowUnmocked).request,
+    deleteEnvironmentVariable:
+      new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/variables/{name}", "delete">(baseUrl, endpoints["actions"]["deleteEnvironmentVariable"], allowUnmocked).request,
     deleteOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}", "delete">(baseUrl, endpoints["actions"]["deleteOrgSecret"], allowUnmocked).request,
+    deleteOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}", "delete">(baseUrl, endpoints["actions"]["deleteOrgVariable"], allowUnmocked).request,
     deleteRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/secrets/{secret_name}", "delete">(baseUrl, endpoints["actions"]["deleteRepoSecret"], allowUnmocked).request,
+    deleteRepoVariable:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/variables/{name}", "delete">(baseUrl, endpoints["actions"]["deleteRepoVariable"], allowUnmocked).request,
+    deleteRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}", "delete">(baseUrl, endpoints["actions"]["deleteRequiredWorkflow"], allowUnmocked).request,
     deleteSelfHostedRunnerFromOrg:
       new MoctokitRequestMocker<"/orgs/{org}/actions/runners/{runner_id}", "delete">(baseUrl, endpoints["actions"]["deleteSelfHostedRunnerFromOrg"], allowUnmocked).request,
     deleteSelfHostedRunnerFromRepo:
@@ -64,14 +84,18 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/actions/permissions/repositories/{repository_id}", "put">(baseUrl, endpoints["actions"]["enableSelectedRepositoryGithubActionsOrganization"], allowUnmocked).request,
     enableWorkflow:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable", "put">(baseUrl, endpoints["actions"]["enableWorkflow"], allowUnmocked).request,
+    generateRunnerJitconfigForEnterprise:
+      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/runners/generate-jitconfig", "post">(baseUrl, endpoints["actions"]["generateRunnerJitconfigForEnterprise"], allowUnmocked).request,
+    generateRunnerJitconfigForOrg:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/runners/generate-jitconfig", "post">(baseUrl, endpoints["actions"]["generateRunnerJitconfigForOrg"], allowUnmocked).request,
+    generateRunnerJitconfigForRepo:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/generate-jitconfig", "post">(baseUrl, endpoints["actions"]["generateRunnerJitconfigForRepo"], allowUnmocked).request,
     getActionsCacheList:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/caches", "get">(baseUrl, endpoints["actions"]["getActionsCacheList"], allowUnmocked).request,
     getActionsCacheUsage:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/cache/usage", "get">(baseUrl, endpoints["actions"]["getActionsCacheUsage"], allowUnmocked).request,
     getActionsCacheUsageByRepoForOrg:
       new MoctokitRequestMocker<"/orgs/{org}/actions/cache/usage-by-repository", "get">(baseUrl, endpoints["actions"]["getActionsCacheUsageByRepoForOrg"], allowUnmocked).request,
-    getActionsCacheUsageForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/cache/usage", "get">(baseUrl, endpoints["actions"]["getActionsCacheUsageForEnterprise"], allowUnmocked).request,
     getActionsCacheUsageForOrg:
       new MoctokitRequestMocker<"/orgs/{org}/actions/cache/usage", "get">(baseUrl, endpoints["actions"]["getActionsCacheUsageForOrg"], allowUnmocked).request,
     getAllowedActionsOrganization:
@@ -84,8 +108,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/secrets/public-key", "get">(baseUrl, endpoints["actions"]["getEnvironmentPublicKey"], allowUnmocked).request,
     getEnvironmentSecret:
       new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}", "get">(baseUrl, endpoints["actions"]["getEnvironmentSecret"], allowUnmocked).request,
-    getGithubActionsDefaultWorkflowPermissionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/workflow", "get">(baseUrl, endpoints["actions"]["getGithubActionsDefaultWorkflowPermissionsEnterprise"], allowUnmocked).request,
+    getEnvironmentVariable:
+      new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/variables/{name}", "get">(baseUrl, endpoints["actions"]["getEnvironmentVariable"], allowUnmocked).request,
     getGithubActionsDefaultWorkflowPermissionsOrganization:
       new MoctokitRequestMocker<"/orgs/{org}/actions/permissions/workflow", "get">(baseUrl, endpoints["actions"]["getGithubActionsDefaultWorkflowPermissionsOrganization"], allowUnmocked).request,
     getGithubActionsDefaultWorkflowPermissionsRepository:
@@ -100,14 +124,24 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/public-key", "get">(baseUrl, endpoints["actions"]["getOrgPublicKey"], allowUnmocked).request,
     getOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}", "get">(baseUrl, endpoints["actions"]["getOrgSecret"], allowUnmocked).request,
+    getOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}", "get">(baseUrl, endpoints["actions"]["getOrgVariable"], allowUnmocked).request,
     getPendingDeploymentsForRun:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments", "get">(baseUrl, endpoints["actions"]["getPendingDeploymentsForRun"], allowUnmocked).request,
     getRepoPermissions:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/permissions", "get">(baseUrl, endpoints["actions"]["getRepoPermissions"], allowUnmocked).request,
     getRepoPublicKey:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/secrets/public-key", "get">(baseUrl, endpoints["actions"]["getRepoPublicKey"], allowUnmocked).request,
+    getRepoRequiredWorkflow:
+      new MoctokitRequestMocker<"/repos/{org}/{repo}/actions/required_workflows/{required_workflow_id_for_repo}", "get">(baseUrl, endpoints["actions"]["getRepoRequiredWorkflow"], allowUnmocked).request,
+    getRepoRequiredWorkflowUsage:
+      new MoctokitRequestMocker<"/repos/{org}/{repo}/actions/required_workflows/{required_workflow_id_for_repo}/timing", "get">(baseUrl, endpoints["actions"]["getRepoRequiredWorkflowUsage"], allowUnmocked).request,
     getRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/secrets/{secret_name}", "get">(baseUrl, endpoints["actions"]["getRepoSecret"], allowUnmocked).request,
+    getRepoVariable:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/variables/{name}", "get">(baseUrl, endpoints["actions"]["getRepoVariable"], allowUnmocked).request,
+    getRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}", "get">(baseUrl, endpoints["actions"]["getRequiredWorkflow"], allowUnmocked).request,
     getReviewsForRun:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/approvals", "get">(baseUrl, endpoints["actions"]["getReviewsForRun"], allowUnmocked).request,
     getSelfHostedRunnerForOrg:
@@ -130,6 +164,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/artifacts", "get">(baseUrl, endpoints["actions"]["listArtifactsForRepo"], allowUnmocked).request,
     listEnvironmentSecrets:
       new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/secrets", "get">(baseUrl, endpoints["actions"]["listEnvironmentSecrets"], allowUnmocked).request,
+    listEnvironmentVariables:
+      new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/variables", "get">(baseUrl, endpoints["actions"]["listEnvironmentVariables"], allowUnmocked).request,
     listJobsForWorkflowRun:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/jobs", "get">(baseUrl, endpoints["actions"]["listJobsForWorkflowRun"], allowUnmocked).request,
     listJobsForWorkflowRunAttempt:
@@ -140,18 +176,36 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/{runner_id}/labels", "get">(baseUrl, endpoints["actions"]["listLabelsForSelfHostedRunnerForRepo"], allowUnmocked).request,
     listOrgSecrets:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets", "get">(baseUrl, endpoints["actions"]["listOrgSecrets"], allowUnmocked).request,
+    listOrgVariables:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables", "get">(baseUrl, endpoints["actions"]["listOrgVariables"], allowUnmocked).request,
+    listRepoOrganizationSecrets:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/organization-secrets", "get">(baseUrl, endpoints["actions"]["listRepoOrganizationSecrets"], allowUnmocked).request,
+    listRepoOrganizationVariables:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/organization-variables", "get">(baseUrl, endpoints["actions"]["listRepoOrganizationVariables"], allowUnmocked).request,
+    listRepoRequiredWorkflows:
+      new MoctokitRequestMocker<"/repos/{org}/{repo}/actions/required_workflows", "get">(baseUrl, endpoints["actions"]["listRepoRequiredWorkflows"], allowUnmocked).request,
     listRepoSecrets:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/secrets", "get">(baseUrl, endpoints["actions"]["listRepoSecrets"], allowUnmocked).request,
+    listRepoVariables:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/variables", "get">(baseUrl, endpoints["actions"]["listRepoVariables"], allowUnmocked).request,
     listRepoWorkflows:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/workflows", "get">(baseUrl, endpoints["actions"]["listRepoWorkflows"], allowUnmocked).request,
+    listRequiredWorkflowRuns:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/required_workflows/{required_workflow_id_for_repo}/runs", "get">(baseUrl, endpoints["actions"]["listRequiredWorkflowRuns"], allowUnmocked).request,
+    listRequiredWorkflows:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows", "get">(baseUrl, endpoints["actions"]["listRequiredWorkflows"], allowUnmocked).request,
     listRunnerApplicationsForOrg:
       new MoctokitRequestMocker<"/orgs/{org}/actions/runners/downloads", "get">(baseUrl, endpoints["actions"]["listRunnerApplicationsForOrg"], allowUnmocked).request,
     listRunnerApplicationsForRepo:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/downloads", "get">(baseUrl, endpoints["actions"]["listRunnerApplicationsForRepo"], allowUnmocked).request,
     listSelectedReposForOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}/repositories", "get">(baseUrl, endpoints["actions"]["listSelectedReposForOrgSecret"], allowUnmocked).request,
+    listSelectedReposForOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}/repositories", "get">(baseUrl, endpoints["actions"]["listSelectedReposForOrgVariable"], allowUnmocked).request,
     listSelectedRepositoriesEnabledGithubActionsOrganization:
       new MoctokitRequestMocker<"/orgs/{org}/actions/permissions/repositories", "get">(baseUrl, endpoints["actions"]["listSelectedRepositoriesEnabledGithubActionsOrganization"], allowUnmocked).request,
+    listSelectedRepositoriesRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories", "get">(baseUrl, endpoints["actions"]["listSelectedRepositoriesRequiredWorkflow"], allowUnmocked).request,
     listSelfHostedRunnersForOrg:
       new MoctokitRequestMocker<"/orgs/{org}/actions/runners", "get">(baseUrl, endpoints["actions"]["listSelfHostedRunnersForOrg"], allowUnmocked).request,
     listSelfHostedRunnersForRepo:
@@ -178,6 +232,12 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/{runner_id}/labels/{name}", "delete">(baseUrl, endpoints["actions"]["removeCustomLabelFromSelfHostedRunnerForRepo"], allowUnmocked).request,
     removeSelectedRepoFromOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["actions"]["removeSelectedRepoFromOrgSecret"], allowUnmocked).request,
+    removeSelectedRepoFromOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["actions"]["removeSelectedRepoFromOrgVariable"], allowUnmocked).request,
+    removeSelectedRepoFromRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories/{repository_id}", "delete">(baseUrl, endpoints["actions"]["removeSelectedRepoFromRequiredWorkflow"], allowUnmocked).request,
+    reviewCustomGatesForRun:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule", "post">(baseUrl, endpoints["actions"]["reviewCustomGatesForRun"], allowUnmocked).request,
     reviewPendingDeploymentsForRun:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments", "post">(baseUrl, endpoints["actions"]["reviewPendingDeploymentsForRun"], allowUnmocked).request,
     setAllowedActionsOrganization:
@@ -188,8 +248,6 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/actions/runners/{runner_id}/labels", "put">(baseUrl, endpoints["actions"]["setCustomLabelsForSelfHostedRunnerForOrg"], allowUnmocked).request,
     setCustomLabelsForSelfHostedRunnerForRepo:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/runners/{runner_id}/labels", "put">(baseUrl, endpoints["actions"]["setCustomLabelsForSelfHostedRunnerForRepo"], allowUnmocked).request,
-    setGithubActionsDefaultWorkflowPermissionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/workflow", "put">(baseUrl, endpoints["actions"]["setGithubActionsDefaultWorkflowPermissionsEnterprise"], allowUnmocked).request,
     setGithubActionsDefaultWorkflowPermissionsOrganization:
       new MoctokitRequestMocker<"/orgs/{org}/actions/permissions/workflow", "put">(baseUrl, endpoints["actions"]["setGithubActionsDefaultWorkflowPermissionsOrganization"], allowUnmocked).request,
     setGithubActionsDefaultWorkflowPermissionsRepository:
@@ -200,10 +258,22 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/permissions", "put">(baseUrl, endpoints["actions"]["setGithubActionsPermissionsRepository"], allowUnmocked).request,
     setSelectedReposForOrgSecret:
       new MoctokitRequestMocker<"/orgs/{org}/actions/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["actions"]["setSelectedReposForOrgSecret"], allowUnmocked).request,
+    setSelectedReposForOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}/repositories", "put">(baseUrl, endpoints["actions"]["setSelectedReposForOrgVariable"], allowUnmocked).request,
+    setSelectedReposToRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories", "put">(baseUrl, endpoints["actions"]["setSelectedReposToRequiredWorkflow"], allowUnmocked).request,
     setSelectedRepositoriesEnabledGithubActionsOrganization:
       new MoctokitRequestMocker<"/orgs/{org}/actions/permissions/repositories", "put">(baseUrl, endpoints["actions"]["setSelectedRepositoriesEnabledGithubActionsOrganization"], allowUnmocked).request,
     setWorkflowAccessToRepository:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/permissions/access", "put">(baseUrl, endpoints["actions"]["setWorkflowAccessToRepository"], allowUnmocked).request,
+    updateEnvironmentVariable:
+      new MoctokitRequestMocker<"/repositories/{repository_id}/environments/{environment_name}/variables/{name}", "patch">(baseUrl, endpoints["actions"]["updateEnvironmentVariable"], allowUnmocked).request,
+    updateOrgVariable:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/variables/{name}", "patch">(baseUrl, endpoints["actions"]["updateOrgVariable"], allowUnmocked).request,
+    updateRepoVariable:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/actions/variables/{name}", "patch">(baseUrl, endpoints["actions"]["updateRepoVariable"], allowUnmocked).request,
+    updateRequiredWorkflow:
+      new MoctokitRequestMocker<"/orgs/{org}/actions/required_workflows/{required_workflow_id}", "patch">(baseUrl, endpoints["actions"]["updateRequiredWorkflow"], allowUnmocked).request,
   },
   activity: {
     checkRepoIsStarredByAuthenticatedUser:
@@ -312,6 +382,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/marketplace_listing/stubbed/plans/{plan_id}/accounts", "get">(baseUrl, endpoints["apps"]["listAccountsForPlanStubbed"], allowUnmocked).request,
     listInstallationReposForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/installations/{installation_id}/repositories", "get">(baseUrl, endpoints["apps"]["listInstallationReposForAuthenticatedUser"], allowUnmocked).request,
+    listInstallationRequestsForAuthenticatedApp:
+      new MoctokitRequestMocker<"/app/installation-requests", "get">(baseUrl, endpoints["apps"]["listInstallationRequestsForAuthenticatedApp"], allowUnmocked).request,
     listInstallations:
       new MoctokitRequestMocker<"/app/installations", "get">(baseUrl, endpoints["apps"]["listInstallations"], allowUnmocked).request,
     listInstallationsForAuthenticatedUser:
@@ -352,10 +424,6 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/settings/billing/actions", "get">(baseUrl, endpoints["billing"]["getGithubActionsBillingOrg"], allowUnmocked).request,
     getGithubActionsBillingUser:
       new MoctokitRequestMocker<"/users/{username}/settings/billing/actions", "get">(baseUrl, endpoints["billing"]["getGithubActionsBillingUser"], allowUnmocked).request,
-    getGithubAdvancedSecurityBillingGhe:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/settings/billing/advanced-security", "get">(baseUrl, endpoints["billing"]["getGithubAdvancedSecurityBillingGhe"], allowUnmocked).request,
-    getGithubAdvancedSecurityBillingOrg:
-      new MoctokitRequestMocker<"/orgs/{org}/settings/billing/advanced-security", "get">(baseUrl, endpoints["billing"]["getGithubAdvancedSecurityBillingOrg"], allowUnmocked).request,
     getGithubPackagesBillingOrg:
       new MoctokitRequestMocker<"/orgs/{org}/settings/billing/packages", "get">(baseUrl, endpoints["billing"]["getGithubPackagesBillingOrg"], allowUnmocked).request,
     getGithubPackagesBillingUser:
@@ -399,12 +467,12 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}", "get">(baseUrl, endpoints["codeScanning"]["getAnalysis"], allowUnmocked).request,
     getCodeqlDatabase:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/codeql/databases/{language}", "get">(baseUrl, endpoints["codeScanning"]["getCodeqlDatabase"], allowUnmocked).request,
+    getDefaultSetup:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/default-setup", "get">(baseUrl, endpoints["codeScanning"]["getDefaultSetup"], allowUnmocked).request,
     getSarif:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}", "get">(baseUrl, endpoints["codeScanning"]["getSarif"], allowUnmocked).request,
     listAlertInstances:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances", "get">(baseUrl, endpoints["codeScanning"]["listAlertInstances"], allowUnmocked).request,
-    listAlertsForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/code-scanning/alerts", "get">(baseUrl, endpoints["codeScanning"]["listAlertsForEnterprise"], allowUnmocked).request,
     listAlertsForOrg:
       new MoctokitRequestMocker<"/orgs/{org}/code-scanning/alerts", "get">(baseUrl, endpoints["codeScanning"]["listAlertsForOrg"], allowUnmocked).request,
     listAlertsForRepo:
@@ -417,6 +485,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/analyses", "get">(baseUrl, endpoints["codeScanning"]["listRecentAnalyses"], allowUnmocked).request,
     updateAlert:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}", "patch">(baseUrl, endpoints["codeScanning"]["updateAlert"], allowUnmocked).request,
+    updateDefaultSetup:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/default-setup", "patch">(baseUrl, endpoints["codeScanning"]["updateDefaultSetup"], allowUnmocked).request,
     uploadSarif:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/code-scanning/sarifs", "post">(baseUrl, endpoints["codeScanning"]["uploadSarif"], allowUnmocked).request,
   },
@@ -430,13 +500,13 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
     addRepositoryForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories/{repository_id}", "put">(baseUrl, endpoints["codespaces"]["addRepositoryForSecretForAuthenticatedUser"], allowUnmocked).request,
     addSelectedRepoToOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}", "put">(baseUrl, endpoints["codespaces"]["addSelectedRepoToOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}", "put">(baseUrl, endpoints["codespaces"]["addSelectedRepoToOrgSecret"], allowUnmocked).request,
     codespaceMachinesForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/machines", "get">(baseUrl, endpoints["codespaces"]["codespaceMachinesForAuthenticatedUser"], allowUnmocked).request,
     createForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces", "post">(baseUrl, endpoints["codespaces"]["createForAuthenticatedUser"], allowUnmocked).request,
     createOrUpdateOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}", "put">(baseUrl, endpoints["codespaces"]["createOrUpdateOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}", "put">(baseUrl, endpoints["codespaces"]["createOrUpdateOrgSecret"], allowUnmocked).request,
     createOrUpdateRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/secrets/{secret_name}", "put">(baseUrl, endpoints["codespaces"]["createOrUpdateRepoSecret"], allowUnmocked).request,
     createOrUpdateSecretForAuthenticatedUser:
@@ -445,26 +515,30 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pulls/{pull_number}/codespaces", "post">(baseUrl, endpoints["codespaces"]["createWithPrForAuthenticatedUser"], allowUnmocked).request,
     createWithRepoForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces", "post">(baseUrl, endpoints["codespaces"]["createWithRepoForAuthenticatedUser"], allowUnmocked).request,
+    deleteCodespacesBillingUsers:
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/billing/selected_users", "delete">(baseUrl, endpoints["codespaces"]["deleteCodespacesBillingUsers"], allowUnmocked).request,
     deleteForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteForAuthenticatedUser"], allowUnmocked).request,
     deleteFromOrganization:
       new MoctokitRequestMocker<"/orgs/{org}/members/{username}/codespaces/{codespace_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteFromOrganization"], allowUnmocked).request,
     deleteOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteOrgSecret"], allowUnmocked).request,
     deleteRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/secrets/{secret_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteRepoSecret"], allowUnmocked).request,
     deleteSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}", "delete">(baseUrl, endpoints["codespaces"]["deleteSecretForAuthenticatedUser"], allowUnmocked).request,
     exportForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/exports", "post">(baseUrl, endpoints["codespaces"]["exportForAuthenticatedUser"], allowUnmocked).request,
+    getCodespacesForUserInOrg:
+      new MoctokitRequestMocker<"/orgs/{org}/members/{username}/codespaces", "get">(baseUrl, endpoints["codespaces"]["getCodespacesForUserInOrg"], allowUnmocked).request,
     getExportDetailsForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/exports/{export_id}", "get">(baseUrl, endpoints["codespaces"]["getExportDetailsForAuthenticatedUser"], allowUnmocked).request,
     getForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}", "get">(baseUrl, endpoints["codespaces"]["getForAuthenticatedUser"], allowUnmocked).request,
     getOrgPublicKey:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/public-key", "get">(baseUrl, endpoints["codespaces"]["getOrgPublicKey"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/public-key", "get">(baseUrl, endpoints["codespaces"]["getOrgPublicKey"], allowUnmocked).request,
     getOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}", "get">(baseUrl, endpoints["codespaces"]["getOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}", "get">(baseUrl, endpoints["codespaces"]["getOrgSecret"], allowUnmocked).request,
     getPublicKeyForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/public-key", "get">(baseUrl, endpoints["codespaces"]["getPublicKeyForAuthenticatedUser"], allowUnmocked).request,
     getRepoPublicKey:
@@ -482,7 +556,7 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
     listInRepositoryForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces", "get">(baseUrl, endpoints["codespaces"]["listInRepositoryForAuthenticatedUser"], allowUnmocked).request,
     listOrgSecrets:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listOrgSecrets"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listOrgSecrets"], allowUnmocked).request,
     listRepoSecrets:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listRepoSecrets"], allowUnmocked).request,
     listRepositoriesForSecretForAuthenticatedUser:
@@ -490,19 +564,25 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
     listSecretsForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets", "get">(baseUrl, endpoints["codespaces"]["listSecretsForAuthenticatedUser"], allowUnmocked).request,
     listSelectedReposForOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories", "get">(baseUrl, endpoints["codespaces"]["listSelectedReposForOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}/repositories", "get">(baseUrl, endpoints["codespaces"]["listSelectedReposForOrgSecret"], allowUnmocked).request,
     preFlightWithRepoForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/new", "get">(baseUrl, endpoints["codespaces"]["preFlightWithRepoForAuthenticatedUser"], allowUnmocked).request,
+    publishForAuthenticatedUser:
+      new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/publish", "post">(baseUrl, endpoints["codespaces"]["publishForAuthenticatedUser"], allowUnmocked).request,
     removeRepositoryForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["codespaces"]["removeRepositoryForSecretForAuthenticatedUser"], allowUnmocked).request,
     removeSelectedRepoFromOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["codespaces"]["removeSelectedRepoFromOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}", "delete">(baseUrl, endpoints["codespaces"]["removeSelectedRepoFromOrgSecret"], allowUnmocked).request,
     repoMachinesForAuthenticatedUser:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/codespaces/machines", "get">(baseUrl, endpoints["codespaces"]["repoMachinesForAuthenticatedUser"], allowUnmocked).request,
+    setCodespacesBilling:
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/billing", "put">(baseUrl, endpoints["codespaces"]["setCodespacesBilling"], allowUnmocked).request,
+    setCodespacesBillingUsers:
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/billing/selected_users", "post">(baseUrl, endpoints["codespaces"]["setCodespacesBillingUsers"], allowUnmocked).request,
     setRepositoriesForSecretForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["codespaces"]["setRepositoriesForSecretForAuthenticatedUser"], allowUnmocked).request,
     setSelectedReposForOrgSecret:
-      new MoctokitRequestMocker<"/organizations/{org}/codespaces/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["codespaces"]["setSelectedReposForOrgSecret"], allowUnmocked).request,
+      new MoctokitRequestMocker<"/orgs/{org}/codespaces/secrets/{secret_name}/repositories", "put">(baseUrl, endpoints["codespaces"]["setSelectedReposForOrgSecret"], allowUnmocked).request,
     startForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/codespaces/{codespace_name}/start", "post">(baseUrl, endpoints["codespaces"]["startForAuthenticatedUser"], allowUnmocked).request,
     stopForAuthenticatedUser:
@@ -533,6 +613,10 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/secrets/public-key", "get">(baseUrl, endpoints["dependabot"]["getRepoPublicKey"], allowUnmocked).request,
     getRepoSecret:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/secrets/{secret_name}", "get">(baseUrl, endpoints["dependabot"]["getRepoSecret"], allowUnmocked).request,
+    listAlertsForEnterprise:
+      new MoctokitRequestMocker<"/enterprises/{enterprise}/dependabot/alerts", "get">(baseUrl, endpoints["dependabot"]["listAlertsForEnterprise"], allowUnmocked).request,
+    listAlertsForOrg:
+      new MoctokitRequestMocker<"/orgs/{org}/dependabot/alerts", "get">(baseUrl, endpoints["dependabot"]["listAlertsForOrg"], allowUnmocked).request,
     listAlertsForRepo:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependabot/alerts", "get">(baseUrl, endpoints["dependabot"]["listAlertsForRepo"], allowUnmocked).request,
     listOrgSecrets:
@@ -553,39 +637,11 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependency-graph/snapshots", "post">(baseUrl, endpoints["dependencyGraph"]["createRepositorySnapshot"], allowUnmocked).request,
     diffRange:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependency-graph/compare/{basehead}", "get">(baseUrl, endpoints["dependencyGraph"]["diffRange"], allowUnmocked).request,
+    exportSbom:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/dependency-graph/sbom", "get">(baseUrl, endpoints["dependencyGraph"]["exportSbom"], allowUnmocked).request,
   },
   emojis: {
     get: new MoctokitRequestMocker<"/emojis", "get">(baseUrl, endpoints["emojis"]["get"], allowUnmocked).request,
-  },
-  enterpriseAdmin: {
-    addCustomLabelsToSelfHostedRunnerForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/runners/{runner_id}/labels", "post">(baseUrl, endpoints["enterpriseAdmin"]["addCustomLabelsToSelfHostedRunnerForEnterprise"], allowUnmocked).request,
-    disableSelectedOrganizationGithubActionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/organizations/{org_id}", "delete">(baseUrl, endpoints["enterpriseAdmin"]["disableSelectedOrganizationGithubActionsEnterprise"], allowUnmocked).request,
-    enableSelectedOrganizationGithubActionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/organizations/{org_id}", "put">(baseUrl, endpoints["enterpriseAdmin"]["enableSelectedOrganizationGithubActionsEnterprise"], allowUnmocked).request,
-    getAllowedActionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/selected-actions", "get">(baseUrl, endpoints["enterpriseAdmin"]["getAllowedActionsEnterprise"], allowUnmocked).request,
-    getGithubActionsPermissionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions", "get">(baseUrl, endpoints["enterpriseAdmin"]["getGithubActionsPermissionsEnterprise"], allowUnmocked).request,
-    getServerStatistics:
-      new MoctokitRequestMocker<"/enterprise-installation/{enterprise_or_org}/server-statistics", "get">(baseUrl, endpoints["enterpriseAdmin"]["getServerStatistics"], allowUnmocked).request,
-    listLabelsForSelfHostedRunnerForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/runners/{runner_id}/labels", "get">(baseUrl, endpoints["enterpriseAdmin"]["listLabelsForSelfHostedRunnerForEnterprise"], allowUnmocked).request,
-    listSelectedOrganizationsEnabledGithubActionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/organizations", "get">(baseUrl, endpoints["enterpriseAdmin"]["listSelectedOrganizationsEnabledGithubActionsEnterprise"], allowUnmocked).request,
-    removeAllCustomLabelsFromSelfHostedRunnerForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/runners/{runner_id}/labels", "delete">(baseUrl, endpoints["enterpriseAdmin"]["removeAllCustomLabelsFromSelfHostedRunnerForEnterprise"], allowUnmocked).request,
-    removeCustomLabelFromSelfHostedRunnerForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/runners/{runner_id}/labels/{name}", "delete">(baseUrl, endpoints["enterpriseAdmin"]["removeCustomLabelFromSelfHostedRunnerForEnterprise"], allowUnmocked).request,
-    setAllowedActionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/selected-actions", "put">(baseUrl, endpoints["enterpriseAdmin"]["setAllowedActionsEnterprise"], allowUnmocked).request,
-    setCustomLabelsForSelfHostedRunnerForEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/runners/{runner_id}/labels", "put">(baseUrl, endpoints["enterpriseAdmin"]["setCustomLabelsForSelfHostedRunnerForEnterprise"], allowUnmocked).request,
-    setGithubActionsPermissionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions", "put">(baseUrl, endpoints["enterpriseAdmin"]["setGithubActionsPermissionsEnterprise"], allowUnmocked).request,
-    setSelectedOrganizationsEnabledGithubActionsEnterprise:
-      new MoctokitRequestMocker<"/enterprises/{enterprise}/actions/permissions/organizations", "put">(baseUrl, endpoints["enterpriseAdmin"]["setSelectedOrganizationsEnabledGithubActionsEnterprise"], allowUnmocked).request,
   },
   gists: {
     checkIsStarred:
@@ -692,6 +748,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/issues/{issue_number}/labels", "post">(baseUrl, endpoints["issues"]["addLabels"], allowUnmocked).request,
     checkUserCanBeAssigned:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/assignees/{assignee}", "get">(baseUrl, endpoints["issues"]["checkUserCanBeAssigned"], allowUnmocked).request,
+    checkUserCanBeAssignedToIssue:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}", "get">(baseUrl, endpoints["issues"]["checkUserCanBeAssignedToIssue"], allowUnmocked).request,
     create:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/issues", "post">(baseUrl, endpoints["issues"]["create"], allowUnmocked).request,
     createComment:
@@ -777,6 +835,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
   },
   meta: {
     get: new MoctokitRequestMocker<"/meta", "get">(baseUrl, endpoints["meta"]["get"], allowUnmocked).request,
+    getAllVersions:
+      new MoctokitRequestMocker<"/versions", "get">(baseUrl, endpoints["meta"]["getAllVersions"], allowUnmocked).request,
     getOctocat:
       new MoctokitRequestMocker<"/octocat", "get">(baseUrl, endpoints["meta"]["getOctocat"], allowUnmocked).request,
     getZen:
@@ -846,14 +906,12 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/public_members/{username}", "get">(baseUrl, endpoints["orgs"]["checkPublicMembershipForUser"], allowUnmocked).request,
     convertMemberToOutsideCollaborator:
       new MoctokitRequestMocker<"/orgs/{org}/outside_collaborators/{username}", "put">(baseUrl, endpoints["orgs"]["convertMemberToOutsideCollaborator"], allowUnmocked).request,
-    createCustomRole:
-      new MoctokitRequestMocker<"/orgs/{org}/custom_roles", "post">(baseUrl, endpoints["orgs"]["createCustomRole"], allowUnmocked).request,
     createInvitation:
       new MoctokitRequestMocker<"/orgs/{org}/invitations", "post">(baseUrl, endpoints["orgs"]["createInvitation"], allowUnmocked).request,
     createWebhook:
       new MoctokitRequestMocker<"/orgs/{org}/hooks", "post">(baseUrl, endpoints["orgs"]["createWebhook"], allowUnmocked).request,
-    deleteCustomRole:
-      new MoctokitRequestMocker<"/orgs/{org}/custom_roles/{role_id}", "delete">(baseUrl, endpoints["orgs"]["deleteCustomRole"], allowUnmocked).request,
+    delete:
+      new MoctokitRequestMocker<"/orgs/{org}", "delete">(baseUrl, endpoints["orgs"]["delete"], allowUnmocked).request,
     deleteWebhook:
       new MoctokitRequestMocker<"/orgs/{org}/hooks/{hook_id}", "delete">(baseUrl, endpoints["orgs"]["deleteWebhook"], allowUnmocked).request,
     enableOrDisableSecurityProductOnAllOrgRepos:
@@ -874,12 +932,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/installations", "get">(baseUrl, endpoints["orgs"]["listAppInstallations"], allowUnmocked).request,
     listBlockedUsers:
       new MoctokitRequestMocker<"/orgs/{org}/blocks", "get">(baseUrl, endpoints["orgs"]["listBlockedUsers"], allowUnmocked).request,
-    listCustomRoles:
-      new MoctokitRequestMocker<"/organizations/{organization_id}/custom_roles", "get">(baseUrl, endpoints["orgs"]["listCustomRoles"], allowUnmocked).request,
     listFailedInvitations:
       new MoctokitRequestMocker<"/orgs/{org}/failed_invitations", "get">(baseUrl, endpoints["orgs"]["listFailedInvitations"], allowUnmocked).request,
-    listFineGrainedPermissions:
-      new MoctokitRequestMocker<"/orgs/{org}/fine_grained_permissions", "get">(baseUrl, endpoints["orgs"]["listFineGrainedPermissions"], allowUnmocked).request,
     listForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/orgs", "get">(baseUrl, endpoints["orgs"]["listForAuthenticatedUser"], allowUnmocked).request,
     listForUser:
@@ -892,6 +946,14 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/user/memberships/orgs", "get">(baseUrl, endpoints["orgs"]["listMembershipsForAuthenticatedUser"], allowUnmocked).request,
     listOutsideCollaborators:
       new MoctokitRequestMocker<"/orgs/{org}/outside_collaborators", "get">(baseUrl, endpoints["orgs"]["listOutsideCollaborators"], allowUnmocked).request,
+    listPatGrantRepositories:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-tokens/{pat_id}/repositories", "get">(baseUrl, endpoints["orgs"]["listPatGrantRepositories"], allowUnmocked).request,
+    listPatGrantRequestRepositories:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-token-requests/{pat_request_id}/repositories", "get">(baseUrl, endpoints["orgs"]["listPatGrantRequestRepositories"], allowUnmocked).request,
+    listPatGrantRequests:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-token-requests", "get">(baseUrl, endpoints["orgs"]["listPatGrantRequests"], allowUnmocked).request,
+    listPatGrants:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-tokens", "get">(baseUrl, endpoints["orgs"]["listPatGrants"], allowUnmocked).request,
     listPendingInvitations:
       new MoctokitRequestMocker<"/orgs/{org}/invitations", "get">(baseUrl, endpoints["orgs"]["listPendingInvitations"], allowUnmocked).request,
     listPublicMembers:
@@ -916,6 +978,10 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/public_members/{username}", "delete">(baseUrl, endpoints["orgs"]["removePublicMembershipForAuthenticatedUser"], allowUnmocked).request,
     removeSecurityManagerTeam:
       new MoctokitRequestMocker<"/orgs/{org}/security-managers/teams/{team_slug}", "delete">(baseUrl, endpoints["orgs"]["removeSecurityManagerTeam"], allowUnmocked).request,
+    reviewPatGrantRequest:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-token-requests/{pat_request_id}", "post">(baseUrl, endpoints["orgs"]["reviewPatGrantRequest"], allowUnmocked).request,
+    reviewPatGrantRequestsInBulk:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-token-requests", "post">(baseUrl, endpoints["orgs"]["reviewPatGrantRequestsInBulk"], allowUnmocked).request,
     setMembershipForUser:
       new MoctokitRequestMocker<"/orgs/{org}/memberships/{username}", "put">(baseUrl, endpoints["orgs"]["setMembershipForUser"], allowUnmocked).request,
     setPublicMembershipForAuthenticatedUser:
@@ -924,10 +990,12 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/blocks/{username}", "delete">(baseUrl, endpoints["orgs"]["unblockUser"], allowUnmocked).request,
     update:
       new MoctokitRequestMocker<"/orgs/{org}", "patch">(baseUrl, endpoints["orgs"]["update"], allowUnmocked).request,
-    updateCustomRole:
-      new MoctokitRequestMocker<"/orgs/{org}/custom_roles/{role_id}", "patch">(baseUrl, endpoints["orgs"]["updateCustomRole"], allowUnmocked).request,
     updateMembershipForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/memberships/orgs/{org}", "patch">(baseUrl, endpoints["orgs"]["updateMembershipForAuthenticatedUser"], allowUnmocked).request,
+    updatePatAccess:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-tokens/{pat_id}", "post">(baseUrl, endpoints["orgs"]["updatePatAccess"], allowUnmocked).request,
+    updatePatAccesses:
+      new MoctokitRequestMocker<"/organizations/{org}/personal-access-tokens", "post">(baseUrl, endpoints["orgs"]["updatePatAccesses"], allowUnmocked).request,
     updateWebhook:
       new MoctokitRequestMocker<"/orgs/{org}/hooks/{hook_id}", "patch">(baseUrl, endpoints["orgs"]["updateWebhook"], allowUnmocked).request,
     updateWebhookConfigForOrg:
@@ -968,6 +1036,12 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}", "get">(baseUrl, endpoints["packages"]["getPackageVersionForOrganization"], allowUnmocked).request,
     getPackageVersionForUser:
       new MoctokitRequestMocker<"/users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}", "get">(baseUrl, endpoints["packages"]["getPackageVersionForUser"], allowUnmocked).request,
+    listDockerMigrationConflictingPackagesForAuthenticatedUser:
+      new MoctokitRequestMocker<"/user/docker/conflicts", "get">(baseUrl, endpoints["packages"]["listDockerMigrationConflictingPackagesForAuthenticatedUser"], allowUnmocked).request,
+    listDockerMigrationConflictingPackagesForOrganization:
+      new MoctokitRequestMocker<"/orgs/{org}/docker/conflicts", "get">(baseUrl, endpoints["packages"]["listDockerMigrationConflictingPackagesForOrganization"], allowUnmocked).request,
+    listDockerMigrationConflictingPackagesForUser:
+      new MoctokitRequestMocker<"/users/{username}/docker/conflicts", "get">(baseUrl, endpoints["packages"]["listDockerMigrationConflictingPackagesForUser"], allowUnmocked).request,
     listPackagesForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/packages", "get">(baseUrl, endpoints["packages"]["listPackagesForAuthenticatedUser"], allowUnmocked).request,
     listPackagesForOrganization:
@@ -1178,6 +1252,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/deployments", "post">(baseUrl, endpoints["repos"]["createDeployment"], allowUnmocked).request,
     createDeploymentBranchPolicy:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies", "post">(baseUrl, endpoints["repos"]["createDeploymentBranchPolicy"], allowUnmocked).request,
+    createDeploymentProtectionRule:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules", "post">(baseUrl, endpoints["repos"]["createDeploymentProtectionRule"], allowUnmocked).request,
     createDeploymentStatus:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/deployments/{deployment_id}/statuses", "post">(baseUrl, endpoints["repos"]["createDeploymentStatus"], allowUnmocked).request,
     createDispatchEvent:
@@ -1192,12 +1268,16 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}", "put">(baseUrl, endpoints["repos"]["createOrUpdateEnvironment"], allowUnmocked).request,
     createOrUpdateFileContents:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/contents/{path}", "put">(baseUrl, endpoints["repos"]["createOrUpdateFileContents"], allowUnmocked).request,
+    createOrgRuleset:
+      new MoctokitRequestMocker<"/orgs/{org}/rulesets", "post">(baseUrl, endpoints["repos"]["createOrgRuleset"], allowUnmocked).request,
     createPagesDeployment:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pages/deployment", "post">(baseUrl, endpoints["repos"]["createPagesDeployment"], allowUnmocked).request,
     createPagesSite:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pages", "post">(baseUrl, endpoints["repos"]["createPagesSite"], allowUnmocked).request,
     createRelease:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases", "post">(baseUrl, endpoints["repos"]["createRelease"], allowUnmocked).request,
+    createRepoRuleset:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/rulesets", "post">(baseUrl, endpoints["repos"]["createRepoRuleset"], allowUnmocked).request,
     createTagProtection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/tags/protection", "post">(baseUrl, endpoints["repos"]["createTagProtection"], allowUnmocked).request,
     createUsingTemplate:
@@ -1234,6 +1314,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/contents/{path}", "delete">(baseUrl, endpoints["repos"]["deleteFile"], allowUnmocked).request,
     deleteInvitation:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/invitations/{invitation_id}", "delete">(baseUrl, endpoints["repos"]["deleteInvitation"], allowUnmocked).request,
+    deleteOrgRuleset:
+      new MoctokitRequestMocker<"/orgs/{org}/rulesets/{ruleset_id}", "delete">(baseUrl, endpoints["repos"]["deleteOrgRuleset"], allowUnmocked).request,
     deletePagesSite:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pages", "delete">(baseUrl, endpoints["repos"]["deletePagesSite"], allowUnmocked).request,
     deletePullRequestReviewProtection:
@@ -1242,12 +1324,16 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/{release_id}", "delete">(baseUrl, endpoints["repos"]["deleteRelease"], allowUnmocked).request,
     deleteReleaseAsset:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/assets/{asset_id}", "delete">(baseUrl, endpoints["repos"]["deleteReleaseAsset"], allowUnmocked).request,
+    deleteRepoRuleset:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/rulesets/{ruleset_id}", "delete">(baseUrl, endpoints["repos"]["deleteRepoRuleset"], allowUnmocked).request,
     deleteTagProtection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/tags/protection/{tag_protection_id}", "delete">(baseUrl, endpoints["repos"]["deleteTagProtection"], allowUnmocked).request,
     deleteWebhook:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/hooks/{hook_id}", "delete">(baseUrl, endpoints["repos"]["deleteWebhook"], allowUnmocked).request,
     disableAutomatedSecurityFixes:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/automated-security-fixes", "delete">(baseUrl, endpoints["repos"]["disableAutomatedSecurityFixes"], allowUnmocked).request,
+    disableDeploymentProtectionRule:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}", "delete">(baseUrl, endpoints["repos"]["disableDeploymentProtectionRule"], allowUnmocked).request,
     disableLfsForRepo:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/lfs", "delete">(baseUrl, endpoints["repos"]["disableLfsForRepo"], allowUnmocked).request,
     disableVulnerabilityAlerts:
@@ -1271,6 +1357,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}/protection/restrictions", "get">(baseUrl, endpoints["repos"]["getAccessRestrictions"], allowUnmocked).request,
     getAdminBranchProtection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins", "get">(baseUrl, endpoints["repos"]["getAdminBranchProtection"], allowUnmocked).request,
+    getAllDeploymentProtectionRules:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules", "get">(baseUrl, endpoints["repos"]["getAllDeploymentProtectionRules"], allowUnmocked).request,
     getAllEnvironments:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments", "get">(baseUrl, endpoints["repos"]["getAllEnvironments"], allowUnmocked).request,
     getAllStatusCheckContexts:
@@ -1285,6 +1373,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}", "get">(baseUrl, endpoints["repos"]["getBranch"], allowUnmocked).request,
     getBranchProtection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}/protection", "get">(baseUrl, endpoints["repos"]["getBranchProtection"], allowUnmocked).request,
+    getBranchRules:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/rules/branches/{branch}", "get">(baseUrl, endpoints["repos"]["getBranchRules"], allowUnmocked).request,
     getClones:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/traffic/clones", "get">(baseUrl, endpoints["repos"]["getClones"], allowUnmocked).request,
     getCodeFrequencyStats:
@@ -1307,6 +1397,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/contents/{path}", "get">(baseUrl, endpoints["repos"]["getContent"], allowUnmocked).request,
     getContributorsStats:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/stats/contributors", "get">(baseUrl, endpoints["repos"]["getContributorsStats"], allowUnmocked).request,
+    getCustomDeploymentProtectionRule:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}", "get">(baseUrl, endpoints["repos"]["getCustomDeploymentProtectionRule"], allowUnmocked).request,
     getDeployKey:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/keys/{key_id}", "get">(baseUrl, endpoints["repos"]["getDeployKey"], allowUnmocked).request,
     getDeployment:
@@ -1321,6 +1413,10 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pages/builds/latest", "get">(baseUrl, endpoints["repos"]["getLatestPagesBuild"], allowUnmocked).request,
     getLatestRelease:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/latest", "get">(baseUrl, endpoints["repos"]["getLatestRelease"], allowUnmocked).request,
+    getOrgRuleset:
+      new MoctokitRequestMocker<"/orgs/{org}/rulesets/{ruleset_id}", "get">(baseUrl, endpoints["repos"]["getOrgRuleset"], allowUnmocked).request,
+    getOrgRulesets:
+      new MoctokitRequestMocker<"/orgs/{org}/rulesets", "get">(baseUrl, endpoints["repos"]["getOrgRulesets"], allowUnmocked).request,
     getPages:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pages", "get">(baseUrl, endpoints["repos"]["getPages"], allowUnmocked).request,
     getPagesBuild:
@@ -1343,6 +1439,10 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/assets/{asset_id}", "get">(baseUrl, endpoints["repos"]["getReleaseAsset"], allowUnmocked).request,
     getReleaseByTag:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/tags/{tag}", "get">(baseUrl, endpoints["repos"]["getReleaseByTag"], allowUnmocked).request,
+    getRepoRuleset:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/rulesets/{ruleset_id}", "get">(baseUrl, endpoints["repos"]["getRepoRuleset"], allowUnmocked).request,
+    getRepoRulesets:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/rulesets", "get">(baseUrl, endpoints["repos"]["getRepoRulesets"], allowUnmocked).request,
     getStatusChecksProtection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks", "get">(baseUrl, endpoints["repos"]["getStatusChecksProtection"], allowUnmocked).request,
     getTeamsWithAccessToProtectedBranch:
@@ -1379,6 +1479,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/commits", "get">(baseUrl, endpoints["repos"]["listCommits"], allowUnmocked).request,
     listContributors:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/contributors", "get">(baseUrl, endpoints["repos"]["listContributors"], allowUnmocked).request,
+    listCustomDeploymentRuleIntegrations:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps", "get">(baseUrl, endpoints["repos"]["listCustomDeploymentRuleIntegrations"], allowUnmocked).request,
     listDeployKeys:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/keys", "get">(baseUrl, endpoints["repos"]["listDeployKeys"], allowUnmocked).request,
     listDeploymentBranchPolicies:
@@ -1473,12 +1575,16 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/pages", "put">(baseUrl, endpoints["repos"]["updateInformationAboutPagesSite"], allowUnmocked).request,
     updateInvitation:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/invitations/{invitation_id}", "patch">(baseUrl, endpoints["repos"]["updateInvitation"], allowUnmocked).request,
+    updateOrgRuleset:
+      new MoctokitRequestMocker<"/orgs/{org}/rulesets/{ruleset_id}", "put">(baseUrl, endpoints["repos"]["updateOrgRuleset"], allowUnmocked).request,
     updatePullRequestReviewProtection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews", "patch">(baseUrl, endpoints["repos"]["updatePullRequestReviewProtection"], allowUnmocked).request,
     updateRelease:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/{release_id}", "patch">(baseUrl, endpoints["repos"]["updateRelease"], allowUnmocked).request,
     updateReleaseAsset:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/releases/assets/{asset_id}", "patch">(baseUrl, endpoints["repos"]["updateReleaseAsset"], allowUnmocked).request,
+    updateRepoRuleset:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/rulesets/{ruleset_id}", "put">(baseUrl, endpoints["repos"]["updateRepoRuleset"], allowUnmocked).request,
     updateStatusCheckPotection:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks", "patch">(baseUrl, endpoints["repos"]["updateStatusCheckPotection"], allowUnmocked).request,
     updateStatusCheckProtection:
@@ -1518,6 +1624,18 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations", "get">(baseUrl, endpoints["secretScanning"]["listLocationsForAlert"], allowUnmocked).request,
     updateAlert:
       new MoctokitRequestMocker<"/repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}", "patch">(baseUrl, endpoints["secretScanning"]["updateAlert"], allowUnmocked).request,
+  },
+  securityAdvisories: {
+    createPrivateVulnerabilityReport:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/security-advisories/reports", "post">(baseUrl, endpoints["securityAdvisories"]["createPrivateVulnerabilityReport"], allowUnmocked).request,
+    createRepositoryAdvisory:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/security-advisories", "post">(baseUrl, endpoints["securityAdvisories"]["createRepositoryAdvisory"], allowUnmocked).request,
+    getRepositoryAdvisory:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/security-advisories/{ghsa_id}", "get">(baseUrl, endpoints["securityAdvisories"]["getRepositoryAdvisory"], allowUnmocked).request,
+    listRepositoryAdvisories:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/security-advisories", "get">(baseUrl, endpoints["securityAdvisories"]["listRepositoryAdvisories"], allowUnmocked).request,
+    updateRepositoryAdvisory:
+      new MoctokitRequestMocker<"/repos/{owner}/{repo}/security-advisories/{ghsa_id}", "patch">(baseUrl, endpoints["securityAdvisories"]["updateRepositoryAdvisory"], allowUnmocked).request,
   },
   teams: {
     addOrUpdateMembershipForUserInOrg:
@@ -1585,6 +1703,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/user/emails", "post">(baseUrl, endpoints["users"]["addEmailForAuthenticated"], allowUnmocked).request,
     addEmailForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/emails", "post">(baseUrl, endpoints["users"]["addEmailForAuthenticatedUser"], allowUnmocked).request,
+    addSocialAccountForAuthenticatedUser:
+      new MoctokitRequestMocker<"/user/social_accounts", "post">(baseUrl, endpoints["users"]["addSocialAccountForAuthenticatedUser"], allowUnmocked).request,
     block:
       new MoctokitRequestMocker<"/user/blocks/{username}", "put">(baseUrl, endpoints["users"]["block"], allowUnmocked).request,
     checkBlocked:
@@ -1615,6 +1735,8 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/user/keys/{key_id}", "delete">(baseUrl, endpoints["users"]["deletePublicSshKeyForAuthenticated"], allowUnmocked).request,
     deletePublicSshKeyForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/keys/{key_id}", "delete">(baseUrl, endpoints["users"]["deletePublicSshKeyForAuthenticatedUser"], allowUnmocked).request,
+    deleteSocialAccountForAuthenticatedUser:
+      new MoctokitRequestMocker<"/user/social_accounts", "delete">(baseUrl, endpoints["users"]["deleteSocialAccountForAuthenticatedUser"], allowUnmocked).request,
     deleteSshSigningKeyForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/ssh_signing_keys/{ssh_signing_key_id}", "delete">(baseUrl, endpoints["users"]["deleteSshSigningKeyForAuthenticatedUser"], allowUnmocked).request,
     follow:
@@ -1670,6 +1792,10 @@ const endpointToMethod = (baseUrl: string, allowUnmocked = false) => ({
       new MoctokitRequestMocker<"/user/keys", "get">(baseUrl, endpoints["users"]["listPublicSshKeysForAuthenticated"], allowUnmocked).request,
     listPublicSshKeysForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/keys", "get">(baseUrl, endpoints["users"]["listPublicSshKeysForAuthenticatedUser"], allowUnmocked).request,
+    listSocialAccountsForAuthenticatedUser:
+      new MoctokitRequestMocker<"/user/social_accounts", "get">(baseUrl, endpoints["users"]["listSocialAccountsForAuthenticatedUser"], allowUnmocked).request,
+    listSocialAccountsForUser:
+      new MoctokitRequestMocker<"/users/{username}/social_accounts", "get">(baseUrl, endpoints["users"]["listSocialAccountsForUser"], allowUnmocked).request,
     listSshSigningKeysForAuthenticatedUser:
       new MoctokitRequestMocker<"/user/ssh_signing_keys", "get">(baseUrl, endpoints["users"]["listSshSigningKeysForAuthenticatedUser"], allowUnmocked).request,
     listSshSigningKeysForUser:

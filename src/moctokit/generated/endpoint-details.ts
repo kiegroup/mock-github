@@ -24,6 +24,24 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    addSelectedRepoToOrgVariable: {
+      method: "put",
+      path: "/orgs/{org}/actions/variables/{name}/repositories/{repository_id}",
+      parameters: {
+        path: ["org", "name", "repository_id"],
+        query: [],
+        body: [],
+      },
+    },
+    addSelectedRepoToRequiredWorkflow: {
+      method: "put",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories/{repository_id}",
+      parameters: {
+        path: ["org", "required_workflow_id", "repository_id"],
+        query: [],
+        body: [],
+      },
+    },
     approveWorkflowRun: {
       method: "post",
       path: "/repos/{owner}/{repo}/actions/runs/{run_id}/approve",
@@ -33,6 +51,15 @@ const endpoints: Endpoints = {
       method: "post",
       path: "/repos/{owner}/{repo}/actions/runs/{run_id}/cancel",
       parameters: { path: ["owner", "repo", "run_id"], query: [], body: [] },
+    },
+    createEnvironmentVariable: {
+      method: "post",
+      path: "/repositories/{repository_id}/environments/{environment_name}/variables",
+      parameters: {
+        path: ["repository_id", "environment_name"],
+        query: [],
+        body: ["name", "value"],
+      },
     },
     createOrUpdateEnvironmentSecret: {
       method: "put",
@@ -66,6 +93,15 @@ const endpoints: Endpoints = {
         body: ["encrypted_value", "key_id"],
       },
     },
+    createOrgVariable: {
+      method: "post",
+      path: "/orgs/{org}/actions/variables",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: ["name", "value", "visibility", "selected_repository_ids"],
+      },
+    },
     createRegistrationTokenForOrg: {
       method: "post",
       path: "/orgs/{org}/actions/runners/registration-token",
@@ -85,6 +121,29 @@ const endpoints: Endpoints = {
       method: "post",
       path: "/repos/{owner}/{repo}/actions/runners/remove-token",
       parameters: { path: ["owner", "repo"], query: [], body: [] },
+    },
+    createRepoVariable: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/actions/variables",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: ["name", "value"],
+      },
+    },
+    createRequiredWorkflow: {
+      method: "post",
+      path: "/orgs/{org}/actions/required_workflows",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: [
+          "workflow_file_path",
+          "repository_id",
+          "scope",
+          "selected_repository_ids",
+        ],
+      },
     },
     createWorkflowDispatch: {
       method: "post",
@@ -123,16 +182,44 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    deleteEnvironmentVariable: {
+      method: "delete",
+      path: "/repositories/{repository_id}/environments/{environment_name}/variables/{name}",
+      parameters: {
+        path: ["repository_id", "name", "environment_name"],
+        query: [],
+        body: [],
+      },
+    },
     deleteOrgSecret: {
       method: "delete",
       path: "/orgs/{org}/actions/secrets/{secret_name}",
       parameters: { path: ["org", "secret_name"], query: [], body: [] },
+    },
+    deleteOrgVariable: {
+      method: "delete",
+      path: "/orgs/{org}/actions/variables/{name}",
+      parameters: { path: ["org", "name"], query: [], body: [] },
     },
     deleteRepoSecret: {
       method: "delete",
       path: "/repos/{owner}/{repo}/actions/secrets/{secret_name}",
       parameters: {
         path: ["owner", "repo", "secret_name"],
+        query: [],
+        body: [],
+      },
+    },
+    deleteRepoVariable: {
+      method: "delete",
+      path: "/repos/{owner}/{repo}/actions/variables/{name}",
+      parameters: { path: ["owner", "repo", "name"], query: [], body: [] },
+    },
+    deleteRequiredWorkflow: {
+      method: "delete",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}",
+      parameters: {
+        path: ["org", "required_workflow_id"],
         query: [],
         body: [],
       },
@@ -213,6 +300,33 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    generateRunnerJitconfigForEnterprise: {
+      method: "post",
+      path: "/enterprises/{enterprise}/actions/runners/generate-jitconfig",
+      parameters: {
+        path: ["enterprise"],
+        query: [],
+        body: ["name", "runner_group_id", "labels", "work_folder"],
+      },
+    },
+    generateRunnerJitconfigForOrg: {
+      method: "post",
+      path: "/orgs/{org}/actions/runners/generate-jitconfig",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: ["name", "runner_group_id", "labels", "work_folder"],
+      },
+    },
+    generateRunnerJitconfigForRepo: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/actions/runners/generate-jitconfig",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: ["name", "runner_group_id", "labels", "work_folder"],
+      },
+    },
     getActionsCacheList: {
       method: "get",
       path: "/repos/{owner}/{repo}/actions/caches",
@@ -231,11 +345,6 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/orgs/{org}/actions/cache/usage-by-repository",
       parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
-    },
-    getActionsCacheUsageForEnterprise: {
-      method: "get",
-      path: "/enterprises/{enterprise}/actions/cache/usage",
-      parameters: { path: ["enterprise"], query: [], body: [] },
     },
     getActionsCacheUsageForOrg: {
       method: "get",
@@ -279,10 +388,14 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
-    getGithubActionsDefaultWorkflowPermissionsEnterprise: {
+    getEnvironmentVariable: {
       method: "get",
-      path: "/enterprises/{enterprise}/actions/permissions/workflow",
-      parameters: { path: ["enterprise"], query: [], body: [] },
+      path: "/repositories/{repository_id}/environments/{environment_name}/variables/{name}",
+      parameters: {
+        path: ["repository_id", "environment_name", "name"],
+        query: [],
+        body: [],
+      },
     },
     getGithubActionsDefaultWorkflowPermissionsOrganization: {
       method: "get",
@@ -319,6 +432,11 @@ const endpoints: Endpoints = {
       path: "/orgs/{org}/actions/secrets/{secret_name}",
       parameters: { path: ["org", "secret_name"], query: [], body: [] },
     },
+    getOrgVariable: {
+      method: "get",
+      path: "/orgs/{org}/actions/variables/{name}",
+      parameters: { path: ["org", "name"], query: [], body: [] },
+    },
     getPendingDeploymentsForRun: {
       method: "get",
       path: "/repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments",
@@ -334,11 +452,43 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/actions/secrets/public-key",
       parameters: { path: ["owner", "repo"], query: [], body: [] },
     },
+    getRepoRequiredWorkflow: {
+      method: "get",
+      path: "/repos/{org}/{repo}/actions/required_workflows/{required_workflow_id_for_repo}",
+      parameters: {
+        path: ["org", "repo", "required_workflow_id_for_repo"],
+        query: [],
+        body: [],
+      },
+    },
+    getRepoRequiredWorkflowUsage: {
+      method: "get",
+      path: "/repos/{org}/{repo}/actions/required_workflows/{required_workflow_id_for_repo}/timing",
+      parameters: {
+        path: ["org", "repo", "required_workflow_id_for_repo"],
+        query: [],
+        body: [],
+      },
+    },
     getRepoSecret: {
       method: "get",
       path: "/repos/{owner}/{repo}/actions/secrets/{secret_name}",
       parameters: {
         path: ["owner", "repo", "secret_name"],
+        query: [],
+        body: [],
+      },
+    },
+    getRepoVariable: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/actions/variables/{name}",
+      parameters: { path: ["owner", "repo", "name"], query: [], body: [] },
+    },
+    getRequiredWorkflow: {
+      method: "get",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}",
+      parameters: {
+        path: ["org", "required_workflow_id"],
         query: [],
         body: [],
       },
@@ -409,13 +559,22 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/actions/artifacts",
       parameters: {
         path: ["owner", "repo"],
-        query: ["per_page", "page"],
+        query: ["per_page", "page", "name"],
         body: [],
       },
     },
     listEnvironmentSecrets: {
       method: "get",
       path: "/repositories/{repository_id}/environments/{environment_name}/secrets",
+      parameters: {
+        path: ["repository_id", "environment_name"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
+    listEnvironmentVariables: {
+      method: "get",
+      path: "/repositories/{repository_id}/environments/{environment_name}/variables",
       parameters: {
         path: ["repository_id", "environment_name"],
         query: ["per_page", "page"],
@@ -455,9 +614,50 @@ const endpoints: Endpoints = {
       path: "/orgs/{org}/actions/secrets",
       parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
     },
+    listOrgVariables: {
+      method: "get",
+      path: "/orgs/{org}/actions/variables",
+      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
+    },
+    listRepoOrganizationSecrets: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/actions/organization-secrets",
+      parameters: {
+        path: ["owner", "repo"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
+    listRepoOrganizationVariables: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/actions/organization-variables",
+      parameters: {
+        path: ["owner", "repo"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
+    listRepoRequiredWorkflows: {
+      method: "get",
+      path: "/repos/{org}/{repo}/actions/required_workflows",
+      parameters: {
+        path: ["org", "repo"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
     listRepoSecrets: {
       method: "get",
       path: "/repos/{owner}/{repo}/actions/secrets",
+      parameters: {
+        path: ["owner", "repo"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
+    listRepoVariables: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/actions/variables",
       parameters: {
         path: ["owner", "repo"],
         query: ["per_page", "page"],
@@ -472,6 +672,31 @@ const endpoints: Endpoints = {
         query: ["per_page", "page"],
         body: [],
       },
+    },
+    listRequiredWorkflowRuns: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/actions/required_workflows/{required_workflow_id_for_repo}/runs",
+      parameters: {
+        path: ["owner", "repo", "required_workflow_id_for_repo"],
+        query: [
+          "actor",
+          "branch",
+          "event",
+          "status",
+          "per_page",
+          "page",
+          "created",
+          "exclude_pull_requests",
+          "check_suite_id",
+          "head_sha",
+        ],
+        body: [],
+      },
+    },
+    listRequiredWorkflows: {
+      method: "get",
+      path: "/orgs/{org}/actions/required_workflows",
+      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
     },
     listRunnerApplicationsForOrg: {
       method: "get",
@@ -492,10 +717,28 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listSelectedReposForOrgVariable: {
+      method: "get",
+      path: "/orgs/{org}/actions/variables/{name}/repositories",
+      parameters: {
+        path: ["org", "name"],
+        query: ["page", "per_page"],
+        body: [],
+      },
+    },
     listSelectedRepositoriesEnabledGithubActionsOrganization: {
       method: "get",
       path: "/orgs/{org}/actions/permissions/repositories",
       parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
+    },
+    listSelectedRepositoriesRequiredWorkflow: {
+      method: "get",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories",
+      parameters: {
+        path: ["org", "required_workflow_id"],
+        query: [],
+        body: [],
+      },
     },
     listSelfHostedRunnersForOrg: {
       method: "get",
@@ -620,6 +863,29 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    removeSelectedRepoFromOrgVariable: {
+      method: "delete",
+      path: "/orgs/{org}/actions/variables/{name}/repositories/{repository_id}",
+      parameters: {
+        path: ["org", "name", "repository_id"],
+        query: [],
+        body: [],
+      },
+    },
+    removeSelectedRepoFromRequiredWorkflow: {
+      method: "delete",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories/{repository_id}",
+      parameters: {
+        path: ["org", "required_workflow_id", "repository_id"],
+        query: [],
+        body: [],
+      },
+    },
+    reviewCustomGatesForRun: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule",
+      parameters: { path: ["owner", "repo", "run_id"], query: [], body: [] },
+    },
     reviewPendingDeploymentsForRun: {
       method: "post",
       path: "/repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments",
@@ -659,18 +925,6 @@ const endpoints: Endpoints = {
         path: ["owner", "repo", "runner_id"],
         query: [],
         body: ["labels"],
-      },
-    },
-    setGithubActionsDefaultWorkflowPermissionsEnterprise: {
-      method: "put",
-      path: "/enterprises/{enterprise}/actions/permissions/workflow",
-      parameters: {
-        path: ["enterprise"],
-        query: [],
-        body: [
-          "default_workflow_permissions",
-          "can_approve_pull_request_reviews",
-        ],
       },
     },
     setGithubActionsDefaultWorkflowPermissionsOrganization: {
@@ -724,6 +978,24 @@ const endpoints: Endpoints = {
         body: ["selected_repository_ids"],
       },
     },
+    setSelectedReposForOrgVariable: {
+      method: "put",
+      path: "/orgs/{org}/actions/variables/{name}/repositories",
+      parameters: {
+        path: ["org", "name"],
+        query: [],
+        body: ["selected_repository_ids"],
+      },
+    },
+    setSelectedReposToRequiredWorkflow: {
+      method: "put",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}/repositories",
+      parameters: {
+        path: ["org", "required_workflow_id"],
+        query: [],
+        body: ["selected_repository_ids"],
+      },
+    },
     setSelectedRepositoriesEnabledGithubActionsOrganization: {
       method: "put",
       path: "/orgs/{org}/actions/permissions/repositories",
@@ -740,6 +1012,47 @@ const endpoints: Endpoints = {
         path: ["owner", "repo"],
         query: [],
         body: ["access_level"],
+      },
+    },
+    updateEnvironmentVariable: {
+      method: "patch",
+      path: "/repositories/{repository_id}/environments/{environment_name}/variables/{name}",
+      parameters: {
+        path: ["repository_id", "environment_name"],
+        query: [],
+        body: ["name", "value"],
+      },
+    },
+    updateOrgVariable: {
+      method: "patch",
+      path: "/orgs/{org}/actions/variables/{name}",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: ["name", "value", "visibility", "selected_repository_ids"],
+      },
+    },
+    updateRepoVariable: {
+      method: "patch",
+      path: "/repos/{owner}/{repo}/actions/variables/{name}",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: ["name", "value"],
+      },
+    },
+    updateRequiredWorkflow: {
+      method: "patch",
+      path: "/orgs/{org}/actions/required_workflows/{required_workflow_id}",
+      parameters: {
+        path: ["org", "required_workflow_id"],
+        query: [],
+        body: [
+          "workflow_file_path",
+          "repository_id",
+          "scope",
+          "selected_repository_ids",
+        ],
       },
     },
   },
@@ -1006,7 +1319,10 @@ const endpoints: Endpoints = {
           "permissions.members",
           "permissions.organization_administration",
           "permissions.organization_custom_roles",
+          "permissions.organization_announcement_banners",
           "permissions.organization_hooks",
+          "permissions.organization_personal_access_tokens",
+          "permissions.organization_personal_access_token_requests",
           "permissions.organization_plan",
           "permissions.organization_projects",
           "permissions.organization_packages",
@@ -1109,6 +1425,11 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listInstallationRequestsForAuthenticatedApp: {
+      method: "get",
+      path: "/app/installation-requests",
+      parameters: { path: [], query: ["per_page", "page"], body: [] },
+    },
     listInstallations: {
       method: "get",
       path: "/app/installations",
@@ -1151,7 +1472,11 @@ const endpoints: Endpoints = {
     listWebhookDeliveries: {
       method: "get",
       path: "/app/hook/deliveries",
-      parameters: { path: [], query: ["per_page", "cursor"], body: [] },
+      parameters: {
+        path: [],
+        query: ["per_page", "cursor", "redelivery"],
+        body: [],
+      },
     },
     redeliverWebhookDelivery: {
       method: "post",
@@ -1222,7 +1547,10 @@ const endpoints: Endpoints = {
           "permissions.members",
           "permissions.organization_administration",
           "permissions.organization_custom_roles",
+          "permissions.organization_announcement_banners",
           "permissions.organization_hooks",
+          "permissions.organization_personal_access_tokens",
+          "permissions.organization_personal_access_token_requests",
           "permissions.organization_plan",
           "permissions.organization_projects",
           "permissions.organization_packages",
@@ -1263,20 +1591,6 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/users/{username}/settings/billing/actions",
       parameters: { path: ["username"], query: [], body: [] },
-    },
-    getGithubAdvancedSecurityBillingGhe: {
-      method: "get",
-      path: "/enterprises/{enterprise}/settings/billing/advanced-security",
-      parameters: {
-        path: ["enterprise"],
-        query: ["per_page", "page"],
-        body: [],
-      },
-    },
-    getGithubAdvancedSecurityBillingOrg: {
-      method: "get",
-      path: "/orgs/{org}/settings/billing/advanced-security",
-      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
     },
     getGithubPackagesBillingOrg: {
       method: "get",
@@ -1468,6 +1782,11 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/code-scanning/codeql/databases/{language}",
       parameters: { path: ["owner", "repo", "language"], query: [], body: [] },
     },
+    getDefaultSetup: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/code-scanning/default-setup",
+      parameters: { path: ["owner", "repo"], query: [], body: [] },
+    },
     getSarif: {
       method: "get",
       path: "/repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}",
@@ -1479,25 +1798,6 @@ const endpoints: Endpoints = {
       parameters: {
         path: ["owner", "repo", "alert_number"],
         query: ["page", "per_page", "ref"],
-        body: [],
-      },
-    },
-    listAlertsForEnterprise: {
-      method: "get",
-      path: "/enterprises/{enterprise}/code-scanning/alerts",
-      parameters: {
-        path: ["enterprise"],
-        query: [
-          "tool_name",
-          "tool_guid",
-          "before",
-          "after",
-          "page",
-          "per_page",
-          "direction",
-          "state",
-          "sort",
-        ],
         body: [],
       },
     },
@@ -1516,6 +1816,7 @@ const endpoints: Endpoints = {
           "direction",
           "state",
           "sort",
+          "severity",
         ],
         body: [],
       },
@@ -1534,6 +1835,7 @@ const endpoints: Endpoints = {
           "direction",
           "sort",
           "state",
+          "severity",
         ],
         body: [],
       },
@@ -1579,6 +1881,15 @@ const endpoints: Endpoints = {
         body: ["state", "dismissed_reason", "dismissed_comment"],
       },
     },
+    updateDefaultSetup: {
+      method: "patch",
+      path: "/repos/{owner}/{repo}/code-scanning/default-setup",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: ["state", "query_suite"],
+      },
+    },
     uploadSarif: {
       method: "post",
       path: "/repos/{owner}/{repo}/code-scanning/sarifs",
@@ -1592,6 +1903,7 @@ const endpoints: Endpoints = {
           "checkout_uri",
           "started_at",
           "tool_name",
+          "validate",
         ],
       },
     },
@@ -1620,7 +1932,7 @@ const endpoints: Endpoints = {
     },
     addSelectedRepoToOrgSecret: {
       method: "put",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}",
       parameters: {
         path: ["org", "secret_name", "repository_id"],
         query: [],
@@ -1642,6 +1954,7 @@ const endpoints: Endpoints = {
           "repository_id",
           "ref",
           "location",
+          "geo",
           "client_ip",
           "machine",
           "devcontainer_path",
@@ -1658,7 +1971,7 @@ const endpoints: Endpoints = {
     },
     createOrUpdateOrgSecret: {
       method: "put",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}",
       parameters: {
         path: ["org", "secret_name"],
         query: [],
@@ -1696,6 +2009,7 @@ const endpoints: Endpoints = {
         query: [],
         body: [
           "location",
+          "geo",
           "client_ip",
           "machine",
           "devcontainer_path",
@@ -1716,6 +2030,7 @@ const endpoints: Endpoints = {
         body: [
           "ref",
           "location",
+          "geo",
           "client_ip",
           "machine",
           "devcontainer_path",
@@ -1726,6 +2041,11 @@ const endpoints: Endpoints = {
           "retention_period_minutes",
         ],
       },
+    },
+    deleteCodespacesBillingUsers: {
+      method: "delete",
+      path: "/orgs/{org}/codespaces/billing/selected_users",
+      parameters: { path: ["org"], query: [], body: ["selected_usernames"] },
     },
     deleteForAuthenticatedUser: {
       method: "delete",
@@ -1743,7 +2063,7 @@ const endpoints: Endpoints = {
     },
     deleteOrgSecret: {
       method: "delete",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}",
       parameters: { path: ["org", "secret_name"], query: [], body: [] },
     },
     deleteRepoSecret: {
@@ -1765,6 +2085,15 @@ const endpoints: Endpoints = {
       path: "/user/codespaces/{codespace_name}/exports",
       parameters: { path: ["codespace_name"], query: [], body: [] },
     },
+    getCodespacesForUserInOrg: {
+      method: "get",
+      path: "/orgs/{org}/members/{username}/codespaces",
+      parameters: {
+        path: ["org", "username"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
     getExportDetailsForAuthenticatedUser: {
       method: "get",
       path: "/user/codespaces/{codespace_name}/exports/{export_id}",
@@ -1781,12 +2110,12 @@ const endpoints: Endpoints = {
     },
     getOrgPublicKey: {
       method: "get",
-      path: "/organizations/{org}/codespaces/secrets/public-key",
+      path: "/orgs/{org}/codespaces/secrets/public-key",
       parameters: { path: ["org"], query: [], body: [] },
     },
     getOrgSecret: {
       method: "get",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}",
       parameters: { path: ["org", "secret_name"], query: [], body: [] },
     },
     getPublicKeyForAuthenticatedUser: {
@@ -1851,7 +2180,7 @@ const endpoints: Endpoints = {
     },
     listOrgSecrets: {
       method: "get",
-      path: "/organizations/{org}/codespaces/secrets",
+      path: "/orgs/{org}/codespaces/secrets",
       parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
     },
     listRepoSecrets: {
@@ -1875,7 +2204,7 @@ const endpoints: Endpoints = {
     },
     listSelectedReposForOrgSecret: {
       method: "get",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}/repositories",
       parameters: {
         path: ["org", "secret_name"],
         query: ["page", "per_page"],
@@ -1891,6 +2220,15 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    publishForAuthenticatedUser: {
+      method: "post",
+      path: "/user/codespaces/{codespace_name}/publish",
+      parameters: {
+        path: ["codespace_name"],
+        query: [],
+        body: ["name", "private"],
+      },
+    },
     removeRepositoryForSecretForAuthenticatedUser: {
       method: "delete",
       path: "/user/codespaces/secrets/{secret_name}/repositories/{repository_id}",
@@ -1902,7 +2240,7 @@ const endpoints: Endpoints = {
     },
     removeSelectedRepoFromOrgSecret: {
       method: "delete",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}",
       parameters: {
         path: ["org", "secret_name", "repository_id"],
         query: [],
@@ -1918,6 +2256,20 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    setCodespacesBilling: {
+      method: "put",
+      path: "/orgs/{org}/codespaces/billing",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: ["visibility", "selected_usernames"],
+      },
+    },
+    setCodespacesBillingUsers: {
+      method: "post",
+      path: "/orgs/{org}/codespaces/billing/selected_users",
+      parameters: { path: ["org"], query: [], body: ["selected_usernames"] },
+    },
     setRepositoriesForSecretForAuthenticatedUser: {
       method: "put",
       path: "/user/codespaces/secrets/{secret_name}/repositories",
@@ -1929,7 +2281,7 @@ const endpoints: Endpoints = {
     },
     setSelectedReposForOrgSecret: {
       method: "put",
-      path: "/organizations/{org}/codespaces/secrets/{secret_name}/repositories",
+      path: "/orgs/{org}/codespaces/secrets/{secret_name}/repositories",
       parameters: {
         path: ["org", "secret_name"],
         query: [],
@@ -2045,6 +2397,50 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listAlertsForEnterprise: {
+      method: "get",
+      path: "/enterprises/{enterprise}/dependabot/alerts",
+      parameters: {
+        path: ["enterprise"],
+        query: [
+          "state",
+          "severity",
+          "ecosystem",
+          "package",
+          "scope",
+          "sort",
+          "direction",
+          "before",
+          "after",
+          "first",
+          "last",
+          "per_page",
+        ],
+        body: [],
+      },
+    },
+    listAlertsForOrg: {
+      method: "get",
+      path: "/orgs/{org}/dependabot/alerts",
+      parameters: {
+        path: ["org"],
+        query: [
+          "state",
+          "severity",
+          "ecosystem",
+          "package",
+          "scope",
+          "sort",
+          "direction",
+          "before",
+          "after",
+          "first",
+          "last",
+          "per_page",
+        ],
+        body: [],
+      },
+    },
     listAlertsForRepo: {
       method: "get",
       path: "/repos/{owner}/{repo}/dependabot/alerts",
@@ -2061,6 +2457,10 @@ const endpoints: Endpoints = {
           "direction",
           "page",
           "per_page",
+          "before",
+          "after",
+          "first",
+          "last",
         ],
         body: [],
       },
@@ -2165,116 +2565,17 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    exportSbom: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/dependency-graph/sbom",
+      parameters: { path: ["owner", "repo"], query: [], body: [] },
+    },
   },
   emojis: {
     get: {
       method: "get",
       path: "/emojis",
       parameters: { path: [], query: [], body: [] },
-    },
-  },
-  enterpriseAdmin: {
-    addCustomLabelsToSelfHostedRunnerForEnterprise: {
-      method: "post",
-      path: "/enterprises/{enterprise}/actions/runners/{runner_id}/labels",
-      parameters: {
-        path: ["enterprise", "runner_id"],
-        query: [],
-        body: ["labels"],
-      },
-    },
-    disableSelectedOrganizationGithubActionsEnterprise: {
-      method: "delete",
-      path: "/enterprises/{enterprise}/actions/permissions/organizations/{org_id}",
-      parameters: { path: ["enterprise", "org_id"], query: [], body: [] },
-    },
-    enableSelectedOrganizationGithubActionsEnterprise: {
-      method: "put",
-      path: "/enterprises/{enterprise}/actions/permissions/organizations/{org_id}",
-      parameters: { path: ["enterprise", "org_id"], query: [], body: [] },
-    },
-    getAllowedActionsEnterprise: {
-      method: "get",
-      path: "/enterprises/{enterprise}/actions/permissions/selected-actions",
-      parameters: { path: ["enterprise"], query: [], body: [] },
-    },
-    getGithubActionsPermissionsEnterprise: {
-      method: "get",
-      path: "/enterprises/{enterprise}/actions/permissions",
-      parameters: { path: ["enterprise"], query: [], body: [] },
-    },
-    getServerStatistics: {
-      method: "get",
-      path: "/enterprise-installation/{enterprise_or_org}/server-statistics",
-      parameters: {
-        path: ["enterprise_or_org"],
-        query: ["date_start", "date_end"],
-        body: [],
-      },
-    },
-    listLabelsForSelfHostedRunnerForEnterprise: {
-      method: "get",
-      path: "/enterprises/{enterprise}/actions/runners/{runner_id}/labels",
-      parameters: { path: ["enterprise", "runner_id"], query: [], body: [] },
-    },
-    listSelectedOrganizationsEnabledGithubActionsEnterprise: {
-      method: "get",
-      path: "/enterprises/{enterprise}/actions/permissions/organizations",
-      parameters: {
-        path: ["enterprise"],
-        query: ["per_page", "page"],
-        body: [],
-      },
-    },
-    removeAllCustomLabelsFromSelfHostedRunnerForEnterprise: {
-      method: "delete",
-      path: "/enterprises/{enterprise}/actions/runners/{runner_id}/labels",
-      parameters: { path: ["enterprise", "runner_id"], query: [], body: [] },
-    },
-    removeCustomLabelFromSelfHostedRunnerForEnterprise: {
-      method: "delete",
-      path: "/enterprises/{enterprise}/actions/runners/{runner_id}/labels/{name}",
-      parameters: {
-        path: ["enterprise", "runner_id", "name"],
-        query: [],
-        body: [],
-      },
-    },
-    setAllowedActionsEnterprise: {
-      method: "put",
-      path: "/enterprises/{enterprise}/actions/permissions/selected-actions",
-      parameters: {
-        path: ["enterprise"],
-        query: [],
-        body: ["github_owned_allowed", "verified_allowed", "patterns_allowed"],
-      },
-    },
-    setCustomLabelsForSelfHostedRunnerForEnterprise: {
-      method: "put",
-      path: "/enterprises/{enterprise}/actions/runners/{runner_id}/labels",
-      parameters: {
-        path: ["enterprise", "runner_id"],
-        query: [],
-        body: ["labels"],
-      },
-    },
-    setGithubActionsPermissionsEnterprise: {
-      method: "put",
-      path: "/enterprises/{enterprise}/actions/permissions",
-      parameters: {
-        path: ["enterprise"],
-        query: [],
-        body: ["enabled_organizations", "allowed_actions"],
-      },
-    },
-    setSelectedOrganizationsEnabledGithubActionsEnterprise: {
-      method: "put",
-      path: "/enterprises/{enterprise}/actions/permissions/organizations",
-      parameters: {
-        path: ["enterprise"],
-        query: [],
-        body: ["selected_organization_ids"],
-      },
     },
   },
   gists: {
@@ -2436,11 +2737,7 @@ const endpoints: Endpoints = {
     createRef: {
       method: "post",
       path: "/repos/{owner}/{repo}/git/refs",
-      parameters: {
-        path: ["owner", "repo"],
-        query: [],
-        body: ["ref", "sha", "key"],
-      },
+      parameters: { path: ["owner", "repo"], query: [], body: ["ref", "sha"] },
     },
     createTag: {
       method: "post",
@@ -2631,6 +2928,15 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/repos/{owner}/{repo}/assignees/{assignee}",
       parameters: { path: ["owner", "repo", "assignee"], query: [], body: [] },
+    },
+    checkUserCanBeAssignedToIssue: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/issues/{issue_number}/assignees/{assignee}",
+      parameters: {
+        path: ["owner", "repo", "issue_number", "assignee"],
+        query: [],
+        body: [],
+      },
     },
     create: {
       method: "post",
@@ -3036,6 +3342,11 @@ const endpoints: Endpoints = {
       path: "/meta",
       parameters: { path: [], query: [], body: [] },
     },
+    getAllVersions: {
+      method: "get",
+      path: "/versions",
+      parameters: { path: [], query: [], body: [] },
+    },
     getOctocat: {
       method: "get",
       path: "/octocat",
@@ -3275,15 +3586,6 @@ const endpoints: Endpoints = {
       path: "/orgs/{org}/outside_collaborators/{username}",
       parameters: { path: ["org", "username"], query: [], body: ["async"] },
     },
-    createCustomRole: {
-      method: "post",
-      path: "/orgs/{org}/custom_roles",
-      parameters: {
-        path: ["org"],
-        query: [],
-        body: ["name", "description", "base_role", "permissions"],
-      },
-    },
     createInvitation: {
       method: "post",
       path: "/orgs/{org}/invitations",
@@ -3313,10 +3615,10 @@ const endpoints: Endpoints = {
         ],
       },
     },
-    deleteCustomRole: {
+    delete: {
       method: "delete",
-      path: "/orgs/{org}/custom_roles/{role_id}",
-      parameters: { path: ["org", "role_id"], query: [], body: [] },
+      path: "/orgs/{org}",
+      parameters: { path: ["org"], query: [], body: [] },
     },
     deleteWebhook: {
       method: "delete",
@@ -3379,22 +3681,12 @@ const endpoints: Endpoints = {
     listBlockedUsers: {
       method: "get",
       path: "/orgs/{org}/blocks",
-      parameters: { path: ["org"], query: [], body: [] },
-    },
-    listCustomRoles: {
-      method: "get",
-      path: "/organizations/{organization_id}/custom_roles",
-      parameters: { path: ["organization_id"], query: [], body: [] },
+      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
     },
     listFailedInvitations: {
       method: "get",
       path: "/orgs/{org}/failed_invitations",
       parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
-    },
-    listFineGrainedPermissions: {
-      method: "get",
-      path: "/orgs/{org}/fine_grained_permissions",
-      parameters: { path: ["org"], query: [], body: [] },
     },
     listForAuthenticatedUser: {
       method: "get",
@@ -3438,10 +3730,70 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listPatGrantRepositories: {
+      method: "get",
+      path: "/organizations/{org}/personal-access-tokens/{pat_id}/repositories",
+      parameters: {
+        path: ["org", "pat_id"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
+    listPatGrantRequestRepositories: {
+      method: "get",
+      path: "/organizations/{org}/personal-access-token-requests/{pat_request_id}/repositories",
+      parameters: {
+        path: ["org", "pat_request_id"],
+        query: ["per_page", "page"],
+        body: [],
+      },
+    },
+    listPatGrantRequests: {
+      method: "get",
+      path: "/organizations/{org}/personal-access-token-requests",
+      parameters: {
+        path: ["org"],
+        query: [
+          "per_page",
+          "page",
+          "sort",
+          "direction",
+          "owner",
+          "repository",
+          "permission",
+          "last_used_before",
+          "last_used_after",
+        ],
+        body: [],
+      },
+    },
+    listPatGrants: {
+      method: "get",
+      path: "/organizations/{org}/personal-access-tokens",
+      parameters: {
+        path: ["org"],
+        query: [
+          "per_page",
+          "page",
+          "sort",
+          "direction",
+          "owner",
+          "repository",
+          "permission",
+          "last_used_before",
+          "last_used_after",
+        ],
+        body: [],
+      },
+    },
     listPendingInvitations: {
       method: "get",
       path: "/orgs/{org}/invitations",
-      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
+      parameters: {
+        path: ["org"],
+        query: ["per_page", "page", "role", "invitation_source"],
+        body: [],
+      },
     },
     listPublicMembers: {
       method: "get",
@@ -3458,7 +3810,7 @@ const endpoints: Endpoints = {
       path: "/orgs/{org}/hooks/{hook_id}/deliveries",
       parameters: {
         path: ["org", "hook_id"],
-        query: ["per_page", "cursor"],
+        query: ["per_page", "cursor", "redelivery"],
         body: [],
       },
     },
@@ -3505,6 +3857,24 @@ const endpoints: Endpoints = {
       method: "delete",
       path: "/orgs/{org}/security-managers/teams/{team_slug}",
       parameters: { path: ["org", "team_slug"], query: [], body: [] },
+    },
+    reviewPatGrantRequest: {
+      method: "post",
+      path: "/organizations/{org}/personal-access-token-requests/{pat_request_id}",
+      parameters: {
+        path: ["org", "pat_request_id"],
+        query: [],
+        body: ["action", "reason"],
+      },
+    },
+    reviewPatGrantRequestsInBulk: {
+      method: "post",
+      path: "/organizations/{org}/personal-access-token-requests",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: ["pat_request_ids", "action", "reason"],
+      },
     },
     setMembershipForUser: {
       method: "put",
@@ -3555,22 +3925,25 @@ const endpoints: Endpoints = {
           "dependency_graph_enabled_for_new_repositories",
           "secret_scanning_enabled_for_new_repositories",
           "secret_scanning_push_protection_enabled_for_new_repositories",
+          "secret_scanning_push_protection_custom_link_enabled",
+          "secret_scanning_push_protection_custom_link",
         ],
-      },
-    },
-    updateCustomRole: {
-      method: "patch",
-      path: "/orgs/{org}/custom_roles/{role_id}",
-      parameters: {
-        path: ["org", "role_id"],
-        query: [],
-        body: ["name", "description", "base_role", "permissions"],
       },
     },
     updateMembershipForAuthenticatedUser: {
       method: "patch",
       path: "/user/memberships/orgs/{org}",
       parameters: { path: ["org"], query: [], body: ["state"] },
+    },
+    updatePatAccess: {
+      method: "post",
+      path: "/organizations/{org}/personal-access-tokens/{pat_id}",
+      parameters: { path: ["org", "pat_id"], query: [], body: ["action"] },
+    },
+    updatePatAccesses: {
+      method: "post",
+      path: "/organizations/{org}/personal-access-tokens",
+      parameters: { path: ["org"], query: [], body: ["action", "pat_ids"] },
     },
     updateWebhook: {
       method: "patch",
@@ -3764,17 +4137,36 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    listDockerMigrationConflictingPackagesForAuthenticatedUser: {
+      method: "get",
+      path: "/user/docker/conflicts",
+      parameters: { path: [], query: [], body: [] },
+    },
+    listDockerMigrationConflictingPackagesForOrganization: {
+      method: "get",
+      path: "/orgs/{org}/docker/conflicts",
+      parameters: { path: ["org"], query: [], body: [] },
+    },
+    listDockerMigrationConflictingPackagesForUser: {
+      method: "get",
+      path: "/users/{username}/docker/conflicts",
+      parameters: { path: ["username"], query: [], body: [] },
+    },
     listPackagesForAuthenticatedUser: {
       method: "get",
       path: "/user/packages",
-      parameters: { path: [], query: ["package_type", "visibility"], body: [] },
+      parameters: {
+        path: [],
+        query: ["package_type", "visibility", "page", "per_page"],
+        body: [],
+      },
     },
     listPackagesForOrganization: {
       method: "get",
       path: "/orgs/{org}/packages",
       parameters: {
         path: ["org"],
-        query: ["package_type", "visibility"],
+        query: ["package_type", "visibility", "page", "per_page"],
         body: [],
       },
     },
@@ -3783,7 +4175,7 @@ const endpoints: Endpoints = {
       path: "/users/{username}/packages",
       parameters: {
         path: ["username"],
-        query: ["package_type", "visibility"],
+        query: ["package_type", "visibility", "page", "per_page"],
         body: [],
       },
     },
@@ -4037,6 +4429,7 @@ const endpoints: Endpoints = {
         body: [
           "title",
           "head",
+          "head_repo",
           "base",
           "body",
           "maintainer_can_modify",
@@ -4091,6 +4484,7 @@ const endpoints: Endpoints = {
           "start_line",
           "start_side",
           "in_reply_to",
+          "subject_type",
         ],
       },
     },
@@ -4663,6 +5057,15 @@ const endpoints: Endpoints = {
         body: ["name"],
       },
     },
+    createDeploymentProtectionRule: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules",
+      parameters: {
+        path: ["environment_name", "repo", "owner"],
+        query: [],
+        body: ["integration_id"],
+      },
+    },
     createDeploymentStatus: {
       method: "post",
       path: "/repos/{owner}/{repo}/deployments/{deployment_id}/statuses",
@@ -4703,6 +5106,7 @@ const endpoints: Endpoints = {
           "has_issues",
           "has_projects",
           "has_wiki",
+          "has_discussions",
           "team_id",
           "auto_init",
           "gitignore_template",
@@ -4745,6 +5149,7 @@ const endpoints: Endpoints = {
           "has_issues",
           "has_projects",
           "has_wiki",
+          "has_downloads",
           "is_template",
           "team_id",
           "auto_init",
@@ -4802,6 +5207,41 @@ const endpoints: Endpoints = {
         ],
       },
     },
+    createOrgRuleset: {
+      method: "post",
+      path: "/orgs/{org}/rulesets",
+      parameters: {
+        path: ["org"],
+        query: [],
+        body: [
+          "name",
+          "target",
+          "enforcement",
+          "bypass_actors",
+          "bypass_actors[].actor_id",
+          "bypass_actors[].actor_type",
+          "conditions",
+          "rules",
+          "rules[].type",
+          "rules[].parameters",
+          "rules[].parameters.update_allows_fetch_and_merge",
+          "rules[].parameters.required_deployment_environments",
+          "rules[].parameters.dismiss_stale_reviews_on_push",
+          "rules[].parameters.require_code_owner_review",
+          "rules[].parameters.require_last_push_approval",
+          "rules[].parameters.required_approving_review_count",
+          "rules[].parameters.required_review_thread_resolution",
+          "rules[].parameters.required_status_checks",
+          "rules[].parameters.required_status_checks[].context",
+          "rules[].parameters.required_status_checks[].integration_id",
+          "rules[].parameters.strict_required_status_checks_policy",
+          "rules[].parameters.name",
+          "rules[].parameters.negate",
+          "rules[].parameters.operator",
+          "rules[].parameters.pattern",
+        ],
+      },
+    },
     createPagesDeployment: {
       method: "post",
       path: "/repos/{owner}/{repo}/pages/deployment",
@@ -4840,6 +5280,46 @@ const endpoints: Endpoints = {
           "prerelease",
           "discussion_category_name",
           "generate_release_notes",
+          "make_latest",
+        ],
+      },
+    },
+    createRepoRuleset: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/rulesets",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: [
+          "name",
+          "target",
+          "enforcement",
+          "bypass_mode",
+          "bypass_actors",
+          "bypass_actors[].actor_id",
+          "bypass_actors[].actor_type",
+          "conditions",
+          "conditions.ref_name",
+          "conditions.ref_name.include",
+          "conditions.ref_name.exclude",
+          "rules",
+          "rules[].type",
+          "rules[].parameters",
+          "rules[].parameters.update_allows_fetch_and_merge",
+          "rules[].parameters.required_deployment_environments",
+          "rules[].parameters.dismiss_stale_reviews_on_push",
+          "rules[].parameters.require_code_owner_review",
+          "rules[].parameters.require_last_push_approval",
+          "rules[].parameters.required_approving_review_count",
+          "rules[].parameters.required_review_thread_resolution",
+          "rules[].parameters.required_status_checks",
+          "rules[].parameters.required_status_checks[].context",
+          "rules[].parameters.required_status_checks[].integration_id",
+          "rules[].parameters.strict_required_status_checks_policy",
+          "rules[].parameters.name",
+          "rules[].parameters.negate",
+          "rules[].parameters.operator",
+          "rules[].parameters.pattern",
         ],
       },
     },
@@ -4996,6 +5476,11 @@ const endpoints: Endpoints = {
         body: [],
       },
     },
+    deleteOrgRuleset: {
+      method: "delete",
+      path: "/orgs/{org}/rulesets/{ruleset_id}",
+      parameters: { path: ["org", "ruleset_id"], query: [], body: [] },
+    },
     deletePagesSite: {
       method: "delete",
       path: "/repos/{owner}/{repo}/pages",
@@ -5020,6 +5505,15 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/releases/assets/{asset_id}",
       parameters: { path: ["owner", "repo", "asset_id"], query: [], body: [] },
     },
+    deleteRepoRuleset: {
+      method: "delete",
+      path: "/repos/{owner}/{repo}/rulesets/{ruleset_id}",
+      parameters: {
+        path: ["owner", "repo", "ruleset_id"],
+        query: [],
+        body: [],
+      },
+    },
     deleteTagProtection: {
       method: "delete",
       path: "/repos/{owner}/{repo}/tags/protection/{tag_protection_id}",
@@ -5038,6 +5532,15 @@ const endpoints: Endpoints = {
       method: "delete",
       path: "/repos/{owner}/{repo}/automated-security-fixes",
       parameters: { path: ["owner", "repo"], query: [], body: [] },
+    },
+    disableDeploymentProtectionRule: {
+      method: "delete",
+      path: "/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}",
+      parameters: {
+        path: ["environment_name", "repo", "owner", "protection_rule_id"],
+        query: [],
+        body: [],
+      },
     },
     disableLfsForRepo: {
       method: "delete",
@@ -5108,6 +5611,15 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins",
       parameters: { path: ["owner", "repo", "branch"], query: [], body: [] },
     },
+    getAllDeploymentProtectionRules: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules",
+      parameters: {
+        path: ["environment_name", "repo", "owner"],
+        query: [],
+        body: [],
+      },
+    },
     getAllEnvironments: {
       method: "get",
       path: "/repos/{owner}/{repo}/environments",
@@ -5154,6 +5666,15 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/repos/{owner}/{repo}/branches/{branch}/protection",
       parameters: { path: ["owner", "repo", "branch"], query: [], body: [] },
+    },
+    getBranchRules: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/rules/branches/{branch}",
+      parameters: {
+        path: ["owner", "repo", "branch"],
+        query: ["per_page", "page"],
+        body: [],
+      },
     },
     getClones: {
       method: "get",
@@ -5222,6 +5743,15 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/stats/contributors",
       parameters: { path: ["owner", "repo"], query: [], body: [] },
     },
+    getCustomDeploymentProtectionRule: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}",
+      parameters: {
+        path: ["owner", "repo", "environment_name", "protection_rule_id"],
+        query: [],
+        body: [],
+      },
+    },
     getDeployKey: {
       method: "get",
       path: "/repos/{owner}/{repo}/keys/{key_id}",
@@ -5272,6 +5802,16 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/repos/{owner}/{repo}/releases/latest",
       parameters: { path: ["owner", "repo"], query: [], body: [] },
+    },
+    getOrgRuleset: {
+      method: "get",
+      path: "/orgs/{org}/rulesets/{ruleset_id}",
+      parameters: { path: ["org", "ruleset_id"], query: [], body: [] },
+    },
+    getOrgRulesets: {
+      method: "get",
+      path: "/orgs/{org}/rulesets",
+      parameters: { path: ["org"], query: ["per_page", "page"], body: [] },
     },
     getPages: {
       method: "get",
@@ -5331,6 +5871,24 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/repos/{owner}/{repo}/releases/tags/{tag}",
       parameters: { path: ["owner", "repo", "tag"], query: [], body: [] },
+    },
+    getRepoRuleset: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/rulesets/{ruleset_id}",
+      parameters: {
+        path: ["owner", "repo", "ruleset_id"],
+        query: ["includes_parents"],
+        body: [],
+      },
+    },
+    getRepoRulesets: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/rulesets",
+      parameters: {
+        path: ["owner", "repo"],
+        query: ["per_page", "page", "includes_parents"],
+        body: [],
+      },
     },
     getStatusChecksProtection: {
       method: "get",
@@ -5445,7 +6003,16 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/commits",
       parameters: {
         path: ["owner", "repo"],
-        query: ["sha", "path", "author", "since", "until", "per_page", "page"],
+        query: [
+          "sha",
+          "path",
+          "author",
+          "committer",
+          "since",
+          "until",
+          "per_page",
+          "page",
+        ],
         body: [],
       },
     },
@@ -5455,6 +6022,15 @@ const endpoints: Endpoints = {
       parameters: {
         path: ["owner", "repo"],
         query: ["anon", "per_page", "page"],
+        body: [],
+      },
+    },
+    listCustomDeploymentRuleIntegrations: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps",
+      parameters: {
+        path: ["environment_name", "repo", "owner"],
+        query: ["page", "per_page"],
         body: [],
       },
     },
@@ -5628,7 +6204,7 @@ const endpoints: Endpoints = {
       path: "/repos/{owner}/{repo}/hooks/{hook_id}/deliveries",
       parameters: {
         path: ["owner", "repo", "hook_id"],
-        query: ["per_page", "cursor"],
+        query: ["per_page", "cursor", "redelivery"],
         body: [],
       },
     },
@@ -5786,7 +6362,7 @@ const endpoints: Endpoints = {
       parameters: {
         path: ["owner", "repo"],
         query: [],
-        body: ["new_owner", "team_ids"],
+        body: ["new_owner", "new_name", "team_ids"],
       },
     },
     update: {
@@ -5852,6 +6428,7 @@ const endpoints: Endpoints = {
           "required_pull_request_reviews.dismiss_stale_reviews",
           "required_pull_request_reviews.require_code_owner_reviews",
           "required_pull_request_reviews.required_approving_review_count",
+          "required_pull_request_reviews.require_last_push_approval",
           "required_pull_request_reviews.bypass_pull_request_allowances",
           "required_pull_request_reviews.bypass_pull_request_allowances.users",
           "required_pull_request_reviews.bypass_pull_request_allowances.teams",
@@ -5865,6 +6442,8 @@ const endpoints: Endpoints = {
           "allow_deletions",
           "block_creations",
           "required_conversation_resolution",
+          "lock_branch",
+          "allow_fork_syncing",
         ],
       },
     },
@@ -5892,7 +6471,7 @@ const endpoints: Endpoints = {
       parameters: {
         path: ["owner", "repo"],
         query: [],
-        body: ["cname", "https_enforced", "public", "build_type", "source"],
+        body: ["cname", "https_enforced", "build_type", "source", "public"],
       },
     },
     updateInvitation: {
@@ -5902,6 +6481,41 @@ const endpoints: Endpoints = {
         path: ["owner", "repo", "invitation_id"],
         query: [],
         body: ["permissions"],
+      },
+    },
+    updateOrgRuleset: {
+      method: "put",
+      path: "/orgs/{org}/rulesets/{ruleset_id}",
+      parameters: {
+        path: ["org", "ruleset_id"],
+        query: [],
+        body: [
+          "name",
+          "target",
+          "enforcement",
+          "bypass_actors",
+          "bypass_actors[].actor_id",
+          "bypass_actors[].actor_type",
+          "conditions",
+          "rules",
+          "rules[].type",
+          "rules[].parameters",
+          "rules[].parameters.update_allows_fetch_and_merge",
+          "rules[].parameters.required_deployment_environments",
+          "rules[].parameters.dismiss_stale_reviews_on_push",
+          "rules[].parameters.require_code_owner_review",
+          "rules[].parameters.require_last_push_approval",
+          "rules[].parameters.required_approving_review_count",
+          "rules[].parameters.required_review_thread_resolution",
+          "rules[].parameters.required_status_checks",
+          "rules[].parameters.required_status_checks[].context",
+          "rules[].parameters.required_status_checks[].integration_id",
+          "rules[].parameters.strict_required_status_checks_policy",
+          "rules[].parameters.name",
+          "rules[].parameters.negate",
+          "rules[].parameters.operator",
+          "rules[].parameters.pattern",
+        ],
       },
     },
     updatePullRequestReviewProtection: {
@@ -5918,6 +6532,7 @@ const endpoints: Endpoints = {
           "dismiss_stale_reviews",
           "require_code_owner_reviews",
           "required_approving_review_count",
+          "require_last_push_approval",
           "bypass_pull_request_allowances",
           "bypass_pull_request_allowances.users",
           "bypass_pull_request_allowances.teams",
@@ -5938,6 +6553,7 @@ const endpoints: Endpoints = {
           "body",
           "draft",
           "prerelease",
+          "make_latest",
           "discussion_category_name",
         ],
       },
@@ -5949,6 +6565,45 @@ const endpoints: Endpoints = {
         path: ["owner", "repo", "asset_id"],
         query: [],
         body: ["name", "label", "state"],
+      },
+    },
+    updateRepoRuleset: {
+      method: "put",
+      path: "/repos/{owner}/{repo}/rulesets/{ruleset_id}",
+      parameters: {
+        path: ["owner", "repo", "ruleset_id"],
+        query: [],
+        body: [
+          "name",
+          "target",
+          "enforcement",
+          "bypass_mode",
+          "bypass_actors",
+          "bypass_actors[].actor_id",
+          "bypass_actors[].actor_type",
+          "conditions",
+          "conditions.ref_name",
+          "conditions.ref_name.include",
+          "conditions.ref_name.exclude",
+          "rules",
+          "rules[].type",
+          "rules[].parameters",
+          "rules[].parameters.update_allows_fetch_and_merge",
+          "rules[].parameters.required_deployment_environments",
+          "rules[].parameters.dismiss_stale_reviews_on_push",
+          "rules[].parameters.require_code_owner_review",
+          "rules[].parameters.require_last_push_approval",
+          "rules[].parameters.required_approving_review_count",
+          "rules[].parameters.required_review_thread_resolution",
+          "rules[].parameters.required_status_checks",
+          "rules[].parameters.required_status_checks[].context",
+          "rules[].parameters.required_status_checks[].integration_id",
+          "rules[].parameters.strict_required_status_checks_policy",
+          "rules[].parameters.name",
+          "rules[].parameters.negate",
+          "rules[].parameters.operator",
+          "rules[].parameters.pattern",
+        ],
       },
     },
     updateStatusCheckPotection: {
@@ -6167,6 +6822,97 @@ const endpoints: Endpoints = {
       },
     },
   },
+  securityAdvisories: {
+    createPrivateVulnerabilityReport: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/security-advisories/reports",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: [
+          "summary",
+          "description",
+          "vulnerabilities",
+          "vulnerabilities[].package",
+          "vulnerabilities[].package.ecosystem",
+          "vulnerabilities[].package.name",
+          "vulnerabilities[].vulnerable_version_range",
+          "vulnerabilities[].patched_versions",
+          "vulnerabilities[].vulnerable_functions",
+          "cwe_ids",
+          "severity",
+          "cvss_vector_string",
+        ],
+      },
+    },
+    createRepositoryAdvisory: {
+      method: "post",
+      path: "/repos/{owner}/{repo}/security-advisories",
+      parameters: {
+        path: ["owner", "repo"],
+        query: [],
+        body: [
+          "summary",
+          "description",
+          "cve_id",
+          "vulnerabilities",
+          "vulnerabilities[].package",
+          "vulnerabilities[].package.ecosystem",
+          "vulnerabilities[].package.name",
+          "vulnerabilities[].vulnerable_version_range",
+          "vulnerabilities[].patched_versions",
+          "vulnerabilities[].vulnerable_functions",
+          "cwe_ids",
+          "credits",
+          "credits[].login",
+          "credits[].type",
+          "severity",
+          "cvss_vector_string",
+        ],
+      },
+    },
+    getRepositoryAdvisory: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/security-advisories/{ghsa_id}",
+      parameters: { path: ["owner", "repo", "ghsa_id"], query: [], body: [] },
+    },
+    listRepositoryAdvisories: {
+      method: "get",
+      path: "/repos/{owner}/{repo}/security-advisories",
+      parameters: {
+        path: ["owner", "repo"],
+        query: ["direction", "sort", "before", "after", "per_page", "state"],
+        body: [],
+      },
+    },
+    updateRepositoryAdvisory: {
+      method: "patch",
+      path: "/repos/{owner}/{repo}/security-advisories/{ghsa_id}",
+      parameters: {
+        path: ["owner", "repo", "ghsa_id"],
+        query: [],
+        body: [
+          "summary",
+          "description",
+          "cve_id",
+          "vulnerabilities",
+          "vulnerabilities[].package",
+          "vulnerabilities[].package.ecosystem",
+          "vulnerabilities[].package.name",
+          "vulnerabilities[].vulnerable_version_range",
+          "vulnerabilities[].patched_versions",
+          "vulnerabilities[].vulnerable_functions",
+          "cwe_ids",
+          "credits",
+          "credits[].login",
+          "credits[].type",
+          "severity",
+          "cvss_vector_string",
+          "state",
+        ],
+      },
+    },
+  },
   teams: {
     addOrUpdateMembershipForUserInOrg: {
       method: "put",
@@ -6225,6 +6971,7 @@ const endpoints: Endpoints = {
           "maintainers",
           "repo_names",
           "privacy",
+          "notification_setting",
           "permission",
           "parent_team_id",
         ],
@@ -6431,6 +7178,7 @@ const endpoints: Endpoints = {
           "name",
           "description",
           "privacy",
+          "notification_setting",
           "permission",
           "parent_team_id",
         ],
@@ -6447,6 +7195,11 @@ const endpoints: Endpoints = {
       method: "post",
       path: "/user/emails",
       parameters: { path: [], query: [], body: ["emails"] },
+    },
+    addSocialAccountForAuthenticatedUser: {
+      method: "post",
+      path: "/user/social_accounts",
+      parameters: { path: [], query: [], body: ["account_urls"] },
     },
     block: {
       method: "put",
@@ -6523,6 +7276,11 @@ const endpoints: Endpoints = {
       path: "/user/keys/{key_id}",
       parameters: { path: ["key_id"], query: [], body: [] },
     },
+    deleteSocialAccountForAuthenticatedUser: {
+      method: "delete",
+      path: "/user/social_accounts",
+      parameters: { path: [], query: [], body: ["account_urls"] },
+    },
     deleteSshSigningKeyForAuthenticatedUser: {
       method: "delete",
       path: "/user/ssh_signing_keys/{ssh_signing_key_id}",
@@ -6585,12 +7343,12 @@ const endpoints: Endpoints = {
     listBlockedByAuthenticated: {
       method: "get",
       path: "/user/blocks",
-      parameters: { path: [], query: [], body: [] },
+      parameters: { path: [], query: ["per_page", "page"], body: [] },
     },
     listBlockedByAuthenticatedUser: {
       method: "get",
       path: "/user/blocks",
-      parameters: { path: [], query: [], body: [] },
+      parameters: { path: [], query: ["per_page", "page"], body: [] },
     },
     listEmailsForAuthenticated: {
       method: "get",
@@ -6666,6 +7424,16 @@ const endpoints: Endpoints = {
       method: "get",
       path: "/user/keys",
       parameters: { path: [], query: ["per_page", "page"], body: [] },
+    },
+    listSocialAccountsForAuthenticatedUser: {
+      method: "get",
+      path: "/user/social_accounts",
+      parameters: { path: [], query: ["per_page", "page"], body: [] },
+    },
+    listSocialAccountsForUser: {
+      method: "get",
+      path: "/users/{username}/social_accounts",
+      parameters: { path: ["username"], query: ["per_page", "page"], body: [] },
     },
     listSshSigningKeysForAuthenticatedUser: {
       method: "get",
