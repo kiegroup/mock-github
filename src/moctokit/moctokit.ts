@@ -1,4 +1,5 @@
 import endpointToMethod from "@mg/moctokit/generated/endpoint-request";
+import nock from "nock";
 
 export class Moctokit {
   private _rest;
@@ -8,5 +9,9 @@ export class Moctokit {
 
   get rest() {
     return this._rest;
+  }
+
+  cleanAll() {
+    nock.cleanAll();
   }
 }
