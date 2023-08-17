@@ -31,8 +31,8 @@ Using this library along with [kiegroup/act-js](https://github.com/kiegroup/act-
 
 ## Moctokit
 
-> **Warning**
-> Moctokit is currently not compatible with Node's experimental native `fetch` implementation since it uses `nock` under the hood See [#2397](https://github.com/nock/nock/issues/2397)
+> **Warning**  
+> Moctokit is currently not compatible with Node 18's native `fetch` implementation since it uses `nock` under the hood See [nock/nock#2397](https://github.com/nock/nock/issues/2397)
 
 Allows you to mock [octokit](https://octokit.github.io/rest.js/v19) using an octokit like interface.
 
