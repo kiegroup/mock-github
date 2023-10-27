@@ -1,15 +1,20 @@
 import { DataMatcher, DataMatcherMap, RequestBodyMatcher } from "nock/types";
 import { EndpointDetails, Params } from "@mg/endpoint-mocker/endpoint-mocker.types";
+import { MockAgent } from "undici";
 
 export abstract class RequestMocker {
+  private _agent: MockAgent;
   private _endpointDetails: EndpointDetails;
   private _baseUrl: string;
-  private _allowUnmocked: boolean;
 
-  constructor(baseUrl: string, endpointDetails: EndpointDetails, allowUnmocked = false) {
+  constructor(agent: MockAgent, baseUrl: string, endpointDetails: EndpointDetails) {
+    this._agent = agent;
     this._endpointDetails = endpointDetails;
     this._baseUrl = baseUrl;
-    this._allowUnmocked = allowUnmocked;
+  }
+
+  get agent() {
+    return this._agent;
   }
 
   get baseUrl() {
@@ -18,10 +23,6 @@ export abstract class RequestMocker {
 
   get endpointDetails() {
     return this._endpointDetails;
-  }
-
-  get allowUnmocked() {
-    return this._allowUnmocked;
   }
 
   protected parseParams(params?: Params) {

@@ -1,8 +1,8 @@
 import { ReplyHeaders, RequestHeaderMatcher } from "nock";
 
-export type Response<T, S extends number> = {
-  status: S;
-  data: T;
+export type Response<TData, Status extends number> = {
+  status: Status;
+  data: TData;
   headers?: ReplyHeaders
   repeat?: number
 };

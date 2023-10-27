@@ -13,7 +13,7 @@ jobs:
   tests:
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [20]
         os: [ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -36,7 +36,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 20
       
       - name: Install packages
         run: npm ci

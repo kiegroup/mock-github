@@ -1,28 +1,36 @@
-import nock, { DataMatcherMap } from "nock";
-import { Header, Response } from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
+import querystring from "node:querystring";
+import { DataMatcherMap, RequestBodyMatcher } from "nock";
+import common from "nock/lib/common.js";
+import matchBody from "nock/lib/match_body.js";
+import {
+  Header,
+  Response,
+} from "@mg/endpoint-mocker/response/abstract-response-mocker.types";
+import { MockAgent } from "undici";
+import { MockInterceptor } from "undici/types/mock-interceptor";
+import { IncomingHttpHeaders } from "undici/types/header";
+import { EndpointMethod } from "../endpoint-mocker.types";
 
-export abstract class ResponseMocker<T, S extends number> {
-  private scope: nock.Scope;
-  private responses: Response<T, S>[];
+export abstract class ResponseMocker<TData, Status extends number> {
+  private agent: MockAgent;
+  private responses: Response<TData, Status>[];
   private headers: Header;
   private path: string | RegExp;
   private query?: DataMatcherMap;
-  private requestBody?: DataMatcherMap;
-  private method: string;
+  private requestBody?: RequestBodyMatcher;
+  private method: EndpointMethod;
   private baseUrl: string;
-  private allowUnmocked: boolean;
 
   constructor(
+    agent: MockAgent,
     baseUrl: string,
     path: string | RegExp,
-    method: string,
+    method: EndpointMethod,
     query?: DataMatcherMap,
-    requestBody?: DataMatcherMap,
-    allowUnmocked = false
+    requestBody?: RequestBodyMatcher
   ) {
+    this.agent = agent;
     this.baseUrl = baseUrl;
-    this.allowUnmocked = allowUnmocked;
-    this.scope = nock(baseUrl, { allowUnmocked });
     this.responses = [];
     this.headers = {};
     this.path = path;
@@ -32,14 +40,19 @@ export abstract class ResponseMocker<T, S extends number> {
   }
 
   matchReqHeaders(headers: Header) {
-    this.headers = {...this.headers, ...headers};
+    this.headers = { ...this.headers, ...headers };
     if (Object.keys(this.headers).length > 0) {
-      this.scope = nock(this.baseUrl, { allowUnmocked: this.allowUnmocked, reqheaders: this.headers });
+      this.agent.get(this.baseUrl).intercept({
+        path: requestPath => this.pathHandler(requestPath),
+        method: this.method.toUpperCase(),
+        body: requestBody => this.bodyHandler(requestBody),
+        query: this.query,
+      });
     }
     return this;
   }
 
-  setResponse(responses: Response<T, S> | Response<T, S>[]) {
+  setResponse(responses: Response<TData, Status> | Response<TData, Status>[]) {
     if (Array.isArray(responses)) {
       this.responses = [...this.responses, ...responses];
     } else {
@@ -48,17 +61,27 @@ export abstract class ResponseMocker<T, S extends number> {
     return this;
   }
 
-  reply(response?: Response<T, S>) {
+  reply(response?: Response<TData, Status>) {
     let interceptor = this.createInterceptor();
     if (response) {
-      this.scope = interceptor
-        .times(response.repeat ?? 1)
-        .reply(response.status, response.data as nock.Body, response.headers);
+      interceptor
+        .reply(response.status, response.data as Record<string, unknown>, {
+          headers: {
+            ...(response.headers as IncomingHttpHeaders),
+            "content-type": this.getContentTypeForResponseData(response.data),
+          },
+        })
+        .times(response.repeat ?? 1);
     } else {
       this.responses.forEach(res => {
-        this.scope = interceptor
-          .times(res.repeat ?? 1)
-          .reply(res.status, res.data as nock.Body, res.headers);
+        interceptor
+          .reply(res.status, res.data as Record<string, unknown>, {
+            headers: {
+              ...(res.headers as IncomingHttpHeaders),
+              "content-type": this.getContentTypeForResponseData(res.data),
+            },
+          })
+          .times(res.repeat ?? 1);
         interceptor = this.createInterceptor();
       });
       this.responses = [];
@@ -67,10 +90,47 @@ export abstract class ResponseMocker<T, S extends number> {
     return this;
   }
 
-  private createInterceptor(): nock.Interceptor {
-    // if query is defined use that otherwise set it to true to indicate that we want to mock the path regardless of query
-    return this.scope
-      .intercept(this.path, this.method, this.requestBody)
-      .query(this.query ?? true);
+  getContentTypeForResponseData(data: TData) {
+    if (data instanceof Buffer) {
+      return "application/octet-stream";
+    }
+    if (typeof data === "object") {
+      return "application/json";
+    }
+    return "text/plain";
+  }
+
+  private createInterceptor(): MockInterceptor {
+    return this.agent.get(this.baseUrl).intercept({
+      path: requestPath => this.pathHandler(requestPath),
+      method: this.method.toUpperCase(),
+      body: requestBody => this.bodyHandler(requestBody),
+    });
+  }
+
+  private pathHandler(requestPath: string) {
+    const [pathname, search] = requestPath.split("?");
+
+    // If no query was given with the intercept, accept all queries.
+    if (this.query) {
+      const requestQuery = querystring.parse(search);
+      const equal = common.dataEqual(this.query, requestQuery);
+      if (!equal) {
+        return false;
+      }
+    }
+
+    if (typeof this.path === "string") {
+      return this.path === pathname;
+    }
+    if (this.path instanceof RegExp) {
+      return this.path.test(pathname);
+    }
+
+    return false;
+  }
+
+  private bodyHandler(requestBody: string) {
+    return this.requestBody ? matchBody({}, this.requestBody, requestBody) : true;
   }
 }

@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from "axios";
 import { EndpointMethod } from "@mg/endpoint-mocker/endpoint-mocker.types";
 import { MoctokitRequestMocker } from "@mg/moctokit/request/request-mocker";
+import { Moctokit } from "@mg/index";
 
-const url = "http://localhost:8000";
-const instance = axios.create({
-  baseURL: url,
-});
+const url = "http://127.0.0.1:8000";
 
-describe.each(["get", "post", "delete", "put", "patch"])(
+const mocker = new Moctokit(url);
+const agent = mocker.agent;
+
+describe.each(["GET", "POST", "DELETE", "PUT", "PATCH"])(
   "Method - %p",
   (method: string) => {
     test("with path parameters", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/path/{param1}/path/{param2}/path/{param3}",
         method: method as EndpointMethod,
         parameters: {
@@ -28,11 +28,11 @@ describe.each(["get", "post", "delete", "put", "patch"])(
         } as any)
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
+      const response = await fetch(`${url}/path/hello/path/world2/path/any`, {
         method,
-        url: "path/hello/path/world2/path/any",
       });
-      expect(status).toBe(200);
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
 
       // reuse same mocker with repeat
@@ -41,26 +41,30 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           param1: "hello",
           param2: /(w|W)orld\d/,
         } as any)
-        .reply({ status: 200, data: { msg: "hello world" }, repeat: 3 } as never);
+        .reply({
+          status: 200,
+          data: { msg: "hello world" },
+          repeat: 3,
+        } as never);
 
       // incorrect param1 - should be an exact match
       await expect(
-        instance({ method, url: "path/Hello/path/world2/path/any" })
+        fetch(`${url}/path/Hello/path/world2/path/any`, { method })
       ).rejects.toThrowError();
 
       // incorrect param2 - does not match the regex
       await expect(
-        instance({ method, url: "path/hello/path/world/path/any" })
+        fetch(`${url}/path/hello/path/world/path/any`, { method })
       ).rejects.toThrowError();
 
       // incorrect param3 - not passed
       await expect(
-        instance({ method, url: "path/hello/path/world2/path/" })
+        fetch(`${url}/path/hello/path/world2/path/`, { method })
       ).rejects.toThrowError();
     });
 
     test("no path parameters passed", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/path/{param1}/path/{param2}/path",
         method: method as EndpointMethod,
         parameters: {
@@ -73,16 +77,19 @@ describe.each(["get", "post", "delete", "put", "patch"])(
         .request()
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
-        method,
-        url: "path/hello/path/world2/path",
-      });
-      expect(status).toBe(200);
+      const response = await fetch(
+        `${url}/path/hello/path/world2/path`,
+        {
+          method,
+        }
+      );
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
     });
 
     test("no path parameters defined. Exact path match", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/path/hello/world",
         method: method as EndpointMethod,
         parameters: {
@@ -91,27 +98,28 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           body: [],
         },
       });
-      requestMocker
-        .request()
-        .reply({ status: 200, data: { msg: "hello world" }, repeat: 2 } as never);
+      requestMocker.request().reply({
+        status: 200,
+        data: { msg: "hello world" },
+        repeat: 2,
+      } as never);
 
-      const { status, data } = await instance({
+      const response = await fetch(`${url}/path/hello/world`, {
         method,
-        url: "/path/hello/world",
       });
-      expect(status).toBe(200);
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
 
       await expect(
-        instance({
+        fetch(`${url}/path/hello/worlD`, {
           method,
-          url: "/path/hello/worlD",
         })
       ).rejects.toThrowError();
     });
 
     test("with url queries", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -128,12 +136,14 @@ describe.each(["get", "post", "delete", "put", "patch"])(
         } as any)
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
-        method,
-        url: "/query/any/query?query1=hello",
-        params: { query2: 1 },
-      });
-      expect(status).toBe(200);
+      const response = await fetch(
+        `${url}/query/any/query?query1=hello&query2=1`,
+        {
+          method,
+        }
+      );
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
 
       requestMocker
@@ -141,24 +151,27 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           query1: "hello",
           query2: /\d/,
         } as any)
-        .reply({ status: 200, data: { msg: "hello world" }, repeat: 3 } as never);
+        .reply({
+          status: 200,
+          data: { msg: "hello world" },
+          repeat: 3,
+        } as never);
 
       await expect(
-        instance({ method, url: "/query/any/query?query1=hell&query2=2" })
+        fetch(`${url}/query/any/query?query1=hell&query2=2`, { method })
       ).rejects.toThrowError();
       await expect(
-        instance({ method, url: "/query/any/query?query1=hello&query2=hello" })
+        fetch(`${url}/query/any/query?query1=hello&query2=hello`, { method })
       ).rejects.toThrowError();
       await expect(
-        instance({
+        fetch(`${url}/query/any/query?query1=hello&query2=1&query3=hello`, {
           method,
-          url: "/query/any/query?query1=hello&query2=1&query3=hello",
         })
       ).rejects.toThrowError();
     });
 
     test("no url queries", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -172,17 +185,19 @@ describe.each(["get", "post", "delete", "put", "patch"])(
         .request()
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
-        method,
-        url: "/query/any/query?query1=hello",
-        params: { query2: 1 },
-      });
-      expect(status).toBe(200);
+      const response = await fetch(
+        `${url}/query/any/query?query1=hello&query2=1`,
+        {
+          method,
+        }
+      );
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
     });
-    
+
     test("mock headers", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/query/{param1}/query",
         method: method as EndpointMethod,
         parameters: {
@@ -194,27 +209,30 @@ describe.each(["get", "post", "delete", "put", "patch"])(
 
       requestMocker
         .request({
-          param1: "hello"
+          param1: "hello",
         } as any)
         .matchReqHeaders({
-          "authorization": /bearer */,
+          authorization: /bearer */,
         })
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
-        method,
-        url: "/query/hello/query?query1=hello",
-        headers: {
-          authorization: "bearer some_token",
-          "custom-header": "value"
-        },
-      });
-      expect(status).toBe(200);
+      const response = await fetch(
+        `${url}/query/hello/query?query1=hello`,
+        {
+          method,
+          headers: {
+            authorization: "bearer some_token",
+            "custom-header": "value",
+          },
+        }
+      );
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
     });
 
     test("setResponse: singular response", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -226,21 +244,27 @@ describe.each(["get", "post", "delete", "put", "patch"])(
 
       requestMocker
         .request()
-        .setResponse({ status: 200, data: { msg: "hello world" }, headers: {"test-header": "value"} } as never)
+        .setResponse({
+          status: 200,
+          data: { msg: "hello world" },
+          headers: { "test-header": "value" },
+        } as never)
         .reply();
 
-      const { status, data, headers } = await instance({
-        method,
-        url: "/response/any/response?query1=hello",
-        params: { query2: 1 },
-      });
-      expect(status).toBe(200);
+      const response = await fetch(
+        `${url}/response/any/response?query1=hello&query2=1`,
+        {
+          method,
+        }
+      );
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
-      expect(headers).toMatchObject({ "test-header": "value" });
+      expect(Object.fromEntries(response.headers.entries())).toMatchObject({ "test-header": "value" });
     });
 
     test("setResponse: multiple response", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -253,32 +277,38 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       requestMocker
         .request()
         .setResponse([
-          { status: 200, data: { msg: "hello world" }, headers: {"test-header": "value"} },
+          {
+            status: 200,
+            data: { msg: "hello world" },
+            headers: { "test-header": "value" },
+          },
           { status: 201, data: { msg: "another response" } },
         ] as never)
         .reply();
 
-      const response1 = await instance({
-        method,
-        url: "/response/any/response?query1=hello",
-        params: { query2: 1 },
-      });
+      const response1 = await fetch(
+        `${url}/response/any/response?query1=hello&query2=1`,
+        {
+          method,
+        }
+      );
       expect(response1.status).toBe(200);
-      expect(response1.data).toStrictEqual({ msg: "hello world" });
-      expect(response1.headers).toMatchObject({"test-header": "value"});
+      expect(await response1.json()).toStrictEqual({ msg: "hello world" });
+      expect(Object.fromEntries(response1.headers.entries())).toMatchObject({ "test-header": "value" });
 
-      const response2 = await instance({
-        method,
-        url: "/response/any/response?query1=hello",
-        params: { query2: 1 },
-      });
+      const response2 = await fetch(
+        `${url}/response/any/response?query1=hello&query2=1`,
+        {
+          method,
+        }
+      );
       expect(response2.status).toBe(201);
-      expect(response2.data).toStrictEqual({ msg: "another response" });
-      expect(response2.headers).not.toMatchObject({"test-header": "value"});
+      expect(await response2.json()).toStrictEqual({ msg: "another response" });
+      expect(Object.fromEntries(response2.headers.entries())).not.toMatchObject({ "test-header": "value" });
     });
 
     test("reply: with headers", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/response/{param1}/response",
         method: method as EndpointMethod,
         parameters: {
@@ -288,27 +318,31 @@ describe.each(["get", "post", "delete", "put", "patch"])(
         },
       });
 
-      requestMocker
-        .request()
-        .reply({ status: 200, data: { msg: "hello world" }, headers: {"test-header": "value"} } as never);
+      requestMocker.request().reply({
+        status: 200,
+        data: { msg: "hello world" },
+        headers: { "test-header": "value" },
+      } as never);
 
-      const { status, data, headers } = await instance({
-        method,
-        url: "/response/any/response?query1=hello",
-        params: { query2: 1 },
-      });
-      expect(status).toBe(200);
+      const response = await fetch(
+        `${url}/response/any/response?query1=hello&query2=1`,
+        {
+          method,
+        }
+      );
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
-      expect(headers).toMatchObject({ "test-header": "value" });
+      expect(Object.fromEntries(response.headers.entries())).toMatchObject({ "test-header": "value" });
     });
   }
 );
 
-describe.each(["post", "delete", "put", "patch"])(
+describe.each(["POST", "DELETE", "PUT", "PATCH"])(
   "Method - %p",
   (method: string) => {
     test("with request body", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/body/{param1}/body",
         method: method as EndpointMethod,
         parameters: {
@@ -325,12 +359,12 @@ describe.each(["post", "delete", "put", "patch"])(
         } as any)
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
+      const response = await fetch(`${url}/body/any/body`, {
         method,
-        url: "/body/any/body",
-        data: { body1: "hello", body2: 2 },
+        body: JSON.stringify({ body1: "hello", body2: 2 }),
       });
-      expect(status).toBe(200);
+      const data = await response.json();
+      expect(response.status).toBe(200);
       expect(data).toStrictEqual({ msg: "hello world" });
 
       requestMocker
@@ -338,33 +372,37 @@ describe.each(["post", "delete", "put", "patch"])(
           body1: "hello",
           body2: /\d/,
         } as any)
-        .reply({ status: 200, data: { msg: "hello world" }, repeat: 3 } as never);
+        .reply({
+          status: 200,
+          data: { msg: "hello world" },
+          repeat: 3,
+        } as never);
 
       await expect(
-        instance({
+        fetch(`${url}/body/any/body?query1=hell`, {
           method,
-          url: "/body/any/body?query1=hell",
-          data: { body1: "hell", body2: 2 },
+          body: JSON.stringify({ body1: "hell", body2: 2 }),
+          headers: {
+            "content-type": "application/json"
+          }
         })
       ).rejects.toThrowError();
       await expect(
-        instance({
+        fetch(`${url}/body/any/body?query1=hello`, {
           method,
-          url: "/body/any/body?query1=hello",
-          data: { body1: "hello", body2: "world" },
+          body: JSON.stringify({ body1: "hello", body2: "world" }),
         })
       ).rejects.toThrowError();
       await expect(
-        instance({
+        fetch(`${url}/body/any/body`, {
           method,
-          url: "/body/any/body",
-          data: { body1: "hello", body2: 2, body3: "world" },
+          body: JSON.stringify({ body1: "hello", body2: 2, body3: "world" }),
         })
       ).rejects.toThrowError();
     });
 
     test("no request body", async () => {
-      const requestMocker = new MoctokitRequestMocker(url, {
+      const requestMocker = new MoctokitRequestMocker(agent, url, {
         path: "/body/{param1}/body",
         method: method as EndpointMethod,
         parameters: {
@@ -378,13 +416,19 @@ describe.each(["post", "delete", "put", "patch"])(
         .request()
         .reply({ status: 200, data: { msg: "hello world" } } as never);
 
-      const { status, data } = await instance({
-        method,
-        url: "/body/any/body",
-        data: { body1: "hello", body2: 2 },
-      });
-      expect(status).toBe(200);
-      expect(data).toStrictEqual({ msg: "hello world" });
+      try {
+        const response = await fetch(`${url}/body/any/body`, {
+          method,
+          body: JSON.stringify({ body1: "hello", body2: 2 }),
+          headers: { "content-type": "application/json" }
+        });
+        const data = await response.json();
+        expect(response.status).toBe(200);
+        expect(data).toStrictEqual({ msg: "hello world" });
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     });
   }
 );
