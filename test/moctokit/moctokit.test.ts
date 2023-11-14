@@ -15,14 +15,14 @@ test("with default base url", async () => {
     repo: "project",
   });
   expect(data1.status).toBe(200);
-  expect(data1.data).toEqual({ full_name: "it definitely worked" });
+  expect(data1.data).toStrictEqual({ full_name: "it definitely worked" });
 
   const data2 = await octokit.rest.repos.get({
     owner: "kie",
     repo: "drools",
   });
   expect(data2.status).toBe(200);
-  expect(data2.data).toEqual({ full_name: "it definitely worked" });
+  expect(data2.data).toStrictEqual({ full_name: "it definitely worked" });
 });
 
 test("with base url", async () => {
