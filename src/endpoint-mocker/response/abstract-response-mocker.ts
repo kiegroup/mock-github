@@ -47,6 +47,7 @@ export abstract class ResponseMocker<TData, Status extends number> {
         method: this.method.toUpperCase(),
         body: requestBody => this.bodyHandler(requestBody),
         query: this.query,
+        headers
       });
     }
     return this;
