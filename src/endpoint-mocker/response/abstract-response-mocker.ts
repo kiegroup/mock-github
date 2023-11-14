@@ -9,7 +9,7 @@ import {
 import { MockAgent } from "undici";
 import { MockInterceptor } from "undici/types/mock-interceptor";
 import { IncomingHttpHeaders } from "undici/types/header";
-import { EndpointMethod } from "../endpoint-mocker.types";
+import { EndpointMethod } from "@mg/endpoint-mocker/endpoint-mocker.types";
 
 export abstract class ResponseMocker<TData, Status extends number> {
   private agent: MockAgent;
