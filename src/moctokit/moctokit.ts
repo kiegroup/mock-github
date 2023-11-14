@@ -1,4 +1,3 @@
-import diagnosticsChannel from "diagnostics_channel";
 import { EndpointMocker } from "@mg/endpoint-mocker/abstract-endpoint-mocker";
 import endpointToMethod from "@mg/moctokit/generated/endpoint-request";
 
