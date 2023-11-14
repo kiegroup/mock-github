@@ -67,8 +67,9 @@ export abstract class ResponseMocker<TData, Status extends number> {
       interceptor
         .reply(response.status, response.data as Record<string, unknown>, {
           headers: {
-            ...(response.headers as IncomingHttpHeaders),
             "content-type": this.getContentTypeForResponseData(response.data),
+            ...(response.headers as IncomingHttpHeaders),
+            
           },
         })
         .times(response.repeat ?? 1);
@@ -77,8 +78,8 @@ export abstract class ResponseMocker<TData, Status extends number> {
         interceptor
           .reply(res.status, res.data as Record<string, unknown>, {
             headers: {
-              ...(res.headers as IncomingHttpHeaders),
               "content-type": this.getContentTypeForResponseData(res.data),
+              ...(res.headers as IncomingHttpHeaders),
             },
           })
           .times(res.repeat ?? 1);
