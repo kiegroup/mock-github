@@ -147,7 +147,7 @@ moctokit.rest.projects
 
 #### Setting response and replying later
 
-You can set an array of responses but actually mock the api later on. Responses are sent in order of their position in the array. This is extremely useful when using moctokit with [Action Compiler](#action-compiler)
+You can set an array of responses but actually mock the api later on. Responses are sent in order of their position in the array.
 
 ```typescript
 const moctokit = new Moctokit();
