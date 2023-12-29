@@ -18,20 +18,20 @@ export type Parameters<T> = "parameters" extends keyof T
   : Record<never, never>;
 
 type RequestBody<T> = "requestBody" extends keyof T
-  ? "content" extends keyof T["requestBody"]
-    ? "application/json" extends keyof T["requestBody"]["content"]
-      ? T["requestBody"]["content"]["application/json"]
+  ? "content" extends keyof NonNullable<T["requestBody"]>
+    ? "application/json" extends keyof NonNullable<T["requestBody"]>["content"]
+      ? NonNullable<T["requestBody"]>["content"]["application/json"]
       : {
           data: {
-            [K in keyof T["requestBody"]["content"]]: T["requestBody"]["content"][K];
-          }[keyof T["requestBody"]["content"]];
+            [K in keyof NonNullable<T["requestBody"]>["content"]]: NonNullable<T["requestBody"]>["content"][K];
+          }[keyof NonNullable<T["requestBody"]>["content"]];
         }
-    : "application/json" extends keyof T["requestBody"]
-    ? T["requestBody"]["application/json"]
+    : "application/json" extends keyof NonNullable<T["requestBody"]>
+    ? NonNullable<T["requestBody"]>["application/json"]
     : {
         data: {
-          [K in keyof T["requestBody"]]: T["requestBody"][K];
-        }[keyof T["requestBody"]];
+          [K in keyof NonNullable<T["requestBody"]>]: NonNullable<T["requestBody"]>[K];
+        }[keyof NonNullable<T["requestBody"]>];
       }
   : Record<never, never>;
 
