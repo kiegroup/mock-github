@@ -17,7 +17,7 @@ export type Parameters<T> = "parameters" extends keyof T
     >
   : Record<never, never>;
 
-export type RequestBody<T> = "requestBody" extends keyof T
+type RequestBody<T> = "requestBody" extends keyof T
   ? "content" extends keyof NonNullable<T["requestBody"]>
     ? "application/json" extends keyof NonNullable<T["requestBody"]>["content"]
       ? NonNullable<T["requestBody"]>["content"]["application/json"]
