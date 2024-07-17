@@ -1,4 +1,12 @@
-# Mock Github
+# Mock Github  
+
+> **Notice**
+>
+> We have introduced experimental support for fetch. Please share your feedback with us. You can install it by:
+>
+> ```
+> npm install @kie/mock-github@beta
+> ```
 
 Provides a bunch of tools to configure and create a local github environment to test your custom github actions in without having to clutter your github with test repositories, actions or hitting github api rate limits.
 
