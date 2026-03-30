@@ -67,6 +67,10 @@ describe("teardown", () => {
 
   test("archive store was not created", async () => {
     const storePath = path.join(__dirname, "store");
+    // Clean up if it exists from previous test runs
+    if (existsSync(storePath)) {
+      await rm(storePath, { recursive: true, force: true });
+    }
     mkdirSync(storePath);
     const archiveMocker = new ArchiveArtifactsMocker(__dirname, "8080");
     await archiveMocker.setup();

@@ -2,6 +2,8 @@ import path from "path";
 import simpleGit, { SimpleGit } from "simple-git";
 import { RepositoryBranches } from "@mg/github/repository/branches/repository-branches";
 import { RepositoryMocker } from "@mg/github/repository/repository-mocker";
+import { existsSync } from "fs";
+import { rm } from "fs/promises";
 
 let repoMocker: RepositoryMocker;
 let branchCreator: RepositoryBranches;
@@ -23,6 +25,15 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await repoMocker.teardown();
+  // Extra cleanup to ensure repo directory is removed
+  const repoDir = path.join(__dirname, "repo");
+  if (existsSync(repoDir)) {
+    try {
+      await rm(repoDir, { recursive: true, force: true });
+    } catch (err) {
+      // Ignore cleanup errors
+    }
+  }
 });
 
 describe("setup local branches", () => {

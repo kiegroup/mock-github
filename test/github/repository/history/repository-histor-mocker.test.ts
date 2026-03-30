@@ -37,6 +37,15 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await repoMocker.teardown();
+  // Extra cleanup to ensure repo directory is removed
+  const repoDir = path.join(__dirname, "repo");
+  if (existsSync(repoDir)) {
+    try {
+      await rm(repoDir, { recursive: true, force: true });
+    } catch (err) {
+      // Ignore cleanup errors
+    }
+  }
 });
 
 describe.each([
