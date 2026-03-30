@@ -1,6 +1,11 @@
 import { Moctokit } from "@mg/moctokit/moctokit";
 import { Octokit } from "@octokit/rest";
 
+afterEach(() => {
+  const moctokit = new Moctokit();
+  moctokit.cleanAll();
+});
+
 test("with default base url", async () => {
   const moctokit = new Moctokit();
   moctokit.rest.repos

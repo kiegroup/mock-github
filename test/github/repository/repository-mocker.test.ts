@@ -13,6 +13,18 @@ import {
 
 const setupPath = __dirname;
 
+afterEach(async () => {
+  // Clean up any repositories created during tests
+  const repoPath = path.join(setupPath, "repo");
+  if (existsSync(repoPath)) {
+    try {
+      await rm(repoPath, { recursive: true, force: true });
+    } catch (err) {
+      // Ignore cleanup errors
+    }
+  }
+});
+
 describe("setup", () => {
   test("no repositories", async () => {
     const repoMocker = new RepositoryMocker({}, setupPath);

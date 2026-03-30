@@ -2,10 +2,15 @@
 import axios from "axios";
 import { EndpointMethod } from "@mg/endpoint-mocker/endpoint-mocker.types";
 import { MoctokitRequestMocker } from "@mg/moctokit/request/request-mocker";
+import nock from "nock";
 
 const url = "http://localhost:8000";
 const instance = axios.create({
   baseURL: url,
+});
+
+afterEach(() => {
+  nock.cleanAll();
 });
 
 describe.each(["get", "post", "delete", "put", "patch"])(
