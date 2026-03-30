@@ -13,10 +13,10 @@ jobs:
     name: Publish coverage report
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup sonarqube
-        uses: warchant/setup-sonar-scanner@v3     
-      - uses: actions/setup-node@v4
+        uses: warchant/setup-sonar-scanner@v10     
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
       - run: npm ci
