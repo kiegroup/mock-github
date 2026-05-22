@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
+          scope: '@kie'
           package-manager-cache: false  # never use caching in release builds
       
       - name: Install packages
