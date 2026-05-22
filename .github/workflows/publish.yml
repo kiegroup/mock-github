@@ -2,6 +2,10 @@ name: Publish
 
 on: workflow_dispatch
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+  
 jobs:
   release:
     permissions:
@@ -15,7 +19,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24.x
-          registry-url: https://registry.npmjs.org/
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false  # never use caching in release builds
       
       - name: Install packages
         run: npm ci
@@ -25,6 +30,3 @@ jobs:
 
       - name: Release
         run: npx semantic-release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
