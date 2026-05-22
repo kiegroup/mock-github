@@ -30,24 +30,23 @@ export abstract class RequestMocker {
     let path: string | RegExp = this.endpointDetails.path;
     let regexFlag = false;
 
-    // replace any path variables with either values or regex expression
-    for (const match of this.endpointDetails.path.match(/{[^{}]+}/g) ??
-      []) {
+    for (const match of this.endpointDetails.path.match(/{[^{}]+}/g) ?? []) {
+      const paramName = match.slice(1, -1);
+      const value = pathParams[paramName];
+
       let replacementParam;
-      if (pathParams[match.slice(1, -1)]) {
-        const value = pathParams[match.slice(1, -1)];
+      if (value !== undefined) {
         replacementParam = value instanceof RegExp ? value.source : `${value}`;
         regexFlag ||= value instanceof RegExp;
       } else {
         replacementParam = ".+";
         regexFlag = true;
       }
-      path = path.replace(new RegExp(match), replacementParam);
+      path = path.replace(match, replacementParam);
     }
 
-    // if a regex expression was encountered then path is used as a regex expression
     if (regexFlag) {
-      path = new RegExp(path);
+      path = new RegExp(`^${path}$`);
     }
 
     return { path, query, requestBody };
