@@ -30,24 +30,59 @@ export abstract class RequestMocker {
     let path: string | RegExp = this.endpointDetails.path;
     let regexFlag = false;
 
+    // Escape special regex characters in the static parts of the path
+    // but preserve the parameter placeholders
+    // Note: We don't escape forward slashes as they're path separators
+    const escapeRegexExceptPlaceholders = (str: string): string => {
+      const parts: string[] = [];
+      let lastIndex = 0;
+      const placeholderRegex = /{[^{}]+}/g;
+      let match;
+      
+      while ((match = placeholderRegex.exec(str)) !== null) {
+        // Escape the part before the placeholder
+        if (match.index > lastIndex) {
+          const staticPart = str.substring(lastIndex, match.index);
+          parts.push(staticPart.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+        }
+        // Keep the placeholder as-is
+        parts.push(match[0]);
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Escape any remaining part after the last placeholder
+      if (lastIndex < str.length) {
+        const staticPart = str.substring(lastIndex);
+        parts.push(staticPart.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      }
+      
+      return parts.join("");
+    };
+
+    // Escape the path template if there are parameters
+    if (this.endpointDetails.path.match(/{[^{}]+}/g)) {
+      path = escapeRegexExceptPlaceholders(path);
+    }
+
     // replace any path variables with either values or regex expression
     for (const match of this.endpointDetails.path.match(/{[^{}]+}/g) ??
       []) {
       let replacementParam;
       if (pathParams[match.slice(1, -1)]) {
         const value = pathParams[match.slice(1, -1)];
-        replacementParam = value instanceof RegExp ? value.source : `${value}`;
+        replacementParam = value instanceof RegExp ? value.source : `${value}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         regexFlag ||= value instanceof RegExp;
       } else {
         replacementParam = ".+";
         regexFlag = true;
       }
-      path = path.replace(new RegExp(match), replacementParam);
+      path = path.replace(match, replacementParam);
     }
 
     // if a regex expression was encountered then path is used as a regex expression
     if (regexFlag) {
-      path = new RegExp(path);
+      // Add anchors to match the entire path
+      path = new RegExp(`^${path}$`);
     }
 
     return { path, query, requestBody };
