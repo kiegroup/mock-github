@@ -36,10 +36,7 @@ export abstract class RequestMocker {
 
       let replacementParam;
       if (value !== undefined) {
-        replacementParam =
-          value instanceof RegExp
-            ? value.source
-            : `${value}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        replacementParam = value instanceof RegExp ? value.source : `${value}`;
         regexFlag ||= value instanceof RegExp;
       } else {
         replacementParam = ".+";
