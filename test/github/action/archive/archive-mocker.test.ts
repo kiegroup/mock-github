@@ -47,7 +47,7 @@ describe("setup", () => {
 
 describe("teardown", () => {
   test("artifact store was created", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8080");
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8081");
 
     await archiveMocker.setup();
     // mimic the store being created
@@ -72,7 +72,7 @@ describe("teardown", () => {
       await rm(storePath, { recursive: true, force: true });
     }
     mkdirSync(storePath);
-    const archiveMocker = new ArchiveArtifactsMocker(__dirname, "8080");
+    const archiveMocker = new ArchiveArtifactsMocker(__dirname, "8082");
     await archiveMocker.setup();
     await archiveMocker.teardown();
 
@@ -90,7 +90,7 @@ describe("teardown", () => {
   });
 
   test("server has not been started", async () => {
-    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8080");
+    const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8083");
     await expect(archiveMocker.teardown()).rejects.toThrowError();
   });
 

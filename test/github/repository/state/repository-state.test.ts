@@ -345,12 +345,13 @@ describe("checkout", () => {
   });
 
   test("repository and branch does exist", async () => {
-    const simpleGitMock = simpleGit as jest.Mock;
     const checkoutMock = jest.fn(async _branch => undefined);
+    const mockedSimpleGit = simpleGit as jest.MockedFunction<typeof simpleGit>;
     
-    simpleGitMock.mockReturnValue({
+    mockedSimpleGit.mockReturnValue({
       checkout: checkoutMock
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
 
     const repoState = new RepositoryState({
       repoA: {
@@ -364,7 +365,7 @@ describe("checkout", () => {
     
     await expect(repoState.checkout("repoA", "pushed1")).resolves.not.toThrowError();
     expect(repoState.getBranchState("repoA")).toMatchObject({currentBranch: "pushed1"});
-    expect(simpleGitMock).toHaveBeenCalledWith(repoState.getPath("repoA"));
+    expect(mockedSimpleGit).toHaveBeenCalledWith(repoState.getPath("repoA"));
     expect(checkoutMock).toHaveBeenCalledWith("pushed1");
   });
 });

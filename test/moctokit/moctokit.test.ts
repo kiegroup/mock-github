@@ -1,9 +1,15 @@
 import { Moctokit } from "@mg/moctokit/moctokit";
 import { Octokit } from "@octokit/rest";
+import nock from "nock";
+
+beforeEach(() => {
+  // Ensure nock is clean before each test
+  nock.cleanAll();
+});
 
 afterEach(() => {
-  const moctokit = new Moctokit();
-  moctokit.cleanAll();
+  // Also clean up after each test
+  nock.cleanAll();
 });
 
 test("with default base url", async () => {
@@ -11,6 +17,7 @@ test("with default base url", async () => {
   moctokit.rest.repos
     .get({
       owner: "kie",
+      repo: /^(project|drools)$/,
     })
     .reply({ status: 200, data: { full_name: "it definitely worked" }, repeat: 2 });
 
@@ -36,6 +43,7 @@ test("with base url", async () => {
   moctokit.rest.repos
     .get({
       owner: "kie",
+      repo: /^(project|drools)$/,
     })
     .reply({ status: 200, data: { full_name: "it definitely worked" }, repeat: 2 });
 
