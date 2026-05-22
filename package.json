@@ -1,6 +1,6 @@
 {
   "name": "@kie/mock-github",
-  "version": "2.0.2",
+  "version": "0.0.0-development",
   "description": "A bunch of tools to configure and create a local github environment to test your github actions in without having to clutter your github with test repositories, actions or hitting github api rate limits.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
