@@ -11,6 +11,7 @@ const jestConfig: Config.InitialOptions = {
   clearMocks: true,
   resetMocks: true,
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  testPathIgnorePatterns: ["<rootDir>/build/"],
   collectCoverageFrom: [
     "src/**",
     "!**/*.types.ts",
