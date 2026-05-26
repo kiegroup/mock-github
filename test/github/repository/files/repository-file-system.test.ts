@@ -108,7 +108,7 @@ describe("copyFile", () => {
     await writeFile(src, "dummy1");
     await expect(
       fileCreator.copyFiles([{ src, dest: `${REMOTE}/src/files/` }])
-    ).rejects.toThrowError();
+    ).rejects.toThrow();
     await rm(src);
   });
 
@@ -117,7 +117,7 @@ describe("copyFile", () => {
     await writeFile(src, "dummy1");
     await expect(
       fileCreator.copyFiles([{ src, dest: GITIGNORE }])
-    ).rejects.toThrowError();
+    ).rejects.toThrow();
     await rm(src);
   });
 
@@ -191,6 +191,6 @@ describe("createFile", () => {
   test("failure", async () => {
     const data = "some data";
     const filePath = `${REMOTE}/dummy.txt`;
-    await expect(fileCreator.createFile(filePath, data)).rejects.toThrowError();
+    await expect(fileCreator.createFile(filePath, data)).rejects.toThrow();
   });
 });

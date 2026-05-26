@@ -341,7 +341,7 @@ describe("checkout", () => {
     ],
   ])("%p", async (_title, config) => {
     const repoState = new RepositoryState(config, setupPath);
-    await expect(repoState.checkout("repoA", "branchA")).rejects.toThrowError();
+    await expect(repoState.checkout("repoA", "branchA")).rejects.toThrow();
   });
 
   test("repository and branch does exist", async () => {
@@ -363,7 +363,7 @@ describe("checkout", () => {
       },
     }, setupPath);
     
-    await expect(repoState.checkout("repoA", "pushed1")).resolves.not.toThrowError();
+    await expect(repoState.checkout("repoA", "pushed1")).resolves.not.toThrow();
     expect(repoState.getBranchState("repoA")).toMatchObject({currentBranch: "pushed1"});
     expect(mockedSimpleGit).toHaveBeenCalledWith(repoState.getPath("repoA"));
     expect(checkoutMock).toHaveBeenCalledWith("pushed1");

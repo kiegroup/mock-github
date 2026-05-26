@@ -13,11 +13,6 @@ const jestConfig: Config.InitialOptions = {
     "^@mg/(.*)$": "<rootDir>/src/$1",
     "^@octokit/rest$": "<rootDir>/test/__mocks__/@octokit/rest.ts",
   },
-  globals: {
-    "ts-jest": {
-      isolatedModules: true,
-    },
-  },
   clearMocks: true,
   resetMocks: true,
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],

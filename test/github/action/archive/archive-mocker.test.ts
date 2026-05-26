@@ -91,12 +91,12 @@ describe("teardown", () => {
 
   test("server has not been started", async () => {
     const archiveMocker = new ArchiveArtifactsMocker(process.cwd(), "8083");
-    await expect(archiveMocker.teardown()).rejects.toThrowError();
+    await expect(archiveMocker.teardown()).rejects.toThrow();
   });
 
   test("no port specified", async () => {
     const archiveMocker = new ArchiveArtifactsMocker(process.cwd());
-    await expect(archiveMocker.teardown()).resolves.not.toThrowError();
+    await expect(archiveMocker.teardown()).resolves.not.toThrow();
   });
 });
 

@@ -51,17 +51,17 @@ describe.each(["get", "post", "delete", "put", "patch"])(
       // incorrect param1 - should be an exact match
       await expect(
         instance({ method, url: "path/Hello/path/world2/path/any" })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
 
       // incorrect param2 - does not match the regex
       await expect(
         instance({ method, url: "path/hello/path/world/path/any" })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
 
       // incorrect param3 - not passed
       await expect(
         instance({ method, url: "path/hello/path/world2/path/" })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
 
     test("no path parameters passed", async () => {
@@ -112,7 +112,7 @@ describe.each(["get", "post", "delete", "put", "patch"])(
           method,
           url: "/path/hello/worlD",
         })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
 
     test("with url queries", async () => {
@@ -150,16 +150,16 @@ describe.each(["get", "post", "delete", "put", "patch"])(
 
       await expect(
         instance({ method, url: "/query/any/query?query1=hell&query2=2" })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
       await expect(
         instance({ method, url: "/query/any/query?query1=hello&query2=hello" })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
       await expect(
         instance({
           method,
           url: "/query/any/query?query1=hello&query2=1&query3=hello",
         })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
 
     test("no url queries", async () => {
@@ -351,21 +351,21 @@ describe.each(["post", "delete", "put", "patch"])(
           url: "/body/any/body?query1=hell",
           data: { body1: "hell", body2: 2 },
         })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
       await expect(
         instance({
           method,
           url: "/body/any/body?query1=hello",
           data: { body1: "hello", body2: "world" },
         })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
       await expect(
         instance({
           method,
           url: "/body/any/body",
           data: { body1: "hello", body2: 2, body3: "world" },
         })
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
 
     test("no request body", async () => {
