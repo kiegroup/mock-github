@@ -106,11 +106,13 @@ export class ArchiveServer {
       res.status(200).json({ value: files });
     });
 
-    this.server.get("/download/:container/:path(*)", (req, res) => {
+    this.server.get(/^\/download\/([^/]+)\/(.+)$/, (req, res) => {
+      const container = req.params[0];
+      const filepath = req.params[1];
       const fileLocation = path.join(
         this.store,
-        req.params.container,
-        req.params.path
+        container,
+        filepath
       );
       fs.createReadStream(fileLocation, { encoding: "utf-8" }).pipe(res);
     });
