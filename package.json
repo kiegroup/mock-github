@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@actions/artifact": "^1.1.0",
-    "@octokit/rest": "^19.0.13",
+    "@octokit/rest": "^22.0.1",
     "@types/express": "^4.17.13",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^28.1.3",
