@@ -9,9 +9,9 @@ export class Octokit {
     
     // Create a proxy that returns mock functions for any endpoint
     this.rest = new Proxy({}, {
-      get: (_target, namespace: string) => {
+      get: (_target, _namespace: string) => {
         return new Proxy({}, {
-          get: (_target, method: string) => {
+          get: (_target, _method: string) => {
             return async (params: Record<string, string>) => {
               // This will be intercepted by nock in the tests
               const owner = params.owner;
