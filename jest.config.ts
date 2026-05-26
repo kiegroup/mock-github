@@ -7,11 +7,12 @@ const jestConfig: Config.InitialOptions = {
     "^.+\\.tsx?$": "ts-jest",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(@octokit|universal-user-agent|before-after-hook)/)",
+    "node_modules/(?!(@octokit|@actions|universal-user-agent|before-after-hook)/)",
   ],
   moduleNameMapper: {
     "^@mg/(.*)$": "<rootDir>/src/$1",
     "^@octokit/rest$": "<rootDir>/test/__mocks__/@octokit/rest.ts",
+    "^@actions/artifact$": "<rootDir>/test/__mocks__/@actions/artifact.ts",
   },
   clearMocks: true,
   resetMocks: true,
