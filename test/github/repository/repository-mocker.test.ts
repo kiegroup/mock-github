@@ -19,7 +19,7 @@ afterEach(async () => {
   if (existsSync(repoPath)) {
     try {
       await rm(repoPath, { recursive: true, force: true });
-    } catch (err) {
+    } catch {
       // Ignore cleanup errors
     }
   }
@@ -44,7 +44,7 @@ describe("setup", () => {
       .spyOn(RepositoryHistory.prototype, "setHistory")
       .mockResolvedValue();
 
-    await expect(repoMocker.setup()).resolves.not.toThrowError();
+    await expect(repoMocker.setup()).resolves.not.toThrow();
 
     expect(fileSpy).toHaveBeenCalledTimes(0);
     expect(localBranchSpy).toHaveBeenCalledTimes(0);
@@ -74,7 +74,7 @@ describe("setup", () => {
       .spyOn(RepositoryHistory.prototype, "setHistory")
       .mockResolvedValue();
 
-    await expect(repoMocker.setup()).resolves.not.toThrowError();
+    await expect(repoMocker.setup()).resolves.not.toThrow();
 
     expect(fileSpy).toHaveBeenCalledTimes(2);
     expect(localBranchSpy).toHaveBeenCalledTimes(2);
@@ -126,7 +126,7 @@ describe("teardown", () => {
     jest.spyOn(RepositoryHistory.prototype, "setHistory").mockResolvedValue();
 
     await repoMocker.setup();
-    await expect(repoMocker.teardown()).resolves.not.toThrowError();
+    await expect(repoMocker.teardown()).resolves.not.toThrow();
   });
 
   test("multiple repositories", async () => {
@@ -156,7 +156,7 @@ describe("teardown", () => {
     expect(existsSync(pathA)).toBe(true);
     expect(existsSync(pathB)).toBe(true);
 
-    await expect(repoMocker.teardown()).resolves.not.toThrowError();
+    await expect(repoMocker.teardown()).resolves.not.toThrow();
     expect(existsSync(pathA)).toBe(false);
     expect(existsSync(pathB)).toBe(false);
   });

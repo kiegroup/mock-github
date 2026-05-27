@@ -23,8 +23,14 @@ import { Repository, Repositories } from "@mg/github/repository/repository-mocke
 
 export {
   MockGithub,
-  MockGithubConfig,
   Moctokit,
+  EndpointMocker,
+  ResponseMocker,
+  RequestMocker,
+};
+
+export type {
+  MockGithubConfig,
   FileState,
   State,
   BranchState,
@@ -37,9 +43,6 @@ export {
   Repositories,
   Repository,
   Response,
-  EndpointMocker,
-  ResponseMocker,
-  RequestMocker,
   EndpointDetails,
   EndpointMethod,
   Endpoints

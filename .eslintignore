@@ -1,7 +1,0 @@
-node_modules/
-build/
-coverage/
-scripts/
-jest.config.ts
-jest.setup.js
-**/generated/

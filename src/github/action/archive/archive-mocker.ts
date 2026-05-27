@@ -32,6 +32,7 @@ export class ArchiveArtifactsMocker
       process.env["ACTIONS_RUNTIME_URL"] = `http://localhost:${this.port}/`;
       process.env["GITHUB_RUN_ID"] = this.runId;
       process.env["ACTIONS_RUNTIME_TOKEN"] = "token";
+      process.env["ARTIFACT_STORE"] = this.store;
     }
   }
 
@@ -46,6 +47,7 @@ export class ArchiveArtifactsMocker
       delete process.env["ACTIONS_RUNTIME_URL"];
       delete process.env["GITHUB_RUN_ID"];
       delete process.env["ACTIONS_RUNTIME_TOKEN"];
+      delete process.env["ARTIFACT_STORE"];
     }
   }
 

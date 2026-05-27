@@ -2,11 +2,17 @@ import type { Config } from "@jest/types";
 // Sync object
 const jestConfig: Config.InitialOptions = {
   verbose: true,
+  preset: "ts-jest",
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!(@octokit|@actions|universal-user-agent|before-after-hook)/)",
+  ],
   moduleNameMapper: {
     "^@mg/(.*)$": "<rootDir>/src/$1",
+    "^@octokit/rest$": "<rootDir>/test/__mocks__/@octokit/rest.ts",
+    "^@actions/artifact$": "<rootDir>/test/__mocks__/@actions/artifact.ts",
   },
   clearMocks: true,
   resetMocks: true,

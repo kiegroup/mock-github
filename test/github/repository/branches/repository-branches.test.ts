@@ -30,7 +30,7 @@ afterEach(async () => {
   if (existsSync(repoDir)) {
     try {
       await rm(repoDir, { recursive: true, force: true });
-    } catch (err) {
+    } catch {
       // Ignore cleanup errors
     }
   }
